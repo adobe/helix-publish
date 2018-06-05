@@ -22,6 +22,7 @@ module.exports = [
     });
   },
   argv => {
+    // handler function
     console.log('Init', argv.name);
   }
 ];
