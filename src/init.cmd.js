@@ -12,27 +12,24 @@
 
 'use strict';
 
-const NAME_PARAM = 'name';
-const DIR_PARAM = 'dir';
+const path = require('path');
+
+const fse = require('fs-extra');
+const chalk = require('chalk');
 
 /* eslint no-console: off */
-/* eslint global-require: off */
 
-module.exports = {
-  command: `init <${NAME_PARAM}> [${DIR_PARAM}]`,
-  desc: 'Initialize the project structure',
-  builder: (yargs) => {
-    yargs.positional(NAME_PARAM, {
-      type: 'string',
-      describe: 'Name of the project to initialize',
+const handler = (argv) => {
+  const projectDir = path.resolve(path.join(argv.dir, argv.name));
+  fse.ensureDir(projectDir)
+    .then(() => {
+      console.log(chalk.green(`Successfully created ${projectDir}`));
     })
-      .positional(DIR_PARAM, {
-        type: 'string',
-        describe: 'Parent directory of new project',
-        default: '.',
-      });
-  },
-  handler: (argv) => {
-    require('./init.cmd').handler(argv);
-  },
+    .catch((err) => {
+      console.error(chalk.red(err));
+    });
+  // TODO: implement
+  console.log(chalk.green('Init'), argv.name, argv.dir);
 };
+
+module.exports.handler = handler;
