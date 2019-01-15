@@ -51,13 +51,9 @@ async function init(fastly, version) {
   )));
 }
 
-function isproxy(strain) {
-  return strain.isProxy();
-}
-
 async function updatestrains(fastly, version, strains) {
   // filter out all proxy strains
-  const proxystrains = Array.from(strains.values()).filter(isproxy);
+  const proxystrains = strains.getProxyStrains();
   // create a new backend or update and existing one for each origin defined
   return Promise.all(
     proxystrains
