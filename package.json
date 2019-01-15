@@ -1,0 +1,26 @@
+{
+  "name": "@adobe/helix-publish",
+  "version": "1.0.0",
+  "description": "A microservice (for Adobe I/O Runtime) that publishes Helix configurations to Fastly",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "nyc mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adobe/helix-publish.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/adobe/helix-publish/issues"
+  },
+  "homepage": "https://github.com/adobe/helix-publish#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0"
+  }
+}
