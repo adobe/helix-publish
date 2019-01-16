@@ -39,7 +39,6 @@ async function updatestrains(fastly, version, strains) {
   const runtimestrains = strains.getRuntimeStrains();
   const deployedstrains = runtimestrains.filter(strain => !!strain.package);
   const updates = deployedstrains.reduce((p, strain) => {
-    
     p.push(fastly.writeDictValue(version, 'strain_action_roots', strain.name, strain.package));
 
     p.push(fastly.writeDictValue(version, 'strain_owners', strain.name, strain.content.owner));
@@ -47,7 +46,7 @@ async function updatestrains(fastly, version, strains) {
     p.push(fastly.writeDictValue(version, 'strain_repos', strain.name, strain.content.repo));
     p.push(fastly.writeDictValue(version, 'strain_root_paths', strain.name, strain.content.path));
 
-    
+
     p.push(fastly.writeDictValue(version, 'strain_github_static_repos', strain.name, strain.static.repo));
     p.push(fastly.writeDictValue(version, 'strain_github_static_owners', strain.name, strain.static.owner));
     p.push(fastly.writeDictValue(version, 'strain_github_static_refs', strain.name, strain.static.ref));

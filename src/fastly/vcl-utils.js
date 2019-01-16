@@ -196,5 +196,5 @@ function xversion(configVersion, cliVersion, revision = 'online') {
 
 
 module.exports = {
-  conditions, resolve, reset, params: parameters, xversion, regexp
+  resolve, reset, params: parameters, xversion, regexp,
 };

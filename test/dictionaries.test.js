@@ -45,7 +45,7 @@ describe('Testing dictionaries.js', () => {
     assert.ok(fastly.writeDictValue.calledWith(1, 'strain_refs', 'adhoc', 'master'));
     assert.ok(fastly.writeDictValue.calledWith(1, 'strain_repos', 'adhoc', 'project-helix.io'));
     assert.ok(fastly.writeDictValue.calledWith(1, 'strain_root_paths', 'adhoc', ''));
-    
+
     assert.ok(fastly.writeDictValue.calledWith(1, 'strain_github_static_repos', 'adhoc', 'project-helix.io'));
     assert.ok(fastly.writeDictValue.calledWith(1, 'strain_github_static_owners', 'adhoc', 'adobe'));
     assert.ok(fastly.writeDictValue.calledWith(1, 'strain_github_static_refs', 'adhoc', 'master'));

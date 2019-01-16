@@ -14,7 +14,7 @@ const include = require('./include-util');
 const {
   resolve,
   reset,
-  params: parameters,
+  parameters,
   xversion,
 } = require('./vcl-utils');
 const package = require('../../package.json');

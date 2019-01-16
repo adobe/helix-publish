@@ -31,7 +31,7 @@ strains:
   client:
     code: *myrepo
     static: *myrepo
-    condition: req.http.host == "client.project-helix.io"
+    url: "https://client.project-helix.io"
     sticky: false
     content:
       repo: helix-cli
@@ -56,6 +56,7 @@ strains:
     sticky: true
 
   proxy-detailed:
+    condition: req.http.host == "proxy2.project-helix.io"
     origin:
       address: 192.168.0.1
       name: publish
