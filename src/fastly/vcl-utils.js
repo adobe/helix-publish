@@ -138,5 +138,58 @@ function reset(backends) {
   return retval;
 }
 
+/**
+   * Turns a list of parameter names into a regular expression string.
+   * @param {Array<String>} params a list of parameter names
+   */
+function filter(params) {
+  return `^(${[...params, 'hlx_.*'].join('|')})$`;
+}
 
-module.exports = { conditions, resolve, reset };
+function whitelist(params, indent = '') {
+  return `set req.http.X-Old-Url = req.url;
+set req.url = querystring.regfilter_except(req.url, "${filter(params)}");
+set req.http.X-Encoded-Params = urlencode(req.url.qs);
+set req.url = req.http.X-Old-Url;`
+    .split('\n')
+    .map(line => indent + line)
+    .join('\n');
+}
+
+/**
+   * Generates VCL for strain resolution from a list of strains
+   */
+function parameters(strains) {
+  let retvcl = '# This file handles the URL parameter whitelist\n\n';
+  const [defaultstrain] = strains.filter(strain => strain.name === 'default');
+  if (defaultstrain && defaultstrain.params && Array.isArray(defaultstrain.params)) {
+    retvcl += '# default parameters, can be overridden per strain\n';
+    retvcl += whitelist(defaultstrain.params);
+  }
+  const otherstrains = strains
+    .filter(strain => strain.name !== 'default')
+    .filter(strain => strain.params && Array.isArray(strain.params));
+
+  retvcl += otherstrains.map(({ name, params }) => `
+
+if (req.http.X-Strain == "${name}") {
+${whitelist(params, '  ')}
+}
+`);
+  return retvcl;
+}
+
+function xversion(configVersion, cliVersion, revision = 'online') {
+  let retvcl = '# This section handles the strain resolution\n';
+
+  const version = `; src=${configVersion}; cli=${cliVersion}; rev=${revision}`;
+
+  retvcl += `set req.http.X-Version = req.http.X-Version + "${version}";\n`;
+
+  return retvcl;
+}
+
+
+module.exports = {
+  conditions, resolve, reset, params: parameters, xversion,
+};

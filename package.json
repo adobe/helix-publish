@@ -37,6 +37,7 @@
   "dependencies": {
     "@adobe/fastly-native-promises": "^1.1.2",
     "@adobe/helix-shared": "adobe/helix-shared#json-constructor",
+    "fs-extra": "^7.0.1",
     "uri-js": "^4.2.2"
   }
 }
