@@ -12,6 +12,18 @@
 const URI = require('uri-js');
 const glob = require('glob-to-regexp');
 
+function vcl(fastly, version, content, name, main) {
+  return fastly.writeVCL(
+    version,
+    name,
+    {
+      content,
+      name,
+      main,
+    },
+  );
+}
+
 function regexp(globs) {
   return globs.map(glob).map(re => re.toString().replace(/^\/|\/$/g, '')).join('|');
 }
@@ -196,5 +208,5 @@ function xversion(configVersion, cliVersion, revision = 'online') {
 
 
 module.exports = {
-  resolve, reset, parameters, xversion, regexp,
+  resolve, reset, parameters, xversion, regexp, vcl
 };

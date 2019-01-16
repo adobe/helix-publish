@@ -10,6 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
+const { reset, vcl } = require('./vcl-utils');
+
 const backends = {
   GitHub: {
     hostname: 'raw.githubusercontent.com',
@@ -55,13 +57,14 @@ async function updatestrains(fastly, version, strains) {
   // filter out all proxy strains
   const proxystrains = strains.getProxyStrains();
   // create a new backend or update and existing one for each origin defined
-  return Promise.all(
-    proxystrains
-      .map(proxystrain => proxystrain.origin)
-      .map(origin => fastly.writeBackend(version, origin.name, origin.toJSON())),
-  );
+  const origins = proxystrains.map(proxystrain => proxystrain.origin);
+  const updateorigins = origins.map(origin => fastly.writeBackend(version, origin.name, origin.toJSON()));
+
+  return Promise.all([
+    ...updateorigins, 
+    vcl(fastly, version, reset([...Object.values(backends), ...origins]), 'reset.vcl')]);
 }
 
 module.exports = {
-  init, updatestrains,
+  init, updatestrains, backends
 };

@@ -32,6 +32,7 @@ describe('Testing backends.js', () => {
   it('#updatestrains/full', async () => {
     const fastly = {
       writeBackend: sinon.fake(),
+      writeVCL: sinon.fake()
     };
 
     const config = await new HelixConfig()
@@ -40,6 +41,8 @@ describe('Testing backends.js', () => {
 
     assert.ok(await updatestrains(fastly, 1, config.strains));
     assert.ok(fastly.writeBackend.calledTwice);
+
+    assert.ok(fastly.writeVCL.calledOnce);
 
     assert.ok(fastly.writeBackend.calledWith(1, 'Proxywwwadobeio861b'));
     assert.ok(fastly.writeBackend.calledWith(1, 'publish'));

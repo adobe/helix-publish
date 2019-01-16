@@ -13,23 +13,11 @@ const path = require('path');
 const include = require('./include-util');
 const {
   resolve,
-  reset,
   parameters,
   xversion,
+  vcl
 } = require('./vcl-utils');
 const package = require('../../package.json');
-
-function vcl(fastly, version, content, name, main) {
-  return fastly.writeVCL(
-    version,
-    name,
-    {
-      content,
-      name,
-      main,
-    },
-  );
-}
 
 async function init(fastly, version) {
   const vclfile = path.resolve(__dirname, '../../layouts/fastly/helix.vcl');
@@ -43,7 +31,6 @@ function updatestrains(fastly, version, strains) {
     vcl(fastly, version, resolve(strains), 'strains.vcl'),
     vcl(fastly, version, parameters(strains), 'params.vcl'),
     vcl(fastly, version, xversion(version, package.version), 'dynamic.vcl'),
-    vcl(fastly, version, reset(strains), 'reset.vcl'),
   ]);
 }
 
