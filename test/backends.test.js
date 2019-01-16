@@ -32,7 +32,7 @@ describe('Testing backends.js', () => {
   it('#updatestrains/full', async () => {
     const fastly = {
       writeBackend: sinon.fake(),
-      writeVCL: sinon.fake()
+      writeVCL: sinon.fake(),
     };
 
     const config = await new HelixConfig()

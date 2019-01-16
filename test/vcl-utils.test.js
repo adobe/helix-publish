@@ -14,7 +14,7 @@ const assert = require('assert');
 const path = require('path');
 const { HelixConfig } = require('@adobe/helix-shared');
 const utils = require('../src/fastly/vcl-utils');
-const { backends } = require('../src/fastly/backends'); 
+const { backends } = require('../src/fastly/backends');
 
 /* eslint-env mocha */
 
@@ -53,6 +53,20 @@ describe('Testing vcl-utils.js', () => {
     };
   }
 
+  function parameterstest(name) {
+    return async function test() {
+      const config = await new HelixConfig()
+        .withConfigPath(path.resolve(__dirname, `fixtures/${name}.yaml`))
+        .init();
+
+      const expected = fs.readFileSync(path.resolve(__dirname, `fixtures/${name}-params.vcl`)).toString();
+
+      const vcl = utils.parameters(config.strains);
+      assert.equal(vcl, expected);
+    };
+  }
+
   it('#resolve/full', resolvetest('full'));
   it('#reset/full', resettest('full'));
+  it('#parameters/full', parameterstest('full'));
 });

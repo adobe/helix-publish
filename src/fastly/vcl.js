@@ -15,22 +15,22 @@ const {
   resolve,
   parameters,
   xversion,
-  vcl
+  writevcl,
 } = require('./vcl-utils');
 const package = require('../../package.json');
 
 async function init(fastly, version) {
   const vclfile = path.resolve(__dirname, '../../layouts/fastly/helix.vcl');
   const content = include(vclfile);
-  await vcl(fastly, version, 'helix.vcl', content);
+  await writevcl(fastly, version, 'helix.vcl', content);
   return fastly.setMainVCL(version, 'helix.vcl');
 }
 
 function updatestrains(fastly, version, strains) {
   return Promise.all([
-    vcl(fastly, version, resolve(strains), 'strains.vcl'),
-    vcl(fastly, version, parameters(strains), 'params.vcl'),
-    vcl(fastly, version, xversion(version, package.version), 'dynamic.vcl'),
+    writevcl(fastly, version, resolve(strains), 'strains.vcl'),
+    writevcl(fastly, version, parameters(strains), 'params.vcl'),
+    writevcl(fastly, version, xversion(version, package.version), 'dynamic.vcl'),
   ]);
 }
 

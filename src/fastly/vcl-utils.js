@@ -12,7 +12,7 @@
 const URI = require('uri-js');
 const glob = require('glob-to-regexp');
 
-function vcl(fastly, version, content, name, main) {
+function writevcl(fastly, version, content, name, main) {
   return fastly.writeVCL(
     version,
     name,
@@ -178,14 +178,14 @@ set req.url = req.http.X-Old-Url;`
    */
 function parameters(strains) {
   let retvcl = '# This file handles the URL parameter whitelist\n\n';
-  const [defaultstrain] = strains.filter(strain => strain.name === 'default');
+  const defaultstrain = strains.get('default');
   if (defaultstrain && defaultstrain.params && Array.isArray(defaultstrain.params)) {
     retvcl += '# default parameters, can be overridden per strain\n';
     retvcl += whitelist(defaultstrain.params);
   }
-  const otherstrains = strains
-    .filter(strain => strain.name !== 'default')
-    .filter(strain => strain.params && Array.isArray(strain.params));
+  const otherstrains = strains.getByFilter(strain => strain.name !== 'default'
+    && strain.params
+    && strain.params.length);
 
   retvcl += otherstrains.map(({ name, params }) => `
 
@@ -208,5 +208,5 @@ function xversion(configVersion, cliVersion, revision = 'online') {
 
 
 module.exports = {
-  resolve, reset, parameters, xversion, regexp, vcl
+  resolve, reset, parameters, xversion, regexp, writevcl,
 };
