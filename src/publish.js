@@ -11,17 +11,14 @@
  */
 
 const { HelixConfig } = require('@adobe/helix-shared');
-const f = require('@adobe/fastly-native-promises');
+const initfastly = require('@adobe/fastly-native-promises');
 const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 
 async function publish(configuration, service, token, version) {
-  const config = new HelixConfig();
-  // eslint-disable-next-line no-underscore-dangle
-  config._cfg = configuration;
-  const fastly = await f(token, service);
-  await config.validate();
+  const config = await new HelixConfig().fromJSON(configuration).init();
+  const fastly = await initfastly(token, service);
 
   await Promise.all([
     backends.init(fastly, version),
