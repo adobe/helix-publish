@@ -10,6 +10,11 @@
  * governing permissions and limitations under the License.
  */
 const URI = require('uri-js');
+const glob = require('glob-to-regexp');
+
+function regexp(globs) {
+  return globs.map(glob).map(re => re.toString().replace(/^\/|\/$/g, '')).join('|');
+}
 
 function conditions([strain, vcl]) {
   if (strain.url) {
@@ -191,5 +196,5 @@ function xversion(configVersion, cliVersion, revision = 'online') {
 
 
 module.exports = {
-  conditions, resolve, reset, params: parameters, xversion,
+  conditions, resolve, reset, params: parameters, xversion, regexp
 };
