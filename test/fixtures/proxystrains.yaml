@@ -1,3 +1,4 @@
+version: 1
 strains:
   default:
       code: /hlx/default/git-github-com-adobe-helix-cli-git--dirty--
