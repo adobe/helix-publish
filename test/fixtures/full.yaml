@@ -54,6 +54,9 @@ strains:
     origin: https://www.adobe.io/
     condition: req.http.host == "proxy.project-helix.io"
     sticky: true
+    params:
+      - "search*"
+      - "*lang"
 
   proxy-detailed:
     condition: req.http.host == "proxy2.project-helix.io"
