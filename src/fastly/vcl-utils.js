@@ -102,7 +102,7 @@ function namebody([strain, vcl]) {
 
 
 function resolve(mystrains) {
-  const strains = mystrains instanceof Map ? Array.from(mystrains.values()) : mystrains;
+  const strains = Array.from(mystrains.values());
   let retvcl = '# This file handles the strain resolution\n';
   const strainconditions = strains
     .map(strain => [strain, { body: [] }])
