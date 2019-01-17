@@ -119,4 +119,4 @@ workflows:
         filters:
           branches:
             # rename to `master` once all environment vars are set up
-            only: master_disabled
+            only: master
