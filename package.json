@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@adobe/fastly-native-promises": "^1.1.2",
-    "@adobe/helix-shared": "adobe/helix-shared#json-constructor",
+    "@adobe/helix-shared": "adobe/helix-shared#new-config",
     "fs-extra": "^7.0.1",
     "glob-to-regexp": "^0.4.0",
     "uri-js": "^4.2.2"
