@@ -74,6 +74,7 @@ describe('Testing vcl-utils.js', () => {
 
   it('#resolve/full', resolvetest('full'));
   it('#resolve/noconditions', resolvetest('noconditions'));
+  it('#resolve/urls', resolvetest('urls'));
   it('#reset/full', resettest('full'));
   it('#parameters/full', parameterstest('full'));
   it('#parameters/noparams', parameterstest('noparams'));

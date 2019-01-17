@@ -28,12 +28,16 @@ function regexp(globs) {
   return globs.map(glob).map(re => re.toString().replace(/^\/|\/$/g, '')).join('|');
 }
 
+function vclbody(arr = []) {
+  return arr;
+};
+
 function conditions([strain, vcl]) {
   if (strain.url) {
     const uri = URI.parse(strain.url);
     if (uri.path && uri.path !== '/') {
       const pathname = uri.path.replace(/\/$/, '');
-      const body = vcl.body || [];
+      const body = vclbody(vcl.body)
       body.push(`set req.http.X-Dirname = regsub(req.url.dirname, "^${pathname}", "");`);
       return [strain, {
         sticky: false,
@@ -45,11 +49,6 @@ function conditions([strain, vcl]) {
       condition: `req.http.Host == "${uri.host}"`,
     }, strain];
   }
-  if (strain.condition && strain.sticky === undefined) {
-    return [strain, {
-      sticky: true,
-    }];
-  }
   return [strain, vcl];
 }
 
@@ -60,7 +59,7 @@ function conditions([strain, vcl]) {
  */
 function proxy([strain, vcl]) {
   if (strain.origin && typeof strain.origin === 'object') {
-    const body = vcl.body || [];
+    const body = vclbody(vcl.body);
     body.push(`
 # Enable passing through of requests
 
@@ -81,7 +80,7 @@ set req.http.host = "${strain.origin.hostname}";
  */
 function stickybody([strain, argvcl]) {
   const vcl = argvcl;
-  vcl.body = vcl.body || [];
+  vcl.body =  body = vclbody(vcl.body)
   if (strain.sticky || vcl.sticky) {
     vcl.body.push('set req.http.X-Sticky = "true";');
   } else {
@@ -105,7 +104,7 @@ function resolve(mystrains) {
   const strains = Array.from(mystrains.values());
   let retvcl = '# This file handles the strain resolution\n';
   const strainconditions = strains
-    .map(strain => [strain, { body: [] }])
+    .map(strain => [strain, { body: vclbody() }])
     .map(conditions)
     .map(proxy)
     .map(stickybody)
