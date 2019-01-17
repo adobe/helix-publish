@@ -30,14 +30,14 @@ function regexp(globs) {
 
 function vclbody(arr = []) {
   return arr;
-};
+}
 
 function conditions([strain, vcl]) {
   if (strain.url) {
     const uri = URI.parse(strain.url);
     if (uri.path && uri.path !== '/') {
       const pathname = uri.path.replace(/\/$/, '');
-      const body = vclbody(vcl.body)
+      const body = vclbody(vcl.body);
       body.push(`set req.http.X-Dirname = regsub(req.url.dirname, "^${pathname}", "");`);
       return [strain, {
         sticky: false,
@@ -80,7 +80,7 @@ set req.http.host = "${strain.origin.hostname}";
  */
 function stickybody([strain, argvcl]) {
   const vcl = argvcl;
-  vcl.body =  body = vclbody(vcl.body)
+  vcl.body = vclbody(vcl.body);
   if (strain.sticky || vcl.sticky) {
     vcl.body.push('set req.http.X-Sticky = "true";');
   } else {

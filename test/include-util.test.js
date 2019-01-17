@@ -16,11 +16,11 @@ const path = require('path');
 const include = require('../src/fastly/include-util');
 
 describe('Testing include-util.js', () => {
-  ['simple'].forEach(f => {
+  ['simple'].forEach((f) => {
     it('#include', () => {
-      const res = include(path.resolve(__dirname, 'fixtures/include-' + f + '.vcl'));
-      const expect = fs.readFileSync(path.resolve(__dirname, 'fixtures/include-' + f +'-resolved.vcl')).toString();
+      const res = include(path.resolve(__dirname, `fixtures/include-${f}.vcl`));
+      const expect = fs.readFileSync(path.resolve(__dirname, `fixtures/include-${f}-resolved.vcl`)).toString();
       assert.equal(res, expect);
     });
-  })
+  });
 });
