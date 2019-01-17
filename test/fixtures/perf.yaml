@@ -1,9 +1,0 @@
-default:
-    name: default
-    content:
-      owner: trieloff
-      repo: soupdemo
-      ref: master
-    code: /trieloff/default/git-github-com-adobe-helix-cli-git--dirty
-    perf:
-      device: iPhone8
