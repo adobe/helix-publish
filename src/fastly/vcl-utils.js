@@ -182,11 +182,9 @@ function parameters(strains) {
   const otherstrains = strains.getByFilter(strain => strain.params
     && strain.params.length);
 
-  retvcl += otherstrains.map(({ name, params }) => `
-
-if (req.http.X-Strain == "${name}") {
+  retvcl += otherstrains.map(({ name, params }) => `if (req.http.X-Strain == "${name}") {
 ${whitelist(params, '  ')}
-}`).join(' else ');
+}`).join(' else');
 
   if (otherstrains.length) {
     retvcl += ` else {

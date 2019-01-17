@@ -76,4 +76,5 @@ describe('Testing vcl-utils.js', () => {
   it('#reset/full', resettest('full'));
   it('#parameters/full', parameterstest('full'));
   it('#parameters/noparams', parameterstest('noparams'));
+  it('#parameters/manyparams', parameterstest('manyparams'));
 });
