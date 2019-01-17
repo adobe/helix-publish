@@ -25,6 +25,12 @@ describe('Testing vcl-utils.js', () => {
     assert.equal(utils.regexp(['foo*', '*bar']), '^foo.*$|^.*bar$');
   });
 
+  it('#xversion', () => {
+    const [line1, line2] = utils.xversion(1, '0.9').split('\n');
+    assert.equal(line1, '# This file shows the current version');
+    assert.equal(line2, 'set req.http.X-Version = req.http.X-Version + "; src=1; cli=0.9; rev=online";')
+  });
+
   function resolvetest(name) {
     return async function test() {
       const config = await new HelixConfig()

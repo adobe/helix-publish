@@ -202,7 +202,7 @@ ${whitelist([])}`;
 }
 
 function xversion(configVersion, cliVersion, revision = 'online') {
-  let retvcl = '# This section handles the strain resolution\n';
+  let retvcl = '# This file shows the current version\n';
 
   const version = `; src=${configVersion}; cli=${cliVersion}; rev=${revision}`;
 
