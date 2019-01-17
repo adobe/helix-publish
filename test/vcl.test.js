@@ -21,7 +21,7 @@ describe('Testing vcl.js', () => {
   it('#init', async () => {
     const fastly = {
       writeVCL: sinon.fake.returns({}),
-      setMainVCL: sinon.fake.returns({})
+      setMainVCL: sinon.fake.returns({}),
     };
 
     assert.ok(await init(fastly, 1));
