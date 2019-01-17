@@ -22,7 +22,7 @@ const package = require('../../package.json');
 async function init(fastly, version) {
   const vclfile = path.resolve(__dirname, '../../layouts/fastly/helix.vcl');
   const content = include(vclfile);
-  await writevcl(fastly, version, 'helix.vcl', content);
+  await writevcl(fastly, version, content, 'helix.vcl');
   return fastly.setMainVCL(version, 'helix.vcl');
 }
 
