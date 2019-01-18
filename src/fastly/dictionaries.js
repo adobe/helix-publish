@@ -31,7 +31,10 @@ async function init(fastly, version) {
   return Promise.all(dictionaries.map(dictionary => fastly.writeDictionary(
     version,
     dictionary,
-    true,
+    {
+      name: dictionary,
+      write_only: true,
+    },
   )));
 }
 
