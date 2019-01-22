@@ -20,7 +20,7 @@ async function publish(configuration, service, token, version) {
   const config = await new HelixConfig().fromJSON(configuration).init();
   const fastly = await initfastly(token, service);
 
-  await Promise.all([
+  return Promise.all([
     backends.init(fastly, version),
     backends.updatestrains(fastly, version, config.strains),
     vcl.init(fastly, version),
@@ -33,7 +33,12 @@ async function publish(configuration, service, token, version) {
       version,
       config.strains,
     )),
-  ]);
+  ]).then(tasks => ({
+    body: {
+      status: true,
+      completed: tasks.length,
+    },
+  }));
 }
 
 module.exports = publish;
