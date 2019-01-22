@@ -18,7 +18,7 @@ const dictionaries = require('./fastly/dictionaries');
 
 /* eslint-disable no-console */
 async function publish(configuration, service, token, version) {
-  const config = await new HelixConfig().fromJSON(configuration).init();
+  const config = await new HelixConfig().withJSON(configuration).init();
   const fastly = await initfastly(token, service);
 
   console.log('publishing …');
