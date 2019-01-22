@@ -39,7 +39,7 @@ async function main(params) {
       body: {
         status: 'Error',
         error: e.toString(),
-        stack: e.stack,
+        stack: e.stack.split('\n'),
       },
     };
   }
