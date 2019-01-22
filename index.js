@@ -11,7 +11,15 @@
  */
 const publish = require('./src/publish');
 
+/* eslint-disable no-console */
+/* eslint-disable no-unreachable */
 function main(params) {
+  console.log('starting action');
+
+  return {
+    body: 'OK.',
+  };
+
   return publish(
     params.configuration,
     params.service,
