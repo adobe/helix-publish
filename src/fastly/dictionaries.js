@@ -28,7 +28,6 @@ const dictionaries = [
 ];
 
 async function init(fastly, version) {
-  console.log('init dictionaries');
   return Promise.all(dictionaries.map(dictionary => fastly.writeDictionary(
     version,
     dictionary,

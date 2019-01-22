@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 const { condit } = require('@adobe/helix-testutils');
+const assert = require('assert');
 const { main } = require('../index');
 /* eslint-env mocha */
 
@@ -64,6 +65,28 @@ const config = {
 };
 
 describe('Integration Test', () => {
+  it('Test publish function with invalid credentials', async () => {
+    const params = Object.assign({
+      version: 2,
+    }, config);
+
+    const res = await main(params);
+    assert.equal(res.statusCode, 401);
+  }).timeout(60000);
+
+  condit('Test publish function with invalid version', condit.hasenvs([
+    'HLX_FASTLY_NAMESPACE',
+    'HLX_FASTLY_AUTH']), async () => {
+    const params = Object.assign({
+      service: process.env.HLX_FASTLY_NAMESPACE,
+      token: process.env.HLX_FASTLY_AUTH,
+      version: -10,
+    }, config);
+
+    const res = await main(params);
+    assert.equal(res.statusCode, 500);
+  }).timeout(60000);
+
   condit('Test publish function locally', condit.hasenvs([
     'HLX_FASTLY_NAMESPACE',
     'HLX_FASTLY_AUTH',
@@ -75,6 +98,26 @@ describe('Integration Test', () => {
     }, config);
 
     const res = await main(params);
-    console.log(res);
+    assert.deepStrictEqual(res, {
+      body: {
+        status: 'published',
+        completed: 5,
+      },
+      statusCode: 200,
+    });
+  }).timeout(60000);
+
+  condit('Test publish function with invalid configuration', condit.hasenvs([
+    'HLX_FASTLY_NAMESPACE',
+    'HLX_FASTLY_AUTH',
+    'VERSION_NUM']), async () => {
+    const params = Object.assign({
+      service: process.env.HLX_FASTLY_NAMESPACE,
+      token: process.env.HLX_FASTLY_AUTH,
+      version: process.env.VERSION_NUM,
+    }, {});
+
+    const res = await main(params);
+    assert.equal(res.statusCode, 400);
   }).timeout(60000);
 });
