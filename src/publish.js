@@ -47,9 +47,8 @@ async function publish(configuration, service, token, version) {
   }).catch((e) => {
     console.error(e);
     return {
-      error: {
-        message: `Unknown error ${e}`,
-      },
+      statusCode: 500,
+      body: `Unknown error: ${e}`
     };
   });
 }
