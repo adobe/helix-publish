@@ -49,6 +49,7 @@ async function publish(configuration, service, token, version) {
     return {
       statusCode: 500,
       body: `Unknown error: ${e}`,
+      stack: e.stack.split('\n')
     };
   });
 }
