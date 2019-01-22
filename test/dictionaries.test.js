@@ -30,7 +30,7 @@ describe('Testing dictionaries.js', () => {
 
   it('#updatestrains/full', async () => {
     const fastly = {
-      writeDictValue: sinon.fake(),
+      writeDictItem: sinon.fake(),
     };
 
     const config = await new HelixConfig()
@@ -38,19 +38,19 @@ describe('Testing dictionaries.js', () => {
       .init();
 
     assert.ok(await updatestrains(fastly, 1, config.strains));
-    assert.equal(fastly.writeDictValue.getCalls().length, 11);
+    assert.equal(fastly.writeDictItem.getCalls().length, 11);
 
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_action_roots', 'adhoc', '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_owners', 'adhoc', 'adobe'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_refs', 'adhoc', 'master'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_repos', 'adhoc', 'project-helix.io'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_root_paths', 'adhoc', ''));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_action_roots', 'adhoc', '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_owners', 'adhoc', 'adobe'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_refs', 'adhoc', 'master'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_repos', 'adhoc', 'project-helix.io'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_root_paths', 'adhoc', ''));
 
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_github_static_repos', 'adhoc', 'project-helix.io'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_github_static_owners', 'adhoc', 'adobe'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_github_static_refs', 'adhoc', 'master'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_github_static_root', 'adhoc', '/htdocs'));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_allow', 'adhoc', ''));
-    assert.ok(fastly.writeDictValue.calledWith(1, 'strain_deny', 'adhoc', ''));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_github_static_repos', 'adhoc', 'project-helix.io'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_github_static_owners', 'adhoc', 'adobe'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_github_static_refs', 'adhoc', 'master'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_github_static_root', 'adhoc', '/htdocs'));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_allow', 'adhoc', ''));
+    assert.ok(fastly.writeDictItem.calledWith(1, 'strain_deny', 'adhoc', ''));
   });
 });
