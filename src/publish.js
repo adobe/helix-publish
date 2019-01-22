@@ -16,9 +16,12 @@ const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 
+/* eslint-disable no-console */
 async function publish(configuration, service, token, version) {
   const config = await new HelixConfig().fromJSON(configuration).init();
   const fastly = await initfastly(token, service);
+
+  console.log('publishing …');
 
   return Promise.all([
     backends.init(fastly, version),
@@ -33,12 +36,22 @@ async function publish(configuration, service, token, version) {
       version,
       config.strains,
     )),
-  ]).then(tasks => ({
-    body: {
-      status: true,
-      completed: tasks.length,
-    },
-  }));
+  ]).then((tasks) => {
+    console.log('success…');
+    return {
+      body: {
+        status: true,
+        completed: tasks.length,
+      },
+    };
+  }).catch((e) => {
+    console.error(e);
+    return {
+      error: {
+        message: `Unknown error ${e}`,
+      },
+    };
+  });
 }
 
 module.exports = publish;
