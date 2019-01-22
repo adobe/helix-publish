@@ -45,7 +45,7 @@ async function publish(configuration, service, token, version) {
       },
     };
   }).catch((e) => {
-    console.error(e);
+    console.trace(e);
     return {
       statusCode: 500,
       body: `Unknown error: ${e}`,
