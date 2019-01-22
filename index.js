@@ -14,35 +14,14 @@ const publish = require('./src/publish');
 /* eslint-disable no-console */
 /* eslint-disable no-unreachable */
 async function main(params) {
-  console.log('starting action');
+  const result = await publish(
+    params.configuration,
+    params.service,
+    params.token,
+    params.version,
+  );
 
-  try {
-    console.log('running publish');
-    const result = await publish(
-      params.configuration,
-      params.service,
-      params.token,
-      params.version,
-    );
-    console.log('got a result');
-
-    return {
-      body: {
-        status: 'OK',
-        result,
-      },
-    };
-  } catch (e) {
-    console.log(e);
-    return {
-      statusCode: 500,
-      body: {
-        status: 'Error',
-        error: e.toString(),
-        stack: e.stack.split('\n'),
-      },
-    };
-  }
+  return result;
 }
 
 module.exports.main = main;
