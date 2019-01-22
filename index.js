@@ -17,7 +17,9 @@ function main(params) {
   console.log('starting action');
 
   return {
-    body: 'OK.',
+    body: {
+      status: 'OK',
+    },
   };
 
   return publish(
