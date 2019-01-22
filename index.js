@@ -35,6 +35,7 @@ async function main(params) {
   } catch (e) {
     console.log(e);
     return {
+      statusCode: 500,
       body: {
         status: 'Error',
         error: e.toString(),
