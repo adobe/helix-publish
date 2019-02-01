@@ -38,9 +38,11 @@
 
 
 /**
- * Check and set the `X-From-Edge` header, which allows us to determine whether
+ * Check the `X-From-Edge` header, which allows us to determine whether
  * a request is coming from a Fastly edge POP. Use this instead of `Fastly-FF`
  * since that can be spoofed, or come from another Fastly service.
+ *
+ * This should be called from the very top of `vcl_recv`
  */
 sub hlx_check_from_edge {
   # Verify correct format
@@ -65,6 +67,11 @@ sub hlx_check_from_edge {
   unset req.http.X-From-Edge;
 }
 
+/**
+ * Set the `X-From-Edge` header that the above sub checks.
+ *
+ * Should be called from the top of `vcl_recv`/`vcl_miss`
+ */
 sub hlx_set_from_edge {
   # If it exists, it's legit, leave it alone
   if (!bereq.http.X-From-Edge) {
@@ -148,7 +155,7 @@ sub hlx_strain {
   }
 
   # Sanitize user input. `urlencode` leaves alphanumeric and `-._~`
-  set req.http.X-Strain = regsuball(urlencode(req.http.Foo), {"%.."}, "_");
+  set req.http.X-Strain = regsuball(urlencode(req.http.X-Strain), {"%.."}, "_");
 
   # do not override strain if set in header
   if (!req.http.X-Strain) {
