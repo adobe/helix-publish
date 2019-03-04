@@ -10,6 +10,137 @@
 # governing permissions and limitations under the License.
 #
 
+
+# About URLs and Host headers:
+# This VCL will use the following conventions:
+# `req.url` - The canonical URL, will be used to determine the hash of the object
+# `req.http.X-Orig-URL` - The URL as received from the client
+# `req.http.X-Backend-URL` - The URL as should be sent to the origin (backend)
+#
+# Having `req.url` be canonical, vs `X-Backend-URL` being what's sent to origin 
+# allows us to do restarts to find content on other origins, and use origin
+# specific URLs, yet have the object stored under a single hash, meaning that 
+# a cache lookup will find the proper object on the first attempt once an 
+# object is in the cache.
+#
+# So `req.url` is what should be left after filtering query string parameters,
+# doing normalizations, etc. Then `req.http.X-Backend-URL` is a transformation of
+# that, using the origin specific rewriting, etc.
+#
+# Domain names are handled a bit simpler:
+# `req.http.Host` - The canonical domain name for the site, used for the hash
+# `req.http.X-Orig-Host` - The original domain name from the client
+#
+# `bereq.http.Host` will be set based on the backend used.
+#
+# When forwarding the request from edge POP to shield POP, the original URL and
+# original domain name will be used.
+
+
+/**
+ * Check the `X-From-Edge` header, which allows us to determine whether
+ * a request is coming from a Fastly edge POP. Use this instead of `Fastly-FF`
+ * since that can be spoofed, or come from another Fastly service.
+ *
+ * This should be called from the very top of `vcl_recv`
+ */
+sub hlx_check_from_edge {
+  # Verify correct format
+  if (req.http.X-From-Edge ~ "^(([0-9]+),[^,]+),(0x[0-9a-f]{64})$"
+      # Verify the HMAC
+      && digest.secure_is_equal(
+           # Using existing secret, but adding it to service id
+           # TODO: use a separate secret, because changing it can have some
+           # gnarly effects, if you don't follow it with a purge all
+           digest.hmac_sha256(req.service_id + table.lookup(secrets, "OPENWHISK_AUTH")
+           , re.group.1), re.group.3)) {
+    declare local var.time TIME;
+    set var.time = std.time(re.group.2, std.integer2time(-1));
+    # And verify the timestamp is not off by more than 2 seconds
+    if (time.is_after(var.time, time.sub(now, 2s))
+        && time.is_after(time.add(now, 2s), var.time)) {
+      # Do nothing, the header is valid
+      return;
+    }
+  }
+  # Header isn't valid, chuck it
+  unset req.http.X-From-Edge;
+}
+
+/**
+ * Set the `X-From-Edge` header that the above sub checks.
+ *
+ * Should be called from the top of `vcl_miss`/`vcl_pass`
+ */
+sub hlx_set_from_edge {
+  # If it exists, it's legit, leave it alone
+  if (!bereq.http.X-From-Edge) {
+    declare local var.data STRING;
+    set var.data = strftime({"%s"}, now) + "," + server.datacenter;
+    set bereq.http.X-From-Edge =
+      var.data + "," + digest.hmac_sha256(
+        # This must match whatever key is being used 
+        req.service_id + table.lookup(secrets, "OPENWHISK_AUTH"), var.data);
+  }
+}
+
+/**
+ * Initial processing of request
+ * Does:
+ * - Save original URL/Host
+ * - Unset headers from client
+ * - Setup secure shielding indicator
+ */
+
+sub hlx_recv_init {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_init";
+
+  # This is set to true for some cases, but that is not cleared upon a restart
+  set req.hash_always_miss = false;
+
+  # Execute the rest only at the very start, not after restarts
+  if (req.restarts > 0) {
+    return;
+  }
+
+  # Check/clear X-From-Edge header
+  call hlx_check_from_edge
+
+  # Set original URL, so that we can log it afterwards.
+  set req.http.X-Orig-URL = req.url;
+  set req.http.X-Orig-Host = req.http.Host;
+
+  # TODO: Make X-Debug require a valid token
+  if (!req.http.X-Debug) {
+    # Make sure clients can't change request flow
+    # X-Strain is currently settable by Cookie, not worth unsetting for now
+    unset req.http.X-Backend-URL;
+    unset req.http.X-Dirname;
+    unset req.http.X-Request-Type;
+    unset req.http.X-Static-Content-Type;
+    unset req.http.X-Sticky;
+    # Allow through from another Fastly POP as well as from debugger
+    if (!req.http.X-From-Edge) {
+      unset req.http.X-CDN-Request-ID;
+    }
+  }
+
+  # Force HTTPS
+  if (!req.http.Fastly-SSL) {
+     error 801 "Force SSL";
+  }
+
+  # Set a unique ID if not present
+  if (!req.http.X-CDN-Request-ID) {
+    set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-4" + randomstr(3, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
+  }
+
+  # set X-Version initial value
+  set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
+
+}
+
+
 # Determines the current strain, and sets the X-Strain header
 sub hlx_strain {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_strain";
@@ -22,14 +153,21 @@ sub hlx_strain {
   if (req.http.Cookie:X-Strain) {
     set req.http.X-Strain = req.http.Cookie:X-Strain;
   }
-  # we don't need cookies for anything else
-  unset req.http.Cookie;
+
+  # Sanitize user input. `urlencode` leaves alphanumeric and `-._~`
+  set req.http.X-Strain = regsuball(urlencode(req.http.X-Strain), {"%.."}, "_");
+
   # do not override strain if set in header
   if (!req.http.X-Strain) {
     set req.http.X-Strain = "default";
 
     # run custom strain resolution
     include "strains.vcl";
+  }
+
+  # we don't need cookies for anything else, but Proxy strains might
+  if (req.http.X-Request-Type != "Proxy") {
+    unset req.http.Cookie;
   }
 }
 
@@ -38,7 +176,6 @@ sub hlx_allow {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_allow";
 
   # starting permissive – change this for a more restrictive default
-  set req.http.X-Allow = ".*";
   set req.http.X-Allow = table.lookup(strain_allow, req.http.X-Strain);
   if (!req.http.X-Allow) {
     set req.http.X-Allow = table.lookup(strain_allow, "default");
@@ -49,7 +186,6 @@ sub hlx_allow {
 sub hlx_deny {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deny";
 
-  set req.http.X-Deny = "^.hlx$";
   set req.http.X-Deny = table.lookup(strain_deny, req.http.X-Strain);
   if (!req.http.X-Deny) {
     set req.http.X-Deny = table.lookup(strain_deny, "default");
@@ -167,35 +303,16 @@ sub hlx_github_static_ref {
   }
 }
 
-# rewrite required headers (called from recv)
-sub hlx_headers_recv {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_recv";
-  # default conditions
-  if (!req.http.Fastly-SSL) {
-     error 801 "Force SSL";
-  }
-  # Header rewrite Request ID : 10
-  if (!req.http.X-CDN-Request-ID) {
-    set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-4" + randomstr(3, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
-  }
-
-  # Header rewrite Strain Cookie : 10
-  if (!req.http.Set-Cookie) {
-    set req.http.Set-Cookie = "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
-  } else {
-    set req.http.Set-Cookie = req.http.Set-Cookie "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
-  }
-}
-
 # rewrite required headers (called from fetch)
 sub hlx_headers_fetch {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_fetch";
-  if ( req.http.X-Debug ) {
-    # Header rewrite Backend Name : 10
+
+  # Only do this when X-Debug is present, since `Vary: X-Debug` will cause
+  # misses, making it useless to keep this on regular objects.
+  if (req.http.X-Debug) {
     if (!beresp.http.X-Backend-Name) {
       set beresp.http.X-Backend-Name = beresp.backend.name;
     }
-    # Header rewrite Response ID : 10
     if (!beresp.http.X-CDN-Request-ID) {
       set beresp.http.X-CDN-Request-ID = req.http.X-CDN-Request-ID;
     }
@@ -204,26 +321,24 @@ sub hlx_headers_fetch {
 
 sub hlx_headers_deliver {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_deliver";
-  # Header rewrite HSTS : 10
-  set resp.http.Strict-Transport-Security = "max-age=31536000; includeSubDomains";
-  # Header rewrite Host : 10
-  set resp.http.X-Host = req.http.Fastly-Orig-Host;
-  # Response Condition: Debug (Response) Prio: 10
+
+  # Set HSTS since we always do HTTPS
+  set resp.http.Strict-Transport-Security = "max-age=31536000";
 
   set resp.http.X-Version = req.http.X-Version;
 
   if( req.http.X-Debug ) {
-    # Header rewrite Backend URL : 10
-    set resp.http.X-Backend-URL = req.url;
-    # Header rewrite Strain : 10
+    set resp.http.X-URL = req.url;
+    set resp.http.X-Orig-Url = req.http.X-Orig-Url;
+    set resp.http.X-Backend-URL = req.http.X-Backend-URL;
+    set resp.http.X-Request-Type = req.http.X-Request-Type;
     set resp.http.X-Strain = req.http.X-Strain;
-    # Header rewrite Strain : 10
     set resp.http.X-Github-Static-Ref = "@" + req.http.X-Github-Static-Ref;
 
     set resp.http.X-Dirname = req.http.X-Dirname;
     set resp.http.X-Index = req.http.X-Index;
     set resp.http.X-Action-Root = req.http.X-Action-Root;
-    set resp.http.X-URL = req.http.X-URL;
+    set resp.http.X-Orig-URL = req.http.X-Orig-URL;
     set resp.http.X-Root-Path = req.http.X-Root-Path;
 
     set resp.http.X-Fastly-Imageopto-Api = req.http.X-Fastly-Imageopto-Api;
@@ -236,32 +351,27 @@ sub hlx_headers_deliver {
   call hlx_deliver_errors;
 }
 
-# set backend (called from recv)
-sub hlx_backend_recv {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_backend_recv";
-  set req.backend = F_AdobeRuntime;
-
-  # Request Condition: Binaries only Prio: 10
-  if( req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$" ) {
-    set req.backend = F_GitHub;
-
-    if (req.restarts == 0) {
-      # enable shielding, needed for Image Optimization
-      if (server.identity !~ "-IAD$" && req.http.Fastly-FF !~ "-IAD") {
-        set req.backend = ssl_shield_iad_va_us;
-      }
-      if (!req.backend.healthy) {
-        # the shield datacenter is broken so dont go to it
-        set req.backend = F_GitHub;
-      }
-    }
+sub hlx_request_type {
+  # Exit if we already have a type
+  if (req.http.X-Request-Type) {
+    return;
   }
 
-  # Request Condition: HTML Only Prio: 10
-  if( req.url ~ ".(html)($|\?)" ) {
-    set req.backend = F_AdobeRuntime;
+  # Binary type images
+  if (req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$") {
+    set req.http.X-Request-Type = "Image";
+    return;
   }
-  #end condition
+  # TODO:
+  # Possibly have a list of extensions that are always static 
+  # if (req.url.ext ~ "(?i)^(?:css|js|svg)$") {
+  #   set req.http.X-Request-Type = "Static";
+  #   return;
+  # }
+  if (req.http.host == "adobeioruntime.net") {
+    set req.http.X-Request-Type = "Embed";
+    return;
+  }
 }
 
 /**
@@ -270,51 +380,43 @@ sub hlx_backend_recv {
  * @header X-GitHub-Static-Owner  the owner or organization of the repo that contains the source files
  * @header X-GitHub-Static-Repo   the repository name of the repo containing the static files
  * @header X-GitHub-Static-Ref    the branch or tag (or commit) name to serve source files from
- * @header X-URL                  the original (unmodified) URL, starting after hostname and port
+ * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
  */
-sub hlx_recv_static {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_static";
+sub hlx_type_static {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static";
   # This is a static request.
-
-  # declare local variables
-  declare local var.owner STRING; # the GitHub user or org, e.g. adobe
-  declare local var.repo STRING; # the GitHub repo, e.g. project-helix
-  declare local var.ref STRING; # the GitHub branch or revision, e.g. master
-  declare local var.dir STRING; # the directory of the content
-  declare local var.name STRING; # the name (without extension) of the resource
-  declare local var.selector STRING; # the selector (between name and extension)
-  declare local var.extension STRING;
-  declare local var.strain STRING; # the resolved strain
-  declare local var.action STRING; # the action to call
-  declare local var.path STRING; # resource path
-  declare local var.entry STRING; # bundler entry point
-
-  set var.strain = req.http.X-Strain;
-
-  # Load important information from edge dicts
-  call hlx_github_static_owner;
-  set var.owner = req.http.X-Github-Static-Owner;
-
-  call hlx_github_static_repo;
-  set var.repo = req.http.X-Github-Static-Repo;
-
-  call hlx_github_static_ref;
-  set var.ref = req.http.X-Github-Static-Ref;
-
-  call hlx_github_static_root;
-
-  # TODO: check for URL ending with `/` and look up index file
-  set var.path = req.http.X-URL;
-  set var.entry = req.http.X-URL;
-
-  # TODO: load magic flag
-  set req.http.X-Plain = "true";
 
   # get it from OpenWhisk
   set req.backend = F_AdobeRuntime;
 
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.path STRING; # resource path
+  declare local var.entry STRING; # bundler entry point
+
+  # Load important information from edge dicts
+  call hlx_github_static_owner;
+  call hlx_github_static_repo;
+  call hlx_github_static_ref;
+  call hlx_github_static_root;
+
+  # TODO: check for URL ending with `/` and look up index file
+  set var.path = req.http.X-Orig-URL;
+  set var.entry = req.http.X-Orig-URL;
+
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
-  set req.url = req.http.X-Action-Root + "?owner=" + var.owner + "&repo=" + var.repo + "&strain=" + var.strain + "&ref=" + var.ref + "&entry=" + var.entry + "&path=" + var.path + "&plain=true"  + "&allow=" urlencode(req.http.X-Allow) + "&deny=" urlencode(req.http.X-Deny) + "&root=" + req.http.X-Github-Static-Root;
+  set req.http.X-Backend-URL = req.http.X-Action-Root
+    + "?owner=" + req.http.X-Github-Static-Owner
+    + "&repo=" + req.http.X-Github-Static-Repo
+    + "&strain=" + req.http.X-Strain
+    + "&ref=" + req.http.X-Github-Static-Ref
+    + "&entry=" + var.entry
+    + "&path=" + var.path
+    # TODO: load magic flag
+    + "&plain=true"
+    + "&allow=" urlencode(req.http.X-Allow)
+    + "&deny=" urlencode(req.http.X-Deny)
+    + "&root=" + req.http.X-Github-Static-Root;
 
 }
 
@@ -322,18 +424,74 @@ sub hlx_recv_static {
  * Handle redirect-serving for static files
  * If the static file is too large for the hlx--static action to serve,
  * because the payload would exceed 1 MB (OpenWhisk limit), the request
- * is restarted, using the `X-Static: Redirect` header, which means the
+ * is restarted, using the `X-Request-Type: Redirect` header, which means the
  * static content will be fetched directly from GitHub, and the required
  * response headers like Content-Type will be injected later on.
  */
-sub hlx_recv_redirect {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_redirect";
+sub hlx_type_redirect {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_redirect";
   # Handle a redirect from static.js by
   # - fetching the resource from GitHub
   # - don't forget to override the Content-Type header
   set req.backend = F_GitHub;
+  # Replace what we have in the cache already (which is the cached redirect)
+  set req.hash_always_miss = true;
+}
 
-  //(!req.http.Fastly-FF && req.http.Fastly-SSL && (req.url.basename ~ "(^[^\.]+)(\.?(.+))?(\.[^\.]*$)" || req.url.basename == ""))
+sub hlx_fetch_static {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
+  if (beresp.http.X-Static == "Raw/Static") {
+    if (beresp.status == 307) {
+      # Keep the redirect around for a short bit, to prevent thundering herd
+      set beresp.cacheable = true;
+      set beresp.ttl = 5s;
+    }
+    return(deliver);
+  } elsif (req.http.X-Request-Type == "Redirect" && beresp.status == 200) {
+    // and this is where we fix the headers of the GitHub static response
+    // so that they become digestible by a browser.
+    // - recover Content-Type from X-Content-Type
+    // - filter out GitHub-headers
+
+    set beresp.http.Content-Type = req.http.X-Static-Content-Type;
+    unset beresp.http.X-Content-Type-Options;
+    unset beresp.http.X-Frame-Options;
+    unset beresp.http.X-XSS-Protection;
+    unset beresp.http.Content-Security-Policy;
+  } elsif (beresp.status == 404 || beresp.status == 204) {
+    # Cache for a short time, restart will get rid of it anyway
+    set beresp.ttl = 60s;
+    return(deliver);
+  }
+}
+
+sub hlx_deliver_static {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
+  if (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
+    # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
+    # clustering. Changes made to most `req` variables don't make it back to
+    # the edge node, when `vcl_fetch` is run on a different node.
+    if (resp.http.Location ~ "https://raw.githubusercontent.com(/.*)") {
+      set req.http.X-Request-Type = "Redirect";
+      set req.http.X-Backend-URL = re.group.1;
+      set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
+      restart;
+    } else {
+      set resp.status = 500;
+      set resp.response = "Redirect to wrong hostname";
+    }
+  } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static) {
+    # That was a miss. Let's try to restart.
+    set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
+    set resp.status = 404;
+
+    if (req.http.X-Request-Type == "Static") {
+      set req.http.X-Request-Type = "Dynamic";
+    } else {
+      set req.http.X-Request-Type = "Static";
+    }
+    restart;
+  }
 }
 
 /**
@@ -343,54 +501,82 @@ sub hlx_recv_redirect {
  * for Adobe I/O Runtime, e.g. the helix-embed service are passed through to
  * the correct backend.
  */
-sub hlx_recv_embed {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_embed";
+sub hlx_type_embed {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_embed";
   # This is an embed request
   # Fastly sends embed requests back to the same service config (which is why
   # we are handling it here), but keeps the correct Host header in place (which
   # is why we can check against it)
-
   set req.backend = F_AdobeRuntime;
+}
 
-  # make sure we hit the right backend
-  # and keep everything else in place
+/**
+ * Handles requests for images.
+ */
+sub hlx_type_image {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_image";
 
-  set req.http.X-Embed = req.http.X-URL;
+  set req.backend = F_GitHub;
+  # enable shielding, needed for Image Optimization
+  if (server.identity !~ "-IAD$" && req.http.Fastly-FF !~ "-IAD") {
+    set req.backend = ssl_shield_iad_va_us;
+  }
+  if (!req.backend.healthy) {
+    # the shield datacenter is broken so dont go to it
+    set req.backend = F_GitHub;
+  }
+
+  # Load important information from edge dicts
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+  call hlx_root_path;
+
+  if (req.http.X-Dirname) {
+    # set root path based on strain-specific dirname (strips away strain root)
+    set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
+  } else {
+    set var.dir = req.http.X-Root-Path + req.url.dirname;
+  }
+  set var.dir = regsuball(var.dir, "/+", "/");
+
+  set var.path = var.dir + "/" + req.url.basename;
+  set var.path = regsuball(var.path, "/+", "/");
+  set req.http.X-Backend-URL = "/" + req.http.X-Github-Static-Owner
+     + "/" + req.http.X-Github-Static-Repo
+     + "/" + req.http.X-Github-Static-Ref
+     + var.path + "?" + req.url.qs;
+
+  # enable IO for image file-types
+  set req.http.X-Fastly-Imageopto-Api = "fastly";
 }
 
 /**
  * Handles requests for the main Helix rendering pipeline.
  */
-sub hlx_recv_pipeline {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_pipeline";
+sub hlx_type_pipeline {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_pipeline";
   # This is a dynamic request.
 
-  # declare local variables
-  declare local var.owner STRING; # the GitHub user or org, e.g. adobe
-  declare local var.repo STRING; # the GitHub repo, e.g. project-helix
-  declare local var.ref STRING; # the GitHub branch or revision, e.g. master
+  # get it from OpenWhisk
+  set req.backend = F_AdobeRuntime;
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
   declare local var.dir STRING; # the directory of the content
   declare local var.name STRING; # the name (without extension) of the resource
   declare local var.selector STRING; # the selector (between name and extension)
   declare local var.extension STRING;
-  declare local var.strain STRING; # the resolved strain
   declare local var.action STRING; # the action to call
   declare local var.path STRING; # resource path
   declare local var.entry STRING; # bundler entry point
 
-  set var.strain = req.http.X-Strain;
-
   # Load important information from edge dicts
   call hlx_owner;
-  set var.owner = req.http.X-Owner;
-
   call hlx_repo;
-  set var.repo = req.http.X-Repo;
-
   call hlx_ref;
-  set var.ref = req.http.X-Ref;
-
   call hlx_root_path;
+
   if (req.http.X-Dirname) {
     # set root path based on strain-specific dirname (strips away strain root)
     set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
@@ -403,7 +589,7 @@ sub hlx_recv_pipeline {
   if (req.url.basename ~ "(^[^\.]+)(\.?(.+))?(\.[^\.]*$)") {
     set var.name = re.group.1;
     set var.selector = re.group.3;
-    set var.extension = regsub(req.url.ext, "^\.", "");
+    set var.extension = req.url.ext;
   } else {
     call hlx_index;
     # enable ESI
@@ -424,38 +610,27 @@ sub hlx_recv_pipeline {
 
   call hlx_action_root;
 
-  if (var.selector ~ ".+") {
+  if (std.strlen(var.selector) > 0) {
     set var.action = req.http.X-Action-Root + var.selector + "_" + var.extension;
   } else {
     set var.action = req.http.X-Action-Root + var.extension;
   }
 
-  # check for images, and get them from GitHub
-  if (req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$") {
-    set var.path = var.dir + "/" + req.url.basename;
-    set var.path = regsuball(var.path, "/+", "/");
-    set req.url = "/" + var.owner + "/" + var.repo + "/" + var.ref + var.path + "?" + req.url.qs;
+  # get (strain-specific) parameter whitelist
+  include "params.vcl";
 
-    # enable IO for image file-types
-    set req.http.X-Fastly-Imageopto-Api = "fastly";
-  } else {
-    # get (strain-specific) parameter whitelist
-    include "params.vcl";
-
-
-    set var.path = var.dir + "/" + var.name + ".md";
-    set var.path = regsuball(var.path, "/+", "/");
-    # Invoke OpenWhisk
-    set req.url = "/api/v1/web" + var.action + 
-      "?owner=" + var.owner + 
-      "&repo=" + var.repo + 
-      "&ref=" + var.ref + 
-      "&path=" + var.path + 
-      "&selector=" + var.selector + 
-      "&extension=" + req.url.ext + 
-      "&strain=" + var.strain + 
-      "&params=" + req.http.X-Encoded-Params;
-  }
+  set var.path = var.dir + "/" + var.name + ".md";
+  set var.path = regsuball(var.path, "/+", "/");
+  # Invoke OpenWhisk
+  set req.http.X-Backend-URL = "/api/v1/web" + var.action
+    + "?owner=" + req.http.X-Github-Static-Owner
+    + "&repo=" + req.http.X-Github-Static-Repo
+    + "&ref=" + req.http.X-Github-Static-Ref
+    + "&path=" + var.path
+    + "&selector=" + var.selector
+    + "&extension=" + req.url.ext
+    + "&strain=" + req.http.X-Strain
+    + "&params=" + req.http.X-Encoded-Params;
 }
 
 /**
@@ -463,49 +638,48 @@ sub hlx_recv_pipeline {
  * These requests already have a backend set as part of the strain resolution
  * so there is no need for URL rewriting.
  */
-sub hlx_recv_proxy {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_proxy";
+sub hlx_type_proxy {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_proxy";
+  # TODO: set Forwarded header? (RFC7239)
+  # TODO: Host header/URL rewrites? or all done at strain resolution time?
 
+  # Pass here so that `dynamic.vcl` doesn't execute for Proxy requests
+  # And we do a pass, not a lookup, because caching third parties is way too
+  # risky, and would take a lot of work in `vcl_fetch` to get right.
+  return(pass);
 }
 
 /**
  * This is where all requests are received.
  */
 sub vcl_recv {
-#FASTLY recv
-  if (req.http.X-Trace) {
-    set req.http.X-Trace = req.http.X-Trace + "; vcl_recv";
+  if (req.restarts == 0) {
+    if (req.http.X-Trace) {
+      set req.http.X-Trace = req.http.X-Trace + "; vcl_recv";
+    } else {
+      set req.http.X-Trace = "vcl_recv";
+    }
   } else {
-    set req.http.X-Trace = "vcl_recv";
+    # So we don't have to add `RESTART` to `X-Trace` whenever we use `restart`
+    set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
 
-  call hlx_headers_recv;
-  call hlx_backend_recv;
+  call hlx_set_from_edge;
+  call hlx_recv_init;
 
-  # Set original URL, so that we can log it afterwards.
-  # If request is on Fastly-FF, we shouldn't override it.
-  set req.http.X-Orig-URL = req.url;
+#FASTLY recv
 
-  if (!req.http.X-URL) {
-    set req.http.X-URL = req.url;
-  }
+  # TODO: Do we even want to set a regular origin as default? Possibly set one
+  # that acts as a canary. If requests reach it, the VCL isn't setting a backend
+  # somewhere.
+  set req.backend = F_AdobeRuntime;
   
-  # We only handle GET and HEAD requests
-  if (req.request != "HEAD" && req.request != "GET" && req.request != "FASTLYPURGE") {
-    return(pass);
-  }
-
-  if (req.http.Fastly-FF) {
-    # disable ESI processing on Origin Shield
+  if (req.http.X-From-Edge) {
+    # Request came from a Fastly POP, send the raw response without ESI processing
     set req.esi = false;
   } elseif ( req.url.ext == "html" ) {
     set req.http.x-esi = "1";
   }
-
-  set req.http.X-Orig-Host = req.http.Fastly-Orig-Host;
-  # set req.http.X-URL = req.url;
-  set req.http.X-Host = req.http.Host;
-
 
   # Determine the current strain and execute strain-specific code
   call hlx_strain;
@@ -513,29 +687,37 @@ sub vcl_recv {
   # block bad requests – needs current strain and unchanged req.url
   call hlx_block_recv;
 
+  # Must be after `hlx_strain`, because that might set `Proxy` as type
+  call hlx_request_type;
 
-  if (req.http.Fastly-SSL) {
-    # we enforce SSL for Helix
-    if (req.http.X-Static == "Proxy") {
-      call hlx_recv_proxy;
-    } elseif (req.http.X-Static == "Static") {
-      call hlx_recv_static;
-    } elseif (req.http.X-Static == "Redirect") {
-      call hlx_recv_redirect;
-    } elseif (req.http.host == "adobeioruntime.net") {
-      call hlx_recv_embed;
-    } else {
-      call hlx_recv_pipeline;
-    }
+  # Force clustering (despite the name of the header) to make sure we get good
+  # cache efficiency with restarts. Without this, Fastly clustering would be
+  # disabled after a restart, which means that each node in a Fastly POP would
+  # use its own cache, instead of checking the designated node for the object. 
+  set req.http.Fastly-Force-Shield = "yes";
+
+  if (req.http.X-Request-Type == "Proxy") {
+    call hlx_type_proxy;
+  } elsif (req.http.X-Request-Type == "Static") {
+    call hlx_type_static;
+  } elsif (req.http.X-Request-Type == "Redirect") {
+    call hlx_type_redirect;
+  } elsif (req.http.X-Request-Type == "Embed") { 
+    call hlx_type_embed;
+  } else {
+    call hlx_type_pipeline;
   }
-
-  # set X-Version initial value
-  set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
 
   # run generated vcl
   include "dynamic.vcl";
+
   # re-enable shielding for changed backends
   # include "reset.vcl";
+
+  # We only handle GET and HEAD requests, but Proxy strains might
+  if (req.request != "HEAD" && req.request != "GET" && req.request != "FASTLYPURGE") {
+    error 405;
+  }
 
   return(lookup);
 }
@@ -601,28 +783,52 @@ sub hlx_error_errors {
 }
 
 sub vcl_fetch {
-#FASTLY fetch
   set req.http.X-Trace = req.http.X-Trace + "; vcl_fetch";
+#FASTLY fetch
+
+  # Sprinkling in our debugging
+  call hlx_headers_fetch;
+
+  # Don't try to do anything else with Proxy requests
+  if (req.http.X-Request-Type == "Proxy") {
+    return(pass);
+  }
 
   call hlx_fetch_errors;
-  call hlx_headers_fetch;
 
   unset beresp.http.Set-Cookie;
   unset beresp.http.Vary;
   unset beresp.http.Expires;
 
-  set beresp.http.Vary = "X-Debug, X-Strain";
+  # We Vary on X-Debug, so that it's automatically a cache-miss, and we go to
+  # origin. Origin will raise the log level for such requests too. So all roung
+  # convenience.
+  if (beresp.http.Vary !~ "X-Debug") {
+    if (beresp.http.Vary) {
+      set beresp.http.Vary = beresp.http.Vary + ",X-Debug";
+    } else {
+      set beresp.http.Vary = "X-Debug";
+    }
+  }
+  # Vary on Strain for pipeline and static, since we're sending strain in the 
+  # backend URL.
+  if (beresp.http.Vary !~ "X-Strain") {
+    # Vary is already set above
+    set beresp.http.Vary = beresp.http.Vary + ",X-Strain";
+  }
+
+  # TODO: Add Surrogate-Keys, based on req.url/X-Orig-URL
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
-    # override ttl
-    } else {
+    # Use TTL from origin
+  } else {
     # apply a default ttl
     if (beresp.status == 200) {
       set beresp.ttl = 604800s;
       set beresp.http.Cache-Control = "max-age=604800, public";
 
       # apply a longer ttl for images
-      if (req.url.ext ~ "(?i)(?:gif|png|jpe?g|webp)") {
+      if (req.http.X-Request-Type == "Image") {
         set beresp.ttl = 2592000s;
         set beresp.http.Cache-Control = "max-age=2592000, public";
       }
@@ -636,57 +842,14 @@ sub vcl_fetch {
     esi;
   }
 
-  if (beresp.http.X-Static == "Raw/Static") {
-    if (beresp.status == 307) {
-      // static.js returns a 307 if the response is greater than OpenWhisk's
-      // delivery limit. We restart the request and deliver directly from
-      // GitHub instead, carring over the Content-Type header that static.js guessed
-      set req.http.X-Static = "Redirect";
-      set req.url = beresp.http.Location;
-      set req.http.X-Content-Type = beresp.http.X-Content-Type;
-
-      set req.http.X-Trace = req.http.X-Trace + "; RESTART";
-      restart;
-    } else {
-      return(deliver);
-    }
-  } elseif (req.http.X-Static == "Redirect") {
-    // and this is where we fix the headers of the GitHub static response
-    // so that they become digestible by a browser.
-    // - recover Content-Type from X-Content-Type
-    // - filter out GitHub-headers
-
-    set beresp.http.Content-Type = req.http.X-Content-Type;
-    unset beresp.http.X-Content-Type-Options;
-    unset beresp.http.X-Frame-Options;
-    unset beresp.http.X-XSS-Protection;
-    unset beresp.http.Content-Security-Policy;
-
-  } elseif ((beresp.status == 404 || beresp.status == 204) && !req.http.X-Disable-Static) {
-    # That was a miss. Let's try to restart.
-    set beresp.http.X-Status = beresp.status + "-Restart " + req.restarts;
-    set beresp.status = 404;
-
-    if (req.http.X-Static == "Static") {
-      set req.http.X-Static = "Dynamic";
-      set beresp.http.X-Static = "Dynamic";
-    } else {
-      set req.http.X-Static = "Static";
-      set beresp.http.X-Static = "Static";
-    }
-    set req.url = req.http.X-URL;
-
-    set req.http.X-Trace = req.http.X-Trace + "; RESTART";
-    restart;
-  }
-
+  call hlx_fetch_static;
 
   return(deliver);
 }
 
 sub vcl_hit {
-#FASTLY hit
   set req.http.X-Trace = req.http.X-Trace + "; vcl_hit";
+#FASTLY hit
 
   if (!obj.cacheable) {
     return(pass);
@@ -694,19 +857,28 @@ sub vcl_hit {
   return(deliver);
 }
 
-sub vcl_miss {
-#FASTLY miss
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_miss";
-  unset bereq.http.X-Orig-Url;
+/**
+ * Do all BackEnd REQuest changes. One sub to be called from both vcl_miss and
+ * vcl_pass, to avoid code-rot through having to update two places.
+ */
+sub hlx_bereq {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
+
+  # If we're going to a shield (another Fastly POP) use the original URL and
+  # Host header. If not a shield, we're going to origin; set the URL and Host
+  # header as explained at the top of this file.
   if (req.backend.is_shield) {
     set bereq.url = req.http.X-Orig-Url;
-  }
-
-  # set backend host
-  if (req.backend == F_AdobeRuntime) {
-    set bereq.http.host = "adobeioruntime.net";
-  } elsif (req.backend == F_GitHub) {
-    set bereq.http.host = "raw.githubusercontent.com";
+    set bereq.http.Host = req.http.X-Orig-Host;
+  } else {
+    if (req.http.X-Backend-URL) {
+      set bereq.url = req.http.X-Backend-URL;
+    }
+    if (req.backend == F_AdobeRuntime) {
+      set bereq.http.Host = "adobeioruntime.net";
+    } elsif (req.backend == F_GitHub) {
+      set bereq.http.Host = "raw.githubusercontent.com";
+    }
   }
 
   # set backend authentication
@@ -716,21 +888,62 @@ sub vcl_miss {
 
   # making sure to get an uncompressed object for ESI
   if ( req.url.ext == "html" ) {
-   unset bereq.http.Accept-Encoding;
+    unset bereq.http.Accept-Encoding;
   }
+
+  # Clean up all temporary request headers, since origins might be 3rd parties
+  unset bereq.http.X-Orig-Url;
+  unset bereq.http.X-Orig-Host;
+  unset bereq.http.X-Backend-URL;
+  unset bereq.http.X-Request-Type;
+  unset bereq.http.X-Static-Content-Type;
+  unset bereq.http.X-Allow;
+  unset bereq.http.X-Deny;
+  unset bereq.http.X-Owner;
+  unset bereq.http.X-Index;
+  unset bereq.http.X-Repo;
+  unset bereq.http.X-Ref;
+  unset bereq.http.X-Root-Path;
+  unset bereq.http.X-Action-Root;
+  unset bereq.http.X-Github-Static-Repo;
+  unset bereq.http.X-Github-Static-Owner;
+  unset bereq.http.X-Github-Static-Root;
+  unset bereq.http.X-Github-Static-Ref;
+
+}
+
+sub vcl_miss {
+  set req.http.X-Trace = req.http.X-Trace + "; vcl_miss";
+#FASTLY miss
+
+  call hlx_bereq;
 
   return(fetch);
 }
 
+sub vcl_pass {
+  set req.http.X-Trace = req.http.X-Trace + "; vcl_pass";
+#FASTLY pass
+
+  call hlx_bereq;
+
+  return(pass);
+}
+
 sub vcl_deliver {
+  set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
 #FASTLY deliver
 
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
   call hlx_headers_deliver;
+
+  call hlx_deliver_static;
 
   # only set the strain cookie for sticky strains
   # and only do it for the Adobe I/O Runtime backend
-  if (req.http.X-Strain&&req.http.X-Sticky=="true"&&req.backend == F_AdobeRuntime) {
+  # Proxy strains can't be sticky, because resolution sets backend and what not,
+  # so skipping resolution would skip that too.
+  if (req.http.X-Strain && req.http.X-Sticky == "true"
+      && req.backend == F_AdobeRuntime && req.http.X-Request-Type != "Proxy") {
     set resp.http.Set-Cookie = "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
   }
 
@@ -768,26 +981,9 @@ sub vcl_deliver {
 }
 
 sub vcl_error {
-#FASTLY error
   set req.http.X-Trace = req.http.X-Trace + "; vcl_error";
+#FASTLY error
   call hlx_error_errors;
-}
-
-sub vcl_pass {
-#FASTLY pass
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_pass";
-  # set backend host
-  if (req.backend == F_AdobeRuntime) {
-    set bereq.http.host = "adobeioruntime.net";
-  } elsif (req.backend == F_GitHub) {
-    set bereq.http.host = "raw.githubusercontent.com";
-  }
-
-  # making sure to get an uncompressed object for ESI
-  if ( req.url.ext == "html" ) {
-   unset bereq.http.Accept-Encoding;
-  }
-
 }
 
 sub vcl_log {
