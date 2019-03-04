@@ -70,14 +70,14 @@ sub hlx_check_from_edge {
 /**
  * Set the `X-From-Edge` header that the above sub checks.
  *
- * Should be called from the top of `vcl_recv`/`vcl_miss`
+ * Should be called from the top of `vcl_miss`/`vcl_pass`
  */
 sub hlx_set_from_edge {
   # If it exists, it's legit, leave it alone
   if (!bereq.http.X-From-Edge) {
     declare local var.data STRING;
     set var.data = strftime({"%s"}, now) + "," + server.datacenter;
-    set bereq.http.Secure-From-Edge =
+    set bereq.http.X-From-Edge =
       var.data + "," + digest.hmac_sha256(
         # This must match whatever key is being used 
         req.service_id + table.lookup(secrets, "OPENWHISK_AUTH"), var.data);
@@ -663,7 +663,8 @@ sub vcl_recv {
     # So we don't have to add `RESTART` to `X-Trace` whenever we use `restart`
     set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
-    
+
+  call hlx_set_from_edge;
   call hlx_recv_init;
 
 #FASTLY recv
