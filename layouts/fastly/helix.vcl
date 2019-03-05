@@ -239,19 +239,19 @@ sub hlx_ref {
   }
   # if default isn't set, use 'master'
   if (!req.http.X-Ref) {
-    set req.http.X-Root-Path = "master";
+    set req.http.X-Ref = "master";
   }
 }
 
 # Gets the content path root
 sub hlx_root_path {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_root_path";
-  set req.http.X-Root-Path = table.lookup(strain_root_paths, req.http.X-Strain);
-  if (!req.http.X-Root-Path) {
-    set req.http.X-Root-Path = table.lookup(strain_root_paths, "default");
+  set req.http.X-Repo-Root-Path = table.lookup(strain_root_paths, req.http.X-Strain);
+  if (!req.http.X-Repo-Root-Path) {
+    set req.http.X-Repo-Root-Path = table.lookup(strain_root_paths, "default");
   }
-  if (!req.http.X-Root-Path) {
-    set req.http.X-Root-Path = "";
+  if (!req.http.X-Repo-Root-Path) {
+    set req.http.X-Repo-Root-Path = "";
   }
 }
 
@@ -336,10 +336,11 @@ sub hlx_headers_deliver {
     set resp.http.X-Github-Static-Ref = "@" + req.http.X-Github-Static-Ref;
 
     set resp.http.X-Dirname = req.http.X-Dirname;
+    set resp.http.X-FullDirname = req.http.X-FullDirname;
     set resp.http.X-Index = req.http.X-Index;
     set resp.http.X-Action-Root = req.http.X-Action-Root;
     set resp.http.X-Orig-URL = req.http.X-Orig-URL;
-    set resp.http.X-Root-Path = req.http.X-Root-Path;
+    set resp.http.X-Repo-Root-Path = req.http.X-Repo-Root-Path;
 
     set resp.http.X-Fastly-Imageopto-Api = req.http.X-Fastly-Imageopto-Api;
 
@@ -570,6 +571,9 @@ sub hlx_type_pipeline {
   declare local var.action STRING; # the action to call
   declare local var.path STRING; # resource path
   declare local var.entry STRING; # bundler entry point
+  declare local var.rootPath STRING; # the root-path (aka mount point) of a strain
+
+  set var.rootPath = req.http.X-Root-Path;
 
   # Load important information from edge dicts
   call hlx_owner;
@@ -579,9 +583,9 @@ sub hlx_type_pipeline {
 
   if (req.http.X-Dirname) {
     # set root path based on strain-specific dirname (strips away strain root)
-    set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
+    set var.dir = req.http.X-Repo-Root-Path + req.http.X-Dirname;
   } else {
-    set var.dir = req.http.X-Root-Path + req.url.dirname;
+    set var.dir = req.http.X-Repo-Root-Path + req.url.dirname;
   }
   set var.dir = regsuball(var.dir, "/+", "/");
 
@@ -630,6 +634,7 @@ sub hlx_type_pipeline {
     + "&selector=" + var.selector
     + "&extension=" + req.url.ext
     + "&strain=" + req.http.X-Strain
+    + "&rootPath=" + var.rootPath +
     + "&params=" + req.http.X-Encoded-Params;
 }
 
@@ -680,6 +685,17 @@ sub vcl_recv {
   } elseif ( req.url.ext == "html" ) {
     set req.http.x-esi = "1";
   }
+
+  // compute X-FullDirname which contains the real incoming path of directories
+  if (req.url.ext == "") {
+    // case url = /a/b -> for Fastly, dirname = /a and basename = b
+    set req.http.X-FullDirname = req.url.dirname + "/" + req.url.basename;
+  } else {
+    // case url = /a/b/c.html -> for Fastly, dirname = /a/b which is what we need
+    set req.http.X-FullDirname = req.url.dirname;
+  }
+  // remove potential double slashes
+  set req.http.X-FullDirname = regsuball(req.http.X-FullDirname, "/+", "/");
 
   # Determine the current strain and execute strain-specific code
   call hlx_strain;
@@ -964,6 +980,7 @@ sub vcl_deliver {
     unset resp.http.X-Content-Type;
     unset resp.http.X-Fastly-Request-ID;
     unset resp.http.X-Frame-Options;
+    unset resp.http.X-FullDirname;
     unset resp.http.X-Geo-Block-List;
     unset resp.http.X-GitHub-Request-Id;
     unset resp.http.X-GW-Cache;
