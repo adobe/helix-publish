@@ -38,25 +38,43 @@ async function init(fastly, version) {
   )));
 }
 
+function ops(oldops = [], key, value) {
+  return [...oldops, {
+    op: 'upsert',
+    item_key: key,
+    item_value: value,
+  }];
+}
+
+function upsertstrain(p, dict, key, value) {
+  // eslint-disable-next-line no-param-reassign
+  p[dict] = ops(p[dict], key, value);
+}
+
 async function updatestrains(fastly, version, strains) {
   const runtimestrains = strains.getRuntimeStrains();
   const deployedstrains = runtimestrains.filter(strain => !!strain.package);
-  const updates = deployedstrains.reduce((p, strain) => {
-    p.push(fastly.writeDictItem(version, 'strain_action_roots', strain.name, strain.package));
+  const strainoperations = deployedstrains.reduce((p, strain) => {
+    upsertstrain(p, 'strain_action_roots', strain.name, strain.package);
 
-    p.push(fastly.writeDictItem(version, 'strain_owners', strain.name, strain.content.owner));
-    p.push(fastly.writeDictItem(version, 'strain_refs', strain.name, strain.content.ref));
-    p.push(fastly.writeDictItem(version, 'strain_repos', strain.name, strain.content.repo));
-    p.push(fastly.writeDictItem(version, 'strain_root_paths', strain.name, strain.content.path));
+    upsertstrain(p, 'strain_owners', strain.name, strain.content.owner);
+    upsertstrain(p, 'strain_refs', strain.name, strain.content.ref);
+    upsertstrain(p, 'strain_repos', strain.name, strain.content.repo);
+    upsertstrain(p, 'strain_root_paths', strain.name, strain.content.path);
 
 
-    p.push(fastly.writeDictItem(version, 'strain_github_static_repos', strain.name, strain.static.repo));
-    p.push(fastly.writeDictItem(version, 'strain_github_static_owners', strain.name, strain.static.owner));
-    p.push(fastly.writeDictItem(version, 'strain_github_static_refs', strain.name, strain.static.ref));
-    p.push(fastly.writeDictItem(version, 'strain_github_static_root', strain.name, strain.static.path));
-    p.push(fastly.writeDictItem(version, 'strain_allow', strain.name, regexp(strain.static.allow)));
-    p.push(fastly.writeDictItem(version, 'strain_deny', strain.name, regexp(strain.static.deny)));
+    upsertstrain(p, 'strain_github_static_repos', strain.name, strain.static.repo);
+    upsertstrain(p, 'strain_github_static_owners', strain.name, strain.static.owner);
+    upsertstrain(p, 'strain_github_static_refs', strain.name, strain.static.ref);
+    upsertstrain(p, 'strain_github_static_root', strain.name, strain.static.path);
+    upsertstrain(p, 'strain_allow', strain.name, regexp(strain.static.allow));
+    upsertstrain(p, 'strain_deny', strain.name, regexp(strain.static.deny));
 
+    return p;
+  }, {});
+
+  const updates = Object.entries(strainoperations).reduce((p, [dictname, operations]) => {
+    p.push(fastly.bulkUpdateDictItems(version, dictname, ...operations));
     return p;
   }, []);
 
