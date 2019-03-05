@@ -1,10 +1,13 @@
 # This file handles the strain resolution
+set req.http.X-Root-Path = "";
 if (req.http.Host == "www.project-helix.io" && (req.http.X-FullDirname ~ "^/client$" || req.http.X-FullDirname ~ "^/client/")) {
   set req.http.X-Dirname = regsub(req.http.X-FullDirname, "^/client", "");
+  set req.http.X-Root-Path = "/client";
   set req.http.X-Sticky = "false";
   set req.http.X-Strain = "client";
 } else if (req.http.Host == "www.project-helix.io" && (req.http.X-FullDirname ~ "^/pipeline$" || req.http.X-FullDirname ~ "^/pipeline/")) {
   set req.http.X-Dirname = regsub(req.http.X-FullDirname, "^/pipeline", "");
+  set req.http.X-Root-Path = "/pipeline";
   set req.http.X-Sticky = "false";
   set req.http.X-Strain = "pipeline";
 } else if (req.http.Host == "proxy.project-helix.io") {

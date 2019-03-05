@@ -1,4 +1,5 @@
 # This file handles the strain resolution
+set req.http.X-Root-Path = "";
 if (req.http.Host == "client.project-helix.io") {
   set req.http.X-Sticky = "false";
   set req.http.X-Strain = "client";
