@@ -674,6 +674,12 @@ sub vcl_recv {
 
 #FASTLY recv
 
+  # X-Location gets set by Helix's redirect logic inside the FASTLY recv block
+  # that will get injected above.
+  if (req.http.X-Location) {
+    error 301 "Redirect"
+  }
+
   # TODO: Do we even want to set a regular origin as default? Possibly set one
   # that acts as a canary. If requests reach it, the VCL isn't setting a backend
   # somewhere.
@@ -1000,6 +1006,13 @@ sub vcl_deliver {
 sub vcl_error {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_error";
 #FASTLY error
+
+  if (obj.status == 301) {
+    set obj.http.Content-Type = "text/html";
+    set obj.http.Location = req.http.X-Location;
+    synthetic "Moved Permanently";
+    return(deliver);
+  }
   call hlx_error_errors;
 }
 
