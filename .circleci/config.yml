@@ -39,6 +39,19 @@ jobs:
       - run: npm install
       - run: npm run deploy
 
+  test-deploy:
+    docker: 
+      - image: trieloff/githop:node8
+    steps:
+      - checkout
+      - run: wsk property set --apihost runtime.adobe.io
+      - run: wsk property set --auth $WSK_AUTH
+      - run: wsk property set --namespace helix
+      - run: npm install
+      - run: npm run test-deploy
+      - run: curl --fail -X GET https://adobeioruntime.net/api/v1/web/helix/default/publish-test
+
+
   build:
     executor: node8
 
@@ -104,6 +117,9 @@ workflows:
   build:
     jobs:
     - build
+    - test-deploy:
+        requires:
+        - build
     # the publish-pre-release jobs needs a $NPM_TOKEN environment to be setup and also have a
     # valid SSH_KEY added for the `github.com` host.
     - publish-pre-release:
@@ -115,6 +131,7 @@ workflows:
             only: master_disabled
     - deploy:
         requires:
+        - test-deploy
         - build
         filters:
           branches:
