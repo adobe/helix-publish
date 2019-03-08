@@ -677,7 +677,7 @@ sub vcl_recv {
   # X-Location gets set by Helix's redirect logic inside the FASTLY recv block
   # that will get injected above.
   if (req.http.X-Location) {
-    error 301 "Redirect"
+    error 301 "Redirect";
   }
 
   # TODO: Do we even want to set a regular origin as default? Possibly set one
