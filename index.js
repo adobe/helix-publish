@@ -9,11 +9,11 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-// log the date to get the response time
-const start = Date.now();
 const publish = require('./src/publish');
 
 async function main(params) {
+  // log the date to get the response time
+  const start = Date.now();
   // eslint-disable-next-line no-underscore-dangle
   if (params && params.__ow_method && params.__ow_method === 'get') {
     return {
@@ -23,7 +23,7 @@ async function main(params) {
       },
       body: `<pingdom_http_custom_check>
       <status>OK</status>
-      <response_time>${Math.abs(Date.now() - start) / 1000}</response_time>
+      <response_time>${Math.abs(Date.now() - start)}</response_time>
   </pingdom_http_custom_check>`,
     };
   }
