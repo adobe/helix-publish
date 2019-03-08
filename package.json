@@ -45,7 +45,7 @@
     "sinon": "^7.2.3"
   },
   "dependencies": {
-    "@adobe/fastly-native-promises": "1.6.1",
+    "@adobe/fastly-native-promises": "1.7.0",
     "@adobe/helix-shared": "0.8.0",
     "fs-extra": "7.0.1",
     "glob-to-regexp": "0.4.0",
