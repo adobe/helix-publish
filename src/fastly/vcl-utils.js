@@ -209,7 +209,26 @@ function xversion(configVersion, cliVersion, revision = 'online') {
   return retvcl;
 }
 
+/**
+ * Turns regex-like replacement patterns into valid VCL statements, e.g. `/foo/$1.html` becomes
+ * `"/foo/" + re.group.1 + ".html"`
+ * @param {string} pattern - a replacement pattern that may include regex-like references like `$1`
+ */
+function pattern2vcl(pattern) {
+  return `"${pattern.replace(/\$([0-9])/g, '" + re.group.$1 + "')}"`;
+}
+
+/**
+ * Turns a regex-pattern (on the full URL, if it starts with `https://`, on the path and QS only, otherwise)
+ * into a valid VCL condition that also checks for a matching X-Strain header value.
+ * @param {string} pattern - a regex-like pattern
+ * @param {string} strain - name of the strain
+ */
+function condition(pattern, strain) {
+  const varname = pattern.match(/^https:\/\//) ? '("https://" + req.http.host + req.url)' : 'req.url';
+  return `req.http.X-Strain == "${strain}" && ${varname} ~ "${pattern}"`;
+}
 
 module.exports = {
-  resolve, reset, parameters, xversion, regexp, writevcl,
+  resolve, reset, parameters, xversion, regexp, writevcl, pattern2vcl, condition,
 };
