@@ -671,7 +671,6 @@ sub vcl_recv {
     set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
 
-  call hlx_set_from_edge;
   call hlx_recv_init;
 
 #FASTLY recv
