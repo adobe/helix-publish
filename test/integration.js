@@ -11,6 +11,7 @@
  */
 const { condit } = require('@adobe/helix-testutils');
 const assert = require('assert');
+const request = require('request-promise-native');
 const { main } = require('../index');
 /* eslint-env mocha */
 
@@ -59,6 +60,12 @@ const config = {
         perf: { device: '', location: '', connection: '' },
         urls: ['https://www.project-helix.io/cli'],
         url: 'https://www.project-helix.io/cli',
+        redirects: [
+          {
+            from: '(.*)\\.php',
+            to: '$1.html',
+          },
+        ],
       },
     },
   },
@@ -101,9 +108,23 @@ describe('Integration Test', () => {
     assert.deepStrictEqual(res, {
       body: {
         status: 'published',
-        completed: 5,
+        completed: 6,
       },
       statusCode: 200,
+    });
+
+    const valid = await request.get(
+      `https://api.fastly.com/service/${process.env.HLX_FASTLY_NAMESPACE}/version/${process.env.VERSION_NUM}/validate`,
+      {
+        headers: {
+          'Fastly-Key': process.env.HLX_FASTLY_AUTH,
+          accept: 'application/json',
+        },
+        json: true,
+      },
+    );
+    assert.deepStrictEqual(valid, {
+      status: 'ok', errors: [], messages: [], warnings: [], msg: null,
     });
   }).timeout(60000);
 

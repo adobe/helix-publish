@@ -15,6 +15,7 @@ const initfastly = require('@adobe/fastly-native-promises');
 const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
+const redirects = require('./fastly/redirects');
 
 async function publish(configuration, service, token, version) {
   if (!(!!token && !!service)) {
@@ -36,6 +37,7 @@ async function publish(configuration, service, token, version) {
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version),
       vcl.updatestrains(fastly, version, config.strains),
+      redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
         fastly,
         version,

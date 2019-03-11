@@ -20,9 +20,13 @@ definitions:
       code: *myrepo
       content: *myrepo
       static: *myrepo
+      redirects:
+        - from: /foo/(.*)
+          to: /bar/$1
 
 strains:
-  default: *basestrain
+  default: 
+    <<: *basestrain
 
   adhoc:
     <<: *basestrain
@@ -38,6 +42,9 @@ strains:
       ref: master
       owner: adobe
     directoryIndex: readme.html
+    redirects:
+      - from: /(.*).php
+        to: /$1.html
 
   pipeline:
     <<: *basestrain

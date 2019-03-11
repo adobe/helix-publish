@@ -79,4 +79,16 @@ describe('Testing vcl-utils.js', () => {
   it('#parameters/full', parameterstest('full'));
   it('#parameters/noparams', parameterstest('noparams'));
   it('#parameters/manyparams', parameterstest('manyparams'));
+
+  it('#pattern2vcl', () => {
+    assert.equal(utils.pattern2vcl('/foo/bar'), '"/foo/bar"');
+    assert.equal(utils.pattern2vcl('/foo/$1.html'), '"/foo/" + re.group.1 + ".html"');
+    assert.equal(utils.pattern2vcl('/foo/$1/bar/$2.html'), '"/foo/" + re.group.1 + "/bar/" + re.group.2 + ".html"');
+    assert.equal(utils.pattern2vcl('/foo/$1/bar/$2.$3'), '"/foo/" + re.group.1 + "/bar/" + re.group.2 + "." + re.group.3 + ""');
+  });
+
+  it('#condition', () => {
+    assert.equal(utils.condition('/old/(.*)', 'default'), 'req.http.X-Strain == "default" && req.url ~ "/old/(.*)"');
+    assert.equal(utils.condition('https://(.*).adobe.io', 'staging'), 'req.http.X-Strain == "staging" && ("https://" + req.http.host + req.url) ~ "https://(.*).adobe.io"');
+  });
 });
