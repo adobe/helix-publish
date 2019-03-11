@@ -104,7 +104,7 @@ sub hlx_recv_init {
   }
 
   # Check/clear X-From-Edge header
-  call hlx_check_from_edge
+  call hlx_check_from_edge;
 
   # Set original URL, so that we can log it afterwards.
   set req.http.X-Orig-URL = req.url;
@@ -533,6 +533,8 @@ sub hlx_type_image {
   call hlx_ref;
   call hlx_root_path;
 
+  declare local var.dir STRING; # directory name
+  declare local var.path STRING; # full path
   if (req.http.X-Dirname) {
     # set root path based on strain-specific dirname (strips away strain root)
     set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
@@ -669,10 +671,15 @@ sub vcl_recv {
     set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
 
-  call hlx_set_from_edge;
   call hlx_recv_init;
 
 #FASTLY recv
+
+  # X-Location gets set by Helix's redirect logic inside the FASTLY recv block
+  # that will get injected above.
+  if (req.http.X-Location) {
+    error 301 "Redirect";
+  }
 
   # TODO: Do we even want to set a regular origin as default? Possibly set one
   # that acts as a canary. If requests reach it, the VCL isn't setting a backend
@@ -720,6 +727,8 @@ sub vcl_recv {
     call hlx_type_redirect;
   } elsif (req.http.X-Request-Type == "Embed") { 
     call hlx_type_embed;
+  } elseif (req.http.X-Request-Type == "Image") {
+    call hlx_type_image;
   } else {
     call hlx_type_pipeline;
   }
@@ -932,6 +941,8 @@ sub vcl_miss {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_miss";
 #FASTLY miss
 
+  call hlx_set_from_edge;
+
   call hlx_bereq;
 
   return(fetch);
@@ -940,6 +951,8 @@ sub vcl_miss {
 sub vcl_pass {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_pass";
 #FASTLY pass
+
+  call hlx_set_from_edge;
 
   call hlx_bereq;
 
@@ -1000,6 +1013,13 @@ sub vcl_deliver {
 sub vcl_error {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_error";
 #FASTLY error
+
+  if (obj.status == 301 && req.http.X-Location) {
+    set obj.http.Content-Type = "text/html";
+    set obj.http.Location = req.http.X-Location;
+    synthetic "Moved permanently <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
+    return(deliver);
+  }
   call hlx_error_errors;
 }
 
