@@ -1007,7 +1007,7 @@ sub vcl_error {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_error";
 #FASTLY error
 
-  if (obj.status == 301) {
+  if (obj.status == 301 && req.http.X-Location) {
     set obj.http.Content-Type = "text/html";
     set obj.http.Location = req.http.X-Location;
     synthetic "Moved Permanently";
