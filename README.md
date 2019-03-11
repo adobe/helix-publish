@@ -23,6 +23,10 @@ This microservice sets up a Fastly service config so that it can be used for Pro
   - Adobe I/O Runtime
   - GitHub
   - all proxy strains from `helix-config.yaml`
+- setting up redirect rules
+  - request conditions
+  - `X-Location` headers
+  - code that detects `X-Location` headers and turns them into `301` redirects
 
 There are a number of important tasks involved in publishing that it does not do:
 
