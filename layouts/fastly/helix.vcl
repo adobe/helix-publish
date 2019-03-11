@@ -1010,7 +1010,7 @@ sub vcl_error {
   if (obj.status == 301 && req.http.X-Location) {
     set obj.http.Content-Type = "text/html";
     set obj.http.Location = req.http.X-Location;
-    synthetic "Moved Permanently";
+    synthetic "Moved permanently <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
     return(deliver);
   }
   call hlx_error_errors;
