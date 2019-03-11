@@ -941,6 +941,8 @@ sub vcl_miss {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_miss";
 #FASTLY miss
 
+  call hlx_set_from_edge;
+
   call hlx_bereq;
 
   return(fetch);
@@ -949,6 +951,8 @@ sub vcl_miss {
 sub vcl_pass {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_pass";
 #FASTLY pass
+
+  call hlx_set_from_edge;
 
   call hlx_bereq;
 
