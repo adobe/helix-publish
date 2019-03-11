@@ -104,7 +104,7 @@ sub hlx_recv_init {
   }
 
   # Check/clear X-From-Edge header
-  call hlx_check_from_edge
+  call hlx_check_from_edge;
 
   # Set original URL, so that we can log it afterwards.
   set req.http.X-Orig-URL = req.url;
