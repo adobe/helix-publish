@@ -60,6 +60,12 @@ const config = {
         perf: { device: '', location: '', connection: '' },
         urls: ['https://www.project-helix.io/cli'],
         url: 'https://www.project-helix.io/cli',
+        redirects: [
+          {
+            from: '(.*)\\.php',
+            to: '$1.html',
+          },
+        ],
       },
     },
   },
