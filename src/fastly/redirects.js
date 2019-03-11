@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Adobe. All rights reserved.
+ * Copyright 2018 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -12,16 +12,16 @@
 const { pattern2vcl, condition } = require('./vcl-utils');
 
 function listredirects(strains) {
-  const redirectingstrains = strains.filter(strain => strain.redirects.length);
+  const redirectingstrains = strains.getByFilter(strain => strain.redirects.length);
   // go over all strains (that have redirects)
-  redirectingstrains.reduce((p, { name, redirects }) => {
+  return redirectingstrains.reduce((p, { name, redirects }) => {
     // go over all redirects per strain
     redirects.reduce((q, redirect) => {
       // collect a new from, to, name tuple
       q.push({
         from: redirect.from,
         to: redirect.to,
-        strain: name
+        strain: name,
       });
       return q;
     }, p);
@@ -29,24 +29,25 @@ function listredirects(strains) {
   }, []);
 }
 
-function updateredirects(fastly, version, strains) {
-  const redirects = listredirects(strains).map(({from, to, strain}) => ({
+function updatestrains(fastly, version, strains) {
+  const redirects = listredirects(strains).map(({ from, to, strain }) => ({
     condition: condition(from, strain),
     expression: pattern2vcl(to),
   }));
 
   const update = fastly.headers.update(
-    version, 
-    'REQUEST', 
-    'Created by helix-publish for Redirects', 
-    'hlx-pub-redirect', 
-    'set', 
-    'http.X-Location', 
-    request);
+    version,
+    'REQUEST',
+    'Created by helix-publish for Redirects',
+    'hlx-pub-redirect',
+    'set',
+    'http.X-Location',
+    'request',
+  );
 
   return update(...redirects);
 }
 
 module.exports = {
-  listredirects, updateredirects
-}
+  listredirects, updatestrains,
+};
