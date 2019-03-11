@@ -108,7 +108,7 @@ describe('Integration Test', () => {
     });
 
     const valid = await request.get(
-      `https://api.fastly.com/service/${process.env.HLX_FASTLY_NAMESPACE}/version/1/validate`,
+      `https://api.fastly.com/service/${process.env.HLX_FASTLY_NAMESPACE}/version/${process.env.VERSION_NUM}/validate`,
       {
         headers: {
           'Fastly-Key': process.env.HLX_FASTLY_AUTH,
