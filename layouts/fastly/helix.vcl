@@ -727,6 +727,8 @@ sub vcl_recv {
     call hlx_type_redirect;
   } elsif (req.http.X-Request-Type == "Embed") { 
     call hlx_type_embed;
+  } elseif (req.http.X-Request-Type == "Image") {
+    call hlx_type_image;
   } else {
     call hlx_type_pipeline;
   }
