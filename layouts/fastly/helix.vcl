@@ -533,7 +533,8 @@ sub hlx_type_image {
   call hlx_ref;
   call hlx_root_path;
 
-  declare local var.dir STRING; #directory name
+  declare local var.dir STRING; # directory name
+  declare local var.path STRING; # full path
   if (req.http.X-Dirname) {
     # set root path based on strain-specific dirname (strips away strain root)
     set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
