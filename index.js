@@ -11,9 +11,22 @@
  */
 const publish = require('./src/publish');
 
-/* eslint-disable no-console */
-/* eslint-disable no-unreachable */
 async function main(params) {
+  // log the date to get the response time
+  const start = Date.now();
+  // eslint-disable-next-line no-underscore-dangle
+  if (params && params.__ow_method && params.__ow_method === 'get') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/xml',
+      },
+      body: `<pingdom_http_custom_check>
+      <status>OK</status>
+      <response_time>${Math.abs(Date.now() - start)}</response_time>
+  </pingdom_http_custom_check>`,
+    };
+  }
   const result = await publish(
     params.configuration,
     params.service,

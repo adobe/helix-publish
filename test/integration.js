@@ -120,4 +120,11 @@ describe('Integration Test', () => {
     const res = await main(params);
     assert.equal(res.statusCode, 400);
   }).timeout(60000);
+
+  it('Get valid status report', async () => {
+    const res = await main({ __ow_method: 'get' });
+
+    assert.equal(res.statusCode, 200);
+    assert.ok(res.body.match(/<status>OK<\/status>/));
+  });
 });
