@@ -636,8 +636,14 @@ sub hlx_type_pipeline {
     + "&selector=" + var.selector
     + "&extension=" + req.url.ext
     + "&strain=" + req.http.X-Strain
-    + "&rootPath=" + var.rootPath +
-    + "&params=" + req.http.X-Encoded-Params;
+    + "&rootPath=" + var.rootPath;
+
+  # only append the encoded params if there are encoded params
+  if (req.http.X-Encoded-Params) {
+    set req.http.X-Backend-URL = req.http.X-Backend-URL
+      + "&params=" + req.http.X-Encoded-Params;
+  }
+    
 }
 
 /**
