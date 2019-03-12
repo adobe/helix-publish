@@ -30,7 +30,7 @@ describe('Troubleshooting Tests', () => {
             },
             statusCode: 200,
           });
-        });
+        }).timeout(1000 * 5 * 60);
       });
   }
 });
