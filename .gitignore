@@ -9,3 +9,4 @@ tmp
 logs
 .DS_Store
 test-results.xml
+test/troubleshoot/*

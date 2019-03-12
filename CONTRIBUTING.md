@@ -50,6 +50,14 @@ We enforce a coding styleguide using `eslint`. As part of your build, run `npm r
 
 You can fix some of the issues automatically by running `npx eslint . --fix`.
 
+## Troubleshooting
+
+When running into issues with `hlx publish --remote`, capture the request made to `helix-publish` using a Proxy server, then put the JSON body of the request into a file in `test/troubleshoot/*.json`.
+
+**Note**: These files contain your credentials and should not get committed. The `test/troubleshoot` directory is ignored by `git`, but if you still manage to accidentially commit or push a file with credentials, make sure to invalidate the personal token in Fasty.
+
+There is a dedicated test suite for troubleshooting that will pick the file up and allow you to debug what's going wrong with your request.
+
 # How Contributions get Reviewed
 
 One of the maintainers will look at the pull request within one week.
