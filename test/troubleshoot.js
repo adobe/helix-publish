@@ -16,19 +16,21 @@ const { main } = require('../index');
 /* eslint-env mocha */
 
 describe('Troubleshooting Tests', () => {
-  fs.readdirSync(path.resolve(__dirname, 'troubleshoot'))
-    .filter(file => file.match(/\.json$/))
-    .forEach((file) => {
-      it(`Troubleshooting ${file}`, async () => {
-        const config = fs.readJSONSync(path.resolve(__dirname, 'troubleshoot', file));
-        const res = await main(config);
-        assert.deepStrictEqual(res, {
-          body: {
-            status: 'published',
-            completed: 6,
-          },
-          statusCode: 200,
+  if (fs.existsSync(path.resolve(__dirname, 'troubleshoot'))) {
+    fs.readdirSync(path.resolve(__dirname, 'troubleshoot'))
+      .filter(file => file.match(/\.json$/))
+      .forEach((file) => {
+        it(`Troubleshooting ${file}`, async () => {
+          const config = fs.readJSONSync(path.resolve(__dirname, 'troubleshoot', file));
+          const res = await main(config);
+          assert.deepStrictEqual(res, {
+            body: {
+              status: 'published',
+              completed: 6,
+            },
+            statusCode: 200,
+          });
         });
       });
-    });
+  }
 });
