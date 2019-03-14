@@ -629,9 +629,9 @@ sub hlx_type_pipeline {
   call hlx_action_root;
 
   if (std.strlen(var.selector) > 0) {
-    set var.action = req.http.X-Action-Root + var.selector + "_" + var.extension;
+    set var.action = "/" + req.http.X-Action-Root + "/" + var.selector + "_" + var.extension;
   } else {
-    set var.action = req.http.X-Action-Root + var.extension;
+    set var.action = "/" + req.http.X-Action-Root + "/" + var.extension;
   }
 
   # get (strain-specific) parameter whitelist
@@ -641,9 +641,9 @@ sub hlx_type_pipeline {
   set var.path = regsuball(var.path, "/+", "/");
   # Invoke OpenWhisk
   set req.http.X-Backend-URL = "/api/v1/web" + var.action
-    + "?owner=" + req.http.X-Github-Static-Owner
-    + "&repo=" + req.http.X-Github-Static-Repo
-    + "&ref=" + req.http.X-Github-Static-Ref
+    + "?owner=" + req.http.X-Owner
+    + "&repo=" + req.http.X-Repo
+    + "&ref=" + req.http.X-Ref
     + "&path=" + var.path
     + "&selector=" + var.selector
     + "&extension=" + req.url.ext
