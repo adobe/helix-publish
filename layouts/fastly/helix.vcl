@@ -353,13 +353,16 @@ sub hlx_headers_deliver {
 }
 
 sub hlx_request_type {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_request_type";
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
+    set req.http.X-Trace = req.http.X-Trace + "(existing)";
     return;
   }
 
   # Binary type images
   if (req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$") {
+    set req.http.X-Trace = req.http.X-Trace + "(image)";
     set req.http.X-Request-Type = "Image";
     return;
   }
@@ -370,9 +373,12 @@ sub hlx_request_type {
   #   return;
   # }
   if (req.http.host == "adobeioruntime.net") {
+    set req.http.X-Trace = req.http.X-Trace + "(embed)";
     set req.http.X-Request-Type = "Embed";
     return;
   }
+  
+  set req.http.X-Trace = req.http.X-Trace + "(none)";
 }
 
 /**
