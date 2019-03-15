@@ -493,8 +493,8 @@ sub hlx_deliver_static {
       set resp.status = 500;
       set resp.response = "Redirect to wrong hostname";
     }
-  } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static) {
-    # That was a miss. Let's try to restart.
+  } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1) {
+    # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
     set resp.status = 404;
 
