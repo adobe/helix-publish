@@ -860,6 +860,12 @@ sub vcl_fetch {
     set beresp.http.Vary = beresp.http.Vary + ",X-Strain";
   }
 
+  # Vary on Request-Type, so that static requests don't interfere with
+  # dynamic requests: https://github.com/adobe/helix-publish/issues/45
+  if (beresp.http.Vary !~ "X-Request-Type") {
+    set beresp.http.Vary = beresp.http.Vary + ",X-Request-Type";
+  }
+
   # TODO: Add Surrogate-Keys, based on req.url/X-Orig-URL
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
