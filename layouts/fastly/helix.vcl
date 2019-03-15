@@ -353,13 +353,16 @@ sub hlx_headers_deliver {
 }
 
 sub hlx_request_type {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_request_type";
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
+    set req.http.X-Trace = req.http.X-Trace + "(existing)";
     return;
   }
 
   # Binary type images
   if (req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$") {
+    set req.http.X-Trace = req.http.X-Trace + "(image)";
     set req.http.X-Request-Type = "Image";
     return;
   }
@@ -370,9 +373,12 @@ sub hlx_request_type {
   #   return;
   # }
   if (req.http.host == "adobeioruntime.net") {
+    set req.http.X-Trace = req.http.X-Trace + "(embed)";
     set req.http.X-Request-Type = "Embed";
     return;
   }
+  
+  set req.http.X-Trace = req.http.X-Trace + "(none)";
 }
 
 /**
@@ -545,9 +551,9 @@ sub hlx_type_image {
 
   set var.path = var.dir + "/" + req.url.basename;
   set var.path = regsuball(var.path, "/+", "/");
-  set req.http.X-Backend-URL = "/" + req.http.X-Github-Static-Owner
-     + "/" + req.http.X-Github-Static-Repo
-     + "/" + req.http.X-Github-Static-Ref
+  set req.http.X-Backend-URL = "/" + req.http.X-Owner
+     + "/" + req.http.X-Repo
+     + "/" + req.http.X-Ref
      + var.path + "?" + req.url.qs;
 
   # enable IO for image file-types
@@ -617,9 +623,9 @@ sub hlx_type_pipeline {
   call hlx_action_root;
 
   if (std.strlen(var.selector) > 0) {
-    set var.action = req.http.X-Action-Root + var.selector + "_" + var.extension;
+    set var.action = "/" + req.http.X-Action-Root + "/" + var.selector + "_" + var.extension;
   } else {
-    set var.action = req.http.X-Action-Root + var.extension;
+    set var.action = "/" + req.http.X-Action-Root + "/" + var.extension;
   }
 
   # get (strain-specific) parameter whitelist
@@ -629,9 +635,9 @@ sub hlx_type_pipeline {
   set var.path = regsuball(var.path, "/+", "/");
   # Invoke OpenWhisk
   set req.http.X-Backend-URL = "/api/v1/web" + var.action
-    + "?owner=" + req.http.X-Github-Static-Owner
-    + "&repo=" + req.http.X-Github-Static-Repo
-    + "&ref=" + req.http.X-Github-Static-Ref
+    + "?owner=" + req.http.X-Owner
+    + "&repo=" + req.http.X-Repo
+    + "&ref=" + req.http.X-Ref
     + "&path=" + var.path
     + "&selector=" + var.selector
     + "&extension=" + req.url.ext
