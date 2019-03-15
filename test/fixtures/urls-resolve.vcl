@@ -15,7 +15,7 @@ if (req.http.Host == "www.project-helix.io" && (req.http.X-FullDirname ~ "^/clie
   # Enable passing through of requests
   
   set req.http.X-Proxy = "https://www.adobe.io:443/";
-  set req.http.X-Static = "Proxy";
+  set req.http.X-Request-Type = "Proxy";
   
   set req.backend = F_Proxywwwadobeio861b;
   set req.http.host = "www.adobe.io";

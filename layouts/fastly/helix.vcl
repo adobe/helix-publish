@@ -145,24 +145,30 @@ sub hlx_recv_init {
 sub hlx_strain {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_strain";
   # TODO: add X-Strain-Key as a random-generated, validation property
+  if (req.http.X-Strain) {
+    set req.http.X-Trace = req.http.X-Trace + "(header:" + req.http.X-Strain + ")";
+  }
   # read strain from URL query string
   if (subfield(req.url.qs, "hlx_strain", "&")) {
     set req.http.X-Strain = subfield(req.url.qs, "hlx_strain", "&");
+    set req.http.X-Trace = req.http.X-Trace + "(url)";
   }
   # read strain from Cookie
   if (req.http.Cookie:X-Strain) {
     set req.http.X-Strain = req.http.Cookie:X-Strain;
+    set req.http.X-Trace = req.http.X-Trace + "(cookie)";
   }
 
   # Sanitize user input. `urlencode` leaves alphanumeric and `-._~`
   set req.http.X-Strain = regsuball(urlencode(req.http.X-Strain), {"%.."}, "_");
 
   # do not override strain if set in header
-  if (!req.http.X-Strain) {
+  if (!req.http.X-Strain||req.http.X-Strain=="") {
     set req.http.X-Strain = "default";
 
     # run custom strain resolution
     include "strains.vcl";
+    set req.http.X-Trace = req.http.X-Trace + "(resolved)";
   }
 
   # we don't need cookies for anything else, but Proxy strains might
