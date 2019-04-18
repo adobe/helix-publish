@@ -556,7 +556,7 @@ sub hlx_deliver_static {
       set req.http.X-Request-Type = "Static";
     }
     restart;
-  } elsif (req.X-Request-Type == "Static-ESI") {
+  } elsif (req.http.X-Request-Type == "Static-ESI") {
     # Get the ETag response header and use it to construct a stable URL
     synthetic regsub(req.http.X-Orig-URL, ".esi$", ".hlx_" + digest.hash_sha1(resp.http.ETag));
     return(deliver);
