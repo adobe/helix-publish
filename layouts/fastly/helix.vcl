@@ -360,6 +360,13 @@ sub hlx_headers_deliver {
 
 sub hlx_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_request_type";
+
+  if (req.http.X-Request-Type == "Static" && req.url.ext == "esi") {
+    set req.http.X-Trace = req.http.X-Trace + "(static-esi)";
+    set req.http.X-Request-Type = "Static-ESI";
+    return;
+  }
+
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
     set req.http.X-Trace = req.http.X-Trace + "(existing)";
@@ -388,6 +395,33 @@ sub hlx_request_type {
 }
 
 /**
+ * This subroutine implements static resource prefetching by calling raw.githubusercontent.com
+ * to determine the ETag of the static file.
+ * @header X-GitHub-Static-Owner  the owner or organization of the repo that contains the source files
+ * @header X-GitHub-Static-Repo   the repository name of the repo containing the static files
+ * @header X-GitHub-Static-Ref    the branch or tag (or commit) name to serve source files from
+ * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
+ */
+sub hlx_type_static_esi {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static";
+
+  set req.backend = F_GitHub;
+
+  # Load important information from edge dicts
+  call hlx_github_static_owner;
+  call hlx_github_static_repo;
+  call hlx_github_static_ref;
+  call hlx_github_static_root;
+
+  // https://raw.githubusercontent.com/trieloff/helix-demo/master/htdocs/index.js
+  set req.http.X-Backend-URL = 
+    req.http.X-GitHub-Static-Owner + "/" +
+    req.http.X-Github-Static-Repo + "/" +
+    req.http.X-GitHub-Static-Ref + "/" +
+    regsub(req.http.X-Orig-URL, ".esi$", "");
+}
+
+/**
  * This subroutine implements static file handling by calling
  * the hlx--static action in OpenWhisk
  * @header X-GitHub-Static-Owner  the owner or organization of the repo that contains the source files
@@ -413,9 +447,17 @@ sub hlx_type_static {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
-  # TODO: check for URL ending with `/` and look up index file
-  set var.path = req.http.X-Orig-URL;
-  set var.entry = req.http.X-Orig-URL;
+  
+  # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
+  if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+    # and keep only the non-hashed part, i.e. everything before .hlx_
+    set var.path = re.group.1;
+    set var.entry = re.group.2;
+  } else {
+    # TODO: check for URL ending with `/` and look up index file
+    set var.path = req.http.X-Orig-URL;
+    set var.entry = req.http.X-Orig-URL;
+  }
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
   set req.http.X-Backend-URL = req.http.X-Action-Root
@@ -453,6 +495,16 @@ sub hlx_type_redirect {
 
 sub hlx_fetch_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
+
+  # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
+  if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+    # tell the browser to keep them forever
+    set beresp.http.Cache-Control = "max-age=31622400" # keep it for a year in the browser;
+    set beresp.http.Surrogate-Control = "max-age=3600" # but only for an hour in the shared cache
+                                                       # to limit cache poisioning
+    set beresp.cacheable = true;
+    set beresp.ttl = 3600;
+  }
   if (beresp.http.X-Static == "Raw/Static") {
     if (beresp.status == 307) {
       # Keep the redirect around for a short bit, to prevent thundering herd
@@ -504,6 +556,10 @@ sub hlx_deliver_static {
       set req.http.X-Request-Type = "Static";
     }
     restart;
+  } elsif (req.X-Request-Type == "Static-ESI") {
+    # Get the ETag response header and use it to construct a stable URL
+    synthetic regsub(req.http.X-Orig-URL, ".esi$", ".hlx_" + digest.hash_sha1(resp.http.ETag));
+    return(deliver);
   }
 }
 
@@ -747,6 +803,8 @@ sub vcl_recv {
     call hlx_type_embed;
   } elseif (req.http.X-Request-Type == "Image") {
     call hlx_type_image;
+  } elseif (req.http.X-Request-Type == "Static-ESI") {
+    call hlx_type_static_esi;
   } else {
     call hlx_type_pipeline;
   }
