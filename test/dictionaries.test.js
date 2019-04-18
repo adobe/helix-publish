@@ -38,13 +38,15 @@ describe('Testing dictionaries.js', () => {
       .init();
 
     assert.ok(await updatestrains(fastly, 1, config.strains));
-    assert.equal(fastly.bulkUpdateDictItems.getCalls().length, 11);
+    assert.equal(fastly.bulkUpdateDictItems.getCalls().length, 12);
 
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_action_roots', { op: 'upsert', item_key: 'adhoc', item_value: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty' }));
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_owners', { op: 'upsert', item_key: 'adhoc', item_value: 'adobe' }));
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_refs', { op: 'upsert', item_key: 'adhoc', item_value: 'master' }));
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_repos', { op: 'upsert', item_key: 'adhoc', item_value: 'project-helix.io' }));
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_root_paths', { op: 'upsert', item_key: 'adhoc', item_value: '' }));
+
+    assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_index_files', { op: 'upsert', item_key: 'adhoc', item_value: 'foo.html' }));
 
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_github_static_repos', { op: 'upsert', item_key: 'adhoc', item_value: 'project-helix.io' }));
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_github_static_owners', { op: 'upsert', item_key: 'adhoc', item_value: 'adobe' }));
