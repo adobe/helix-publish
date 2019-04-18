@@ -503,7 +503,7 @@ sub hlx_fetch_static {
     set beresp.http.Surrogate-Control = "max-age=3600"; # but only for an hour in the shared cache
                                                         # to limit cache poisioning
     set beresp.cacheable = true;
-    set beresp.ttl = 3600;
+    set beresp.ttl = 3600s;
   }
   if (beresp.http.X-Static == "Raw/Static") {
     if (beresp.status == 307) {
