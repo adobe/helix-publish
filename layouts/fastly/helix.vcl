@@ -558,7 +558,10 @@ sub hlx_deliver_static {
     restart;
   } elsif (req.http.X-Request-Type == "Static-ESI") {
     # Get the ETag response header and use it to construct a stable URL
-    synthetic regsub(req.http.X-Orig-URL, ".esi$", ".hlx_" + digest.hash_sha1(resp.http.ETag));
+    declare local var.ext STRING;
+
+    set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
+    synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
     return(deliver);
   }
 }
