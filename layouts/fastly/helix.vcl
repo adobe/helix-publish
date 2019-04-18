@@ -499,9 +499,9 @@ sub hlx_fetch_static {
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     # tell the browser to keep them forever
-    set beresp.http.Cache-Control = "max-age=31622400" # keep it for a year in the browser;
-    set beresp.http.Surrogate-Control = "max-age=3600" # but only for an hour in the shared cache
-                                                       # to limit cache poisioning
+    set beresp.http.Cache-Control = "max-age=31622400"; # keep it for a year in the browser;
+    set beresp.http.Surrogate-Control = "max-age=3600"; # but only for an hour in the shared cache
+                                                        # to limit cache poisioning
     set beresp.cacheable = true;
     set beresp.ttl = 3600;
   }
