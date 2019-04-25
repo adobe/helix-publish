@@ -552,11 +552,12 @@ sub hlx_deliver_static {
   set resp.http.X-Static-Trace = req.http.X-Trace + "; hlx_deliver_static";
   set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[type=" + req.http.X-Request-Type + ", status=" + resp.status + "]";
   if (req.http.X-Request-Type == "Static-ESI" && resp.status == 200) {
-    set resp.http.X-Trace = resp.http.X-Trace + "(esi)";
+    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "(esi)";
     # Get the ETag response header and use it to construct a stable URL
     declare local var.ext STRING;
 
     set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
+    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
     synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
     return(deliver);
   } elsif (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
