@@ -499,11 +499,12 @@ sub hlx_type_redirect {
 
 sub hlx_fetch_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
+  declare local var.ext STRING;
 
   if (req.http.X-Request-Type == "Static-ESI" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(esi)";
     # Get the ETag response header and use it to construct a stable URL
-    declare local var.ext STRING;
+    
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
     set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
@@ -514,7 +515,6 @@ sub hlx_fetch_static {
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
 
-    declare local var.ext STRING;
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
 
     if (req.group.2 == var.ext) {
