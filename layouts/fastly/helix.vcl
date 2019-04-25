@@ -499,12 +499,12 @@ sub hlx_fetch_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
 
   if (req.http.X-Request-Type == "Static-ESI" && beresp.status == 200) {
-    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "(esi)";
+    set req.http.X-Trace = req.http.X-Trace + "(esi)";
     # Get the ETag response header and use it to construct a stable URL
     declare local var.ext STRING;
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
-    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
     set req.http.X-Location = regsub(req.http.X-Orig-URL, ".esi$", var.ext);
     error 303 "ESI"; 
   }
