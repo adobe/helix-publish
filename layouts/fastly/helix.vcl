@@ -452,10 +452,12 @@ sub hlx_type_static {
   
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     # and keep only the non-hashed part, i.e. everything before .hlx_
     set var.path = re.group.1;
-    set var.entry = re.group.2;
+    set var.entry = re.group.1;
   } else {
+    set req.http.X-Trace = req.http.X-Trace + "(normal)";
     # TODO: check for URL ending with `/` and look up index file
     set var.path = req.http.X-Orig-URL;
     set var.entry = req.http.X-Orig-URL;
