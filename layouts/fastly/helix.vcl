@@ -498,6 +498,16 @@ sub hlx_type_redirect {
 sub hlx_fetch_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
 
+  if (req.http.X-Request-Type == "Static-ESI" && beresp.status == 200) {
+    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "(esi)";
+    # Get the ETag response header and use it to construct a stable URL
+    declare local var.ext STRING;
+
+    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
+    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".esi$", var.ext);
+    error 303 "ESI"; 
+  }
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
@@ -542,16 +552,7 @@ sub hlx_fetch_static {
 sub hlx_deliver_static {
   set resp.http.X-Static-Trace = req.http.X-Trace + "; hlx_deliver_static";
   set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[type=" + req.http.X-Request-Type + ", status=" + resp.status + "]";
-  if (req.http.X-Request-Type == "Static-ESI" && resp.status == 200) {
-    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "(esi)";
-    # Get the ETag response header and use it to construct a stable URL
-    declare local var.ext STRING;
-
-    set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
-    set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
-    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".esi$", var.ext);
-    error 303 "ESI";
-  } elsif (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
+  if (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
     # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
     # clustering. Changes made to most `req` variables don't make it back to
     # the edge node, when `vcl_fetch` is run on a different node.
