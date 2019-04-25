@@ -517,7 +517,7 @@ sub hlx_fetch_static {
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
 
-    if (req.group.2 == var.ext) {
+    if (re.group.2 == var.ext) {
       # tell the browser to keep them forever
       set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
       set beresp.http.Surrogate-Control = "max-age=3600"; # but only for an hour in the shared cache
