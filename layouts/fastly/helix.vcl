@@ -998,6 +998,10 @@ sub vcl_fetch {
 
   call hlx_fetch_static;
 
+  if (beresp.http.X-ESI) {
+    esi;
+  }
+
   return(deliver);
 }
 
