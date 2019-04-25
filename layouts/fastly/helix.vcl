@@ -509,16 +509,7 @@ sub hlx_fetch_static {
     set beresp.ttl = 3600s;
     return(deliver);
   }
-  if (beresp.status == 200 && req.http.X-Request-Type == "Static-ESI") {
-    set req.http.X-Trace = req.http.X-Trace + "(esi)";
-    # Get the ETag response header and use it to construct a stable URL
-    declare local var.ext STRING;
-
-    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
-    synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
-    return(deliver);
-
-  } elsif (beresp.http.X-Static == "Raw/Static") {
+  if (beresp.http.X-Static == "Raw/Static") {
     set req.http.X-Trace = req.http.X-Trace + "(raw)";
     if (beresp.status == 307) {
       # Keep the redirect around for a short bit, to prevent thundering herd
@@ -558,8 +549,8 @@ sub hlx_deliver_static {
 
     set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
     set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
-    synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
-    return(deliver);
+    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".esi$", var.ext);
+    error 303 "ESI";
   } elsif (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
     # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
     # clustering. Changes made to most `req` variables don't make it back to
@@ -1130,6 +1121,12 @@ sub vcl_error {
     set obj.http.Content-Type = "text/html";
     set obj.http.Location = req.http.X-Location;
     synthetic "Moved permanently <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
+    return(deliver);
+  }
+  if (obj.status == 303 && req.http.X-Location) {
+    set obj.http.Content-Type = "text/plain";
+    set obj.status = 200;
+    synthetic req.http.X-Location;
     return(deliver);
   }
   call hlx_error_errors;
