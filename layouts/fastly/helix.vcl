@@ -403,7 +403,7 @@ sub hlx_request_type {
  * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
  */
 sub hlx_type_static_esi {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static(esi)";
 
   set req.backend = F_GitHub;
 
@@ -557,6 +557,7 @@ sub hlx_deliver_static {
     }
     restart;
   } elsif (req.http.X-Request-Type == "Static-ESI") {
+    set req.http.X-Trace = req.http.X-Trace + "(esi)";
     # Get the ETag response header and use it to construct a stable URL
     declare local var.ext STRING;
 
