@@ -419,7 +419,7 @@ sub hlx_type_static_esi {
     req.http.X-GitHub-Static-Owner + "/" +
     req.http.X-Github-Static-Repo + "/" +
     req.http.X-GitHub-Static-Ref + // no slash at the end, because the X-Orig-URL starts with one
-    ">" + req.http.X-Github-Static-Root + "<"
+    req.http.X-Github-Static-Root +
     regsub(req.http.X-Orig-URL, ".esi$", "");
 }
 
@@ -534,7 +534,7 @@ sub hlx_fetch_static {
 
 sub hlx_deliver_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
-  elsif (req.http.X-Request-Type == "Static-ESI" && resp.status == 200) {
+  if (req.http.X-Request-Type == "Static-ESI" && resp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(esi)";
     # Get the ETag response header and use it to construct a stable URL
     declare local var.ext STRING;
