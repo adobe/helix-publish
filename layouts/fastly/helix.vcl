@@ -534,7 +534,15 @@ sub hlx_fetch_static {
 
 sub hlx_deliver_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
-  if (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
+  elsif (req.http.X-Request-Type == "Static-ESI" && resp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(esi)";
+    # Get the ETag response header and use it to construct a stable URL
+    declare local var.ext STRING;
+
+    set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
+    synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
+    return(deliver);
+  } elsif (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
     # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
     # clustering. Changes made to most `req` variables don't make it back to
     # the edge node, when `vcl_fetch` is run on a different node.
@@ -562,14 +570,6 @@ sub hlx_deliver_static {
       set req.http.X-Request-Type = "Static";
     }
     restart;
-  } elsif (req.http.X-Request-Type == "Static-ESI") {
-    set req.http.X-Trace = req.http.X-Trace + "(esi)";
-    # Get the ETag response header and use it to construct a stable URL
-    declare local var.ext STRING;
-
-    set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
-    synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
-    return(deliver);
   }
 }
 
