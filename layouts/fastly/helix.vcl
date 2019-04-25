@@ -514,10 +514,10 @@ sub hlx_fetch_static {
     # Get the ETag response header and use it to construct a stable URL
     declare local var.ext STRING;
 
-    set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
+    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
     synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
     return(deliver);
-    
+
   } elsif (beresp.http.X-Static == "Raw/Static") {
     set req.http.X-Trace = req.http.X-Trace + "(raw)";
     if (beresp.status == 307) {
