@@ -298,11 +298,7 @@ sub hlx_github_static_root {
   if (!req.http.X-Github-Static-Root) {
     set req.http.X-Github-Static-Root = "/";
   }
-  if (req.http.X-Github-Static-Root) {
-    set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root + ")";
-  } else {
-    set req.http.X-Trace = req.http.X-Trace + "(none)";
-  }
+  set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root +  ")";
 }
 
 # Gets the github static ref
@@ -546,15 +542,19 @@ sub hlx_deliver_static {
       set req.http.X-Request-Type = "Redirect";
       set req.http.X-Backend-URL = re.group.1;
       set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
+      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
       restart;
     } else {
       set resp.status = 500;
       set resp.response = "Redirect to wrong hostname";
+      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
     }
   } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1) {
     # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
     set resp.status = 404;
+    
+    set req.http.X-Trace = req.http.X-Trace + "(404)";
 
     if (req.http.X-Request-Type == "Static") {
       set req.http.X-Request-Type = "Dynamic";
