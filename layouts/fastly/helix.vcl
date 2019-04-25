@@ -136,7 +136,7 @@ sub hlx_recv_init {
   }
 
   # set X-Version initial value
-  set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
+  set req.http.X-Version = "static-esi" + regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
 
 }
 
@@ -298,6 +298,11 @@ sub hlx_github_static_root {
   if (!req.http.X-Github-Static-Root) {
     set req.http.X-Github-Static-Root = "/";
   }
+  if (req.http.X-Github-Static-Root) {
+    set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root + ")";
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "(none)";
+  }
 }
 
 # Gets the github static ref
@@ -418,6 +423,7 @@ sub hlx_type_static_esi {
     req.http.X-GitHub-Static-Owner + "/" +
     req.http.X-Github-Static-Repo + "/" +
     req.http.X-GitHub-Static-Ref + // no slash at the end, because the X-Orig-URL starts with one
+    ">" + req.http.X-Github-Static-Root + "<"
     regsub(req.http.X-Orig-URL, ".esi$", "");
 }
 
