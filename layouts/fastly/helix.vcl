@@ -414,7 +414,7 @@ sub hlx_type_static_esi {
   call hlx_github_static_root;
 
   // https://raw.githubusercontent.com/trieloff/helix-demo/master/htdocs/index.js
-  set req.http.X-Backend-URL = 
+  set req.http.X-Backend-URL = "/" +
     req.http.X-GitHub-Static-Owner + "/" +
     req.http.X-Github-Static-Repo + "/" +
     req.http.X-GitHub-Static-Ref + // no slash at the end, because the X-Orig-URL starts with one
