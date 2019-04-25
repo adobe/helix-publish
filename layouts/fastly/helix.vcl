@@ -535,14 +535,15 @@ sub hlx_fetch_static {
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
 
     if (re.group.2 == var.ext) {
-      # tell the browser to keep them forever
       set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
-      set beresp.http.Surrogate-Control = "max-age=3600"; # but only for an hour in the shared cache
-                                                          # to limit cache poisioning
+      set beresp.http.Surrogate-Control = "max-age=31622400,immutable";
       set beresp.cacheable = true;
-      set beresp.ttl = 3600s;
+      set beresp.ttl = 31622400s;
     } else {
+      set beresp.ttl = 300s;
+      error 404 "Invalid";
       set beresp.http.X-Trace = "etag=" + beresp.http.ETag + "; ext=" + var.ext;
+
     }
     return(deliver);
   }
