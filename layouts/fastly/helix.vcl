@@ -406,7 +406,13 @@ sub hlx_request_type {
 sub hlx_type_static_esi {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_esi";
 
-  set req.backend = F_GitHub;
+  # get it from OpenWhisk
+  set req.backend = F_AdobeRuntime;
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.path STRING; # resource path
+  declare local var.entry STRING; # bundler entry point
 
   # Load important information from edge dicts
   call hlx_github_static_owner;
@@ -414,13 +420,24 @@ sub hlx_type_static_esi {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
-  // https://raw.githubusercontent.com/trieloff/helix-demo/master/htdocs/index.js
-  set req.http.X-Backend-URL = "/" +
-    req.http.X-GitHub-Static-Owner + "/" +
-    req.http.X-Github-Static-Repo + "/" +
-    req.http.X-GitHub-Static-Ref + // no slash at the end, because the X-Orig-URL starts with one
-    req.http.X-Github-Static-Root +
-    regsub(req.http.X-Orig-URL, ".esi$", "");
+  # TODO: check for URL ending with `/` and look up index file
+  set var.path = regsub(req.http.X-Orig-URL, ".esi$", "");
+  set var.entry = regsub(req.http.X-Orig-URL, ".esi$", "");
+
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
+  set req.http.X-Backend-URL = req.http.X-Action-Root
+    + "?owner=" + req.http.X-Github-Static-Owner
+    + "&repo=" + req.http.X-Github-Static-Repo
+    + "&strain=" + req.http.X-Strain
+    + "&ref=" + req.http.X-Github-Static-Ref
+    + "&entry=" + var.entry
+    + "&path=" + var.path
+    # TODO: load magic flag
+    + "&plain=true"
+    + "&allow=" urlencode(req.http.X-Allow)
+    + "&deny=" urlencode(req.http.X-Deny)
+    + "&root=" + req.http.X-Github-Static-Root;
+    
 }
 
 /**
