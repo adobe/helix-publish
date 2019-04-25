@@ -404,7 +404,7 @@ sub hlx_request_type {
  * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
  */
 sub hlx_type_static_esi {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static(esi)";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_esi";
 
   set req.backend = F_GitHub;
 
@@ -1071,9 +1071,9 @@ sub vcl_deliver {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
 #FASTLY deliver
 
-  call hlx_headers_deliver;
-
   call hlx_deliver_static;
+
+  call hlx_headers_deliver;
 
   # only set the strain cookie for sticky strains
   # and only do it for the Adobe I/O Runtime backend
