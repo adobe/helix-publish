@@ -459,6 +459,7 @@ sub hlx_type_static {
   # them into the URL
   declare local var.path STRING; # resource path
   declare local var.entry STRING; # bundler entry point
+  declare local var.esi STRING;
 
   # Load important information from edge dicts
   call hlx_github_static_owner;
@@ -473,11 +474,13 @@ sub hlx_type_static {
     # and keep only the non-hashed part, i.e. everything before .hlx_
     set var.path = re.group.1;
     set var.entry = re.group.1;
+    set var.esi = "&esi=true";
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(normal)";
     # TODO: check for URL ending with `/` and look up index file
     set var.path = req.http.X-Orig-URL;
     set var.entry = req.http.X-Orig-URL;
+    set var.esi = "";
   }
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
@@ -488,6 +491,7 @@ sub hlx_type_static {
     + "&ref=" + req.http.X-Github-Static-Ref
     + "&entry=" + var.entry
     + "&path=" + var.path
+    + var.esi
     # TODO: load magic flag
     + "&plain=true"
     + "&allow=" urlencode(req.http.X-Allow)
