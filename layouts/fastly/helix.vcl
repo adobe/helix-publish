@@ -524,6 +524,8 @@ sub hlx_fetch_static {
                                                           # to limit cache poisioning
       set beresp.cacheable = true;
       set beresp.ttl = 3600s;
+    } else {
+      set beresp.http.X-Trace = "etag=" + beresp.http.ETag + "; ext=" + var.ext;
     }
     return(deliver);
   }
@@ -558,8 +560,7 @@ sub hlx_fetch_static {
 }
 
 sub hlx_deliver_static {
-  set resp.http.X-Static-Trace = req.http.X-Trace + "; hlx_deliver_static";
-  set resp.http.X-Static-Trace = resp.http.X-Static-Trace + "[type=" + req.http.X-Request-Type + ", status=" + resp.status + "]";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
   if (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
     # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
     # clustering. Changes made to most `req` variables don't make it back to
