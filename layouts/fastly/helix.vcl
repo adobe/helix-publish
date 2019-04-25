@@ -500,14 +500,26 @@ sub hlx_fetch_static {
 
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     # tell the browser to keep them forever
     set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
     set beresp.http.Surrogate-Control = "max-age=3600"; # but only for an hour in the shared cache
                                                         # to limit cache poisioning
     set beresp.cacheable = true;
     set beresp.ttl = 3600s;
+    return(deliver);
   }
-  if (beresp.http.X-Static == "Raw/Static") {
+  if (beresp.status == 200 && req.http.X-Request-Type == "Static-ESI") {
+    set req.http.X-Trace = req.http.X-Trace + "(esi)";
+    # Get the ETag response header and use it to construct a stable URL
+    declare local var.ext STRING;
+
+    set var.ext = ".hlx_" + digest.hash_sha1(resp.http.ETag);
+    synthetic regsub(req.http.X-Orig-URL, ".esi$", var.ext);
+    return(deliver);
+    
+  } elsif (beresp.http.X-Static == "Raw/Static") {
+    set req.http.X-Trace = req.http.X-Trace + "(raw)";
     if (beresp.status == 307) {
       # Keep the redirect around for a short bit, to prevent thundering herd
       set beresp.cacheable = true;
@@ -515,6 +527,7 @@ sub hlx_fetch_static {
     }
     return(deliver);
   } elsif (req.http.X-Request-Type == "Redirect" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(redirect)";
     // and this is where we fix the headers of the GitHub static response
     // so that they become digestible by a browser.
     // - recover Content-Type from X-Content-Type
@@ -526,9 +539,12 @@ sub hlx_fetch_static {
     unset beresp.http.X-XSS-Protection;
     unset beresp.http.Content-Security-Policy;
   } elsif (beresp.status == 404 || beresp.status == 204) {
+    set req.http.X-Trace = req.http.X-Trace + "(400)";
     # Cache for a short time, restart will get rid of it anyway
     set beresp.ttl = 60s;
     return(deliver);
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "(none)";
   }
 }
 
@@ -1098,6 +1114,8 @@ sub vcl_deliver {
     unset resp.http.X-Timer;
     unset resp.http.X-URL;
     unset resp.http.x-xss-protection;
+  } else {
+    set resp.http.X-Trace = req.http.X-Trace;
   }
   return(deliver);
 }
