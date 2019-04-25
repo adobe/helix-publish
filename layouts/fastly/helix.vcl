@@ -513,12 +513,18 @@ sub hlx_fetch_static {
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
-    # tell the browser to keep them forever
-    set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
-    set beresp.http.Surrogate-Control = "max-age=3600"; # but only for an hour in the shared cache
-                                                        # to limit cache poisioning
-    set beresp.cacheable = true;
-    set beresp.ttl = 3600s;
+
+    declare local var.ext STRING;
+    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
+
+    if (req.group.2 == var.ext) {
+      # tell the browser to keep them forever
+      set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
+      set beresp.http.Surrogate-Control = "max-age=3600"; # but only for an hour in the shared cache
+                                                          # to limit cache poisioning
+      set beresp.cacheable = true;
+      set beresp.ttl = 3600s;
+    }
     return(deliver);
   }
   if (beresp.http.X-Static == "Raw/Static") {
