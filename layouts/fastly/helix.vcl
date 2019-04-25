@@ -549,9 +549,10 @@ sub hlx_fetch_static {
 }
 
 sub hlx_deliver_static {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
+  set resp.http.X-Static-Trace = req.http.X-Trace + "; hlx_deliver_static";
+  set resp.http.X-Static-Trace = set resp.http.X-Static-Trace + "[type=" + req.http.X-Request-Type + ", status=" + resp.status + "]";
   if (req.http.X-Request-Type == "Static-ESI" && resp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(esi)";
+    set resp.http.X-Trace = resp.http.X-Trace + "(esi)";
     # Get the ETag response header and use it to construct a stable URL
     declare local var.ext STRING;
 
@@ -1071,9 +1072,9 @@ sub vcl_deliver {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
 #FASTLY deliver
 
-  call hlx_deliver_static;
-
   call hlx_headers_deliver;
+
+  call hlx_deliver_static;
 
   # only set the strain cookie for sticky strains
   # and only do it for the Adobe I/O Runtime backend
