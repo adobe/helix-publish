@@ -136,7 +136,7 @@ sub hlx_recv_init {
   }
 
   # set X-Version initial value
-  set req.http.X-Version = "static-esi" + regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
+  set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
 
 }
 
@@ -1045,10 +1045,10 @@ sub hlx_bereq {
   if (req.backend == F_AdobeRuntime) {
     # set backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
-
-    # making sure to get an uncompressed object for ESI
-    unset bereq.http.Accept-Encoding;
   }
+
+  # making sure to get an uncompressed object for ESI
+  unset bereq.http.Accept-Encoding;
 
   # Clean up all temporary request headers, since origins might be 3rd parties
   unset bereq.http.X-Orig-Url;
