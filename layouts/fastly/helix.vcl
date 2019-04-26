@@ -998,13 +998,9 @@ sub vcl_fetch {
     }
   }
 
-  if ( req.http.x-esi ) {
-    esi;
-  }
-
   call hlx_fetch_static;
 
-  if (beresp.http.X-ESI) {
+  if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
     esi;
   }
 
@@ -1051,7 +1047,7 @@ sub hlx_bereq {
   }
 
   # making sure to get an uncompressed object for ESI
-  if ( req.url.ext == "html" ) {
+  if ( req.url.ext == "html" || req.url.ext == "js" || req.url.ext == "css" ) {
     unset bereq.http.Accept-Encoding;
   }
 
