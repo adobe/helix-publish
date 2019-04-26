@@ -1041,13 +1041,12 @@ sub hlx_bereq {
     }
   }
 
-  # set backend authentication
+  
   if (req.backend == F_AdobeRuntime) {
+    # set backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
-  }
 
-  # making sure to get an uncompressed object for ESI
-  if ( req.url.ext == "html" || req.url.ext == "js" || req.url.ext == "css" ) {
+    # making sure to get an uncompressed object for ESI
     unset bereq.http.Accept-Encoding;
   }
 
