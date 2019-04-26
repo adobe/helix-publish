@@ -539,6 +539,8 @@ sub hlx_fetch_static {
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
 
     if (re.group.2 == var.ext) {
+      esi;
+      set beresp.http.X-ESI = "processed";
       set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
       set beresp.http.Surrogate-Control = "max-age=31622400,immutable";
       set beresp.cacheable = true;
@@ -548,9 +550,6 @@ sub hlx_fetch_static {
       error 404 "Invalid";
       set beresp.http.X-Trace = "etag=" + beresp.http.ETag + "; ext=" + var.ext;
 
-    }
-    if (beresp.http.X-ESI == "enabled") {
-      esi;
     }
     return(deliver);
   }
