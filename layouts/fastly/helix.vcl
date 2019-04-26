@@ -374,6 +374,12 @@ sub hlx_request_type {
     return;
   }
 
+  if (req.url.ext ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    set req.http.X-Request-Type = "Static";
+    return;
+  }
+
   # Binary type images
   if (req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$") {
     set req.http.X-Trace = req.http.X-Trace + "(image)";
