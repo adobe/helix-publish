@@ -539,7 +539,7 @@ sub hlx_fetch_static {
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
 
     if (re.group.2 == var.ext) {
-      req.esi = true;
+      set req.esi = true;
       esi;
       set beresp.http.X-ESI = "processed(" + bereq.http.Accept-Encoding + ", " + req.esi + "," + req.http.X-From-Edge +")";
       set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
