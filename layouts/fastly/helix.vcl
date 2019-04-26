@@ -377,6 +377,7 @@ sub hlx_request_type {
   if (req.url.ext ~ "^(hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     set req.http.X-Request-Type = "Static";
+    unset req.http.Accept-Encoding;
     return;
   }
 
