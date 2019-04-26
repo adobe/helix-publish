@@ -549,6 +549,9 @@ sub hlx_fetch_static {
       set beresp.http.X-Trace = "etag=" + beresp.http.ETag + "; ext=" + var.ext;
 
     }
+    if (beresp.http.X-ESI == "enabled") {
+      esi;
+    }
     return(deliver);
   }
   if (beresp.http.X-Static == "Raw/Static") {
