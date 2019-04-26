@@ -540,7 +540,7 @@ sub hlx_fetch_static {
 
     if (re.group.2 == var.ext) {
       esi;
-      set beresp.http.X-ESI = "processed";
+      set beresp.http.X-ESI = "processed(" + bereq.http.Accept-Encoding + ")";
       set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
       set beresp.http.Surrogate-Control = "max-age=31622400,immutable";
       set beresp.cacheable = true;
