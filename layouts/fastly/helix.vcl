@@ -549,6 +549,7 @@ sub hlx_fetch_static {
       set req.esi = true;
       esi;
       set beresp.http.X-ESI = "processed(" + bereq.http.Accept-Encoding + ", " + req.esi + "," + req.http.X-From-Edge +")";
+      `set beresp.http.x-compress-hint = "on";` // so h2o compresses it on the way out
       set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
       set beresp.http.Surrogate-Control = "max-age=31622400,immutable";
       set beresp.cacheable = true;
