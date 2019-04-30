@@ -298,6 +298,7 @@ sub hlx_github_static_root {
   if (!req.http.X-Github-Static-Root) {
     set req.http.X-Github-Static-Root = "/";
   }
+  set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root +  ")";
 }
 
 # Gets the github static ref
@@ -360,9 +361,29 @@ sub hlx_headers_deliver {
 
 sub hlx_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_request_type";
+
+  if (req.http.X-Request-Type == "Static" && req.url.ext == "url") {
+    set req.http.X-Trace = req.http.X-Trace + "(static-url)";
+    set req.http.X-Request-Type = "Static-URL";
+    return;
+  }
+
+  if (req.http.X-Request-Type == "Static" && req.url.ext == "302") {
+    set req.http.X-Trace = req.http.X-Trace + "(static-302)";
+    set req.http.X-Request-Type = "Static-302";
+    return;
+  }
+
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
     set req.http.X-Trace = req.http.X-Trace + "(existing)";
+    return;
+  }
+
+  if (req.url.ext ~ "^(hlx_([0-9a-f]){20,40}$)") {
+    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    set req.http.X-Request-Type = "Static";
+    unset req.http.Accept-Encoding;
     return;
   }
 
@@ -388,6 +409,49 @@ sub hlx_request_type {
 }
 
 /**
+ * This subroutine implements static resource prefetching by calling Adobe I/O Runtime
+ * @header X-GitHub-Static-Owner  the owner or organization of the repo that contains the source files
+ * @header X-GitHub-Static-Repo   the repository name of the repo containing the static files
+ * @header X-GitHub-Static-Ref    the branch or tag (or commit) name to serve source files from
+ * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
+ */
+sub hlx_type_static_url {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_url";
+
+  # get it from OpenWhisk
+  set req.backend = F_AdobeRuntime;
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.path STRING; # resource path
+  declare local var.entry STRING; # bundler entry point
+
+  # Load important information from edge dicts
+  call hlx_github_static_owner;
+  call hlx_github_static_repo;
+  call hlx_github_static_ref;
+  call hlx_github_static_root;
+
+  # TODO: check for URL ending with `/` and look up index file
+  set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
+  set var.entry = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
+
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
+  set req.http.X-Backend-URL = req.http.X-Action-Root
+    + "?owner=" + req.http.X-Github-Static-Owner
+    + "&repo=" + req.http.X-Github-Static-Repo
+    + "&strain=" + req.http.X-Strain
+    + "&ref=" + req.http.X-Github-Static-Ref
+    + "&entry=" + var.entry
+    + "&path=" + var.path
+    # TODO: load magic flag
+    + "&plain=true"
+    + "&allow=" urlencode(req.http.X-Allow)
+    + "&deny=" urlencode(req.http.X-Deny)
+    + "&root=" + req.http.X-Github-Static-Root;
+}
+
+/**
  * This subroutine implements static file handling by calling
  * the hlx--static action in OpenWhisk
  * @header X-GitHub-Static-Owner  the owner or organization of the repo that contains the source files
@@ -406,6 +470,7 @@ sub hlx_type_static {
   # them into the URL
   declare local var.path STRING; # resource path
   declare local var.entry STRING; # bundler entry point
+  declare local var.esi STRING;
 
   # Load important information from edge dicts
   call hlx_github_static_owner;
@@ -413,9 +478,21 @@ sub hlx_type_static {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
-  # TODO: check for URL ending with `/` and look up index file
-  set var.path = req.http.X-Orig-URL;
-  set var.entry = req.http.X-Orig-URL;
+  
+  # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
+  if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    # and keep only the non-hashed part, i.e. everything before .hlx_
+    set var.path = re.group.1;
+    set var.entry = re.group.1;
+    set var.esi = "&esi=true";
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "(normal)";
+    # TODO: check for URL ending with `/` and look up index file
+    set var.path = req.http.X-Orig-URL;
+    set var.entry = req.http.X-Orig-URL;
+    set var.esi = "";
+  }
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
   set req.http.X-Backend-URL = req.http.X-Action-Root
@@ -425,6 +502,7 @@ sub hlx_type_static {
     + "&ref=" + req.http.X-Github-Static-Ref
     + "&entry=" + var.entry
     + "&path=" + var.path
+    + var.esi
     # TODO: load magic flag
     + "&plain=true"
     + "&allow=" urlencode(req.http.X-Allow)
@@ -453,7 +531,53 @@ sub hlx_type_redirect {
 
 sub hlx_fetch_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
+  declare local var.ext STRING;
+
+  if (req.http.X-Request-Type == "Static-URL" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(url)";
+    # Get the ETag response header and use it to construct a stable URL
+    
+
+    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
+    set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".url$", var.ext);
+    error 303 "URL"; 
+  }
+  if (req.http.X-Request-Type == "Static-302" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(302)";
+    # Get the ETag response header and use it to construct a stable URL
+    
+
+    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
+    set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".302$", var.ext);
+    error 902 "302"; 
+  }
+  # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
+  if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+
+    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
+
+    if (re.group.2 == var.ext) {
+      set req.esi = true;
+      esi;
+      set beresp.http.X-ESI = "processed(" + bereq.http.Accept-Encoding + ", " + req.esi + "," + req.http.X-From-Edge +")";
+      set beresp.http.x-compress-hint = "on"; // so h2o compresses it on the way out
+      set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the browser;
+      set beresp.http.Surrogate-Control = "max-age=31622400,immutable";
+      set beresp.cacheable = true;
+      set beresp.ttl = 31622400s;
+    } else {
+      set beresp.ttl = 300s;
+      error 404 "Invalid";
+      set beresp.http.X-Trace = "etag=" + beresp.http.ETag + "; ext=" + var.ext;
+
+    }
+    return(deliver);
+  }
   if (beresp.http.X-Static == "Raw/Static") {
+    set req.http.X-Trace = req.http.X-Trace + "(raw)";
     if (beresp.status == 307) {
       # Keep the redirect around for a short bit, to prevent thundering herd
       set beresp.cacheable = true;
@@ -461,6 +585,7 @@ sub hlx_fetch_static {
     }
     return(deliver);
   } elsif (req.http.X-Request-Type == "Redirect" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(redirect)";
     // and this is where we fix the headers of the GitHub static response
     // so that they become digestible by a browser.
     // - recover Content-Type from X-Content-Type
@@ -472,9 +597,12 @@ sub hlx_fetch_static {
     unset beresp.http.X-XSS-Protection;
     unset beresp.http.Content-Security-Policy;
   } elsif (beresp.status == 404 || beresp.status == 204) {
+    set req.http.X-Trace = req.http.X-Trace + "(400)";
     # Cache for a short time, restart will get rid of it anyway
     set beresp.ttl = 60s;
     return(deliver);
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "(none)";
   }
 }
 
@@ -488,15 +616,19 @@ sub hlx_deliver_static {
       set req.http.X-Request-Type = "Redirect";
       set req.http.X-Backend-URL = re.group.1;
       set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
+      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
       restart;
     } else {
       set resp.status = 500;
       set resp.response = "Redirect to wrong hostname";
+      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
     }
   } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1) {
     # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
     set resp.status = 404;
+    
+    set req.http.X-Trace = req.http.X-Trace + "(404)";
 
     if (req.http.X-Request-Type == "Static") {
       set req.http.X-Request-Type = "Dynamic";
@@ -747,6 +879,10 @@ sub vcl_recv {
     call hlx_type_embed;
   } elseif (req.http.X-Request-Type == "Image") {
     call hlx_type_image;
+  } elseif (req.http.X-Request-Type == "Static-URL") {
+    call hlx_type_static_url;
+  } elseif (req.http.X-Request-Type == "Static-302") {
+    call hlx_type_static_url;
   } else {
     call hlx_type_pipeline;
   }
@@ -887,11 +1023,11 @@ sub vcl_fetch {
     }
   }
 
-  if ( req.http.x-esi ) {
+  call hlx_fetch_static;
+
+  if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
     esi;
   }
-
-  call hlx_fetch_static;
 
   return(deliver);
 }
@@ -930,15 +1066,14 @@ sub hlx_bereq {
     }
   }
 
-  # set backend authentication
+  
   if (req.backend == F_AdobeRuntime) {
+    # set backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
   }
 
   # making sure to get an uncompressed object for ESI
-  if ( req.url.ext == "html" ) {
-    unset bereq.http.Accept-Encoding;
-  }
+  unset bereq.http.Accept-Encoding;
 
   # Clean up all temporary request headers, since origins might be 3rd parties
   unset bereq.http.X-Orig-Url;
@@ -1030,6 +1165,8 @@ sub vcl_deliver {
     unset resp.http.X-Timer;
     unset resp.http.X-URL;
     unset resp.http.x-xss-protection;
+  } else {
+    set resp.http.X-Trace = req.http.X-Trace;
   }
   return(deliver);
 }
@@ -1042,6 +1179,21 @@ sub vcl_error {
     set obj.http.Content-Type = "text/html";
     set obj.http.Location = req.http.X-Location;
     synthetic "Moved permanently <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
+    return(deliver);
+  }
+  # synthetic response for Static-URL: creates a plain text response with the immutable URL
+  if (obj.status == 303 && req.http.X-Location) {
+    set obj.http.Content-Type = "text/plain";
+    set obj.status = 200;
+    synthetic req.http.X-Location;
+    return(deliver);
+  }
+  # synthetic response for Static-302: creates a redirect to the immutable URL
+  if (obj.status == 902 && req.http.X-Location) {
+    set obj.http.Content-Type = "text/html";
+    set obj.status = 302;
+    set obj.http.Location = req.http.X-Location;
+    synthetic "Found: <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
     return(deliver);
   }
   call hlx_error_errors;
