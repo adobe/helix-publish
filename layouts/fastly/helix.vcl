@@ -433,8 +433,8 @@ sub hlx_type_static_url {
   call hlx_github_static_root;
 
   # TODO: check for URL ending with `/` and look up index file
-  set var.path = regsub(req.http.X-Orig-URL, ".url$", "");
-  set var.entry = regsub(req.http.X-Orig-URL, ".url$", "");
+  set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
+  set var.entry = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
   set req.http.X-Backend-URL = req.http.X-Action-Root
@@ -449,7 +449,6 @@ sub hlx_type_static_url {
     + "&allow=" urlencode(req.http.X-Allow)
     + "&deny=" urlencode(req.http.X-Deny)
     + "&root=" + req.http.X-Github-Static-Root;
-    
 }
 
 /**
