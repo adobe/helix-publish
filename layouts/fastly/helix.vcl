@@ -1192,6 +1192,7 @@ sub vcl_error {
   if (obj.status == 902 && req.http.X-Location) {
     set obj.http.Content-Type = "text/html";
     set obj.status = 302;
+    set obj.location = req.http.X-Location;
     synthetic "Found: <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
     return(deliver);
   }
