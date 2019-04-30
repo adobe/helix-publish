@@ -362,9 +362,15 @@ sub hlx_headers_deliver {
 sub hlx_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_request_type";
 
-  if (req.http.X-Request-Type == "Static" && req.url.ext == "esi") {
-    set req.http.X-Trace = req.http.X-Trace + "(static-esi)";
-    set req.http.X-Request-Type = "Static-ESI";
+  if (req.http.X-Request-Type == "Static" && req.url.ext == "url") {
+    set req.http.X-Trace = req.http.X-Trace + "(static-url)";
+    set req.http.X-Request-Type = "Static-URL";
+    return;
+  }
+
+  if (req.http.X-Request-Type == "Static" && req.url.ext == "302") {
+    set req.http.X-Trace = req.http.X-Trace + "(static-302)";
+    set req.http.X-Request-Type = "Static-302";
     return;
   }
 
@@ -403,15 +409,14 @@ sub hlx_request_type {
 }
 
 /**
- * This subroutine implements static resource prefetching by calling raw.githubusercontent.com
- * to determine the ETag of the static file.
+ * This subroutine implements static resource prefetching by calling Adobe I/O Runtime
  * @header X-GitHub-Static-Owner  the owner or organization of the repo that contains the source files
  * @header X-GitHub-Static-Repo   the repository name of the repo containing the static files
  * @header X-GitHub-Static-Ref    the branch or tag (or commit) name to serve source files from
  * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
  */
-sub hlx_type_static_esi {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_esi";
+sub hlx_type_static_url {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_url";
 
   # get it from OpenWhisk
   set req.backend = F_AdobeRuntime;
@@ -428,8 +433,8 @@ sub hlx_type_static_esi {
   call hlx_github_static_root;
 
   # TODO: check for URL ending with `/` and look up index file
-  set var.path = regsub(req.http.X-Orig-URL, ".esi$", "");
-  set var.entry = regsub(req.http.X-Orig-URL, ".esi$", "");
+  set var.path = regsub(req.http.X-Orig-URL, ".url$", "");
+  set var.entry = regsub(req.http.X-Orig-URL, ".url$", "");
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
   set req.http.X-Backend-URL = req.http.X-Action-Root
@@ -529,15 +534,25 @@ sub hlx_fetch_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
   declare local var.ext STRING;
 
-  if (req.http.X-Request-Type == "Static-ESI" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(esi)";
+  if (req.http.X-Request-Type == "Static-URL" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(url)";
     # Get the ETag response header and use it to construct a stable URL
     
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
     set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
-    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".esi$", var.ext);
-    error 303 "ESI"; 
+    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".url$", var.ext);
+    error 303 "URL"; 
+  }
+  if (req.http.X-Request-Type == "Static-302" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(302)";
+    # Get the ETag response header and use it to construct a stable URL
+    
+
+    set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
+    set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    set req.http.X-Location = regsub(req.http.X-Orig-URL, ".302$", var.ext);
+    error 902 "302"; 
   }
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
@@ -865,8 +880,10 @@ sub vcl_recv {
     call hlx_type_embed;
   } elseif (req.http.X-Request-Type == "Image") {
     call hlx_type_image;
-  } elseif (req.http.X-Request-Type == "Static-ESI") {
-    call hlx_type_static_esi;
+  } elseif (req.http.X-Request-Type == "Static-URL") {
+    call hlx_type_static_url;
+  } elseif (req.http.X-Request-Type == "Static-302") {
+    call hlx_type_static_url;
   } else {
     call hlx_type_pipeline;
   }
@@ -1165,10 +1182,18 @@ sub vcl_error {
     synthetic "Moved permanently <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
     return(deliver);
   }
+  # synthetic response for Static-URL: creates a plain text response with the immutable URL
   if (obj.status == 303 && req.http.X-Location) {
     set obj.http.Content-Type = "text/plain";
     set obj.status = 200;
     synthetic req.http.X-Location;
+    return(deliver);
+  }
+  # synthetic response for Static-302: creates a redirect to the immutable URL
+  if (obj.status == 902 && req.http.X-Location) {
+    set obj.http.Content-Type = "text/html";
+    set obj.status = 302;
+    synthetic "Found: <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
     return(deliver);
   }
   call hlx_error_errors;
