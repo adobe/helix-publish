@@ -166,7 +166,13 @@ function shielding({ name }) {
 function reset(backends) {
   let retval = '# This file resets shielding for all known backends\n';
 
-  const backendresets = Object.values(backends).map(shielding);
+  const origins = {};
+  Object.values(backends).forEach(backend => {
+    origins[backend.name] = backend;
+  });
+
+
+  const backendresets = Object.values(origins).map(shielding);
 
   retval += backendresets.join('\n');
 

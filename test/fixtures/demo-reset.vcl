@@ -23,11 +23,3 @@ if (req.backend == F_Proxywwwadobeio3a0a && req.restarts == 0) {
     set req.backend = F_Proxywwwadobeio3a0a;
   }
 }
-if (req.backend == F_publish && req.restarts == 0) {
-  if (server.identity !~ "-IAD$" && req.http.Fastly-FF !~ "-IAD") {
-    set req.backend = ssl_shield_iad_va_us;
-  }
-  if (!req.backend.healthy) {
-    set req.backend = F_publish;
-  }
-}

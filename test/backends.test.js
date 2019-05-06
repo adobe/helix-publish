@@ -47,4 +47,22 @@ describe('Testing backends.js', () => {
     assert.ok(fastly.writeBackend.calledWith(1, 'Proxywwwadobeio3a0a'));
     assert.ok(fastly.writeBackend.calledWith(1, 'publish'));
   });
+
+  it('#updatestrains/demo', async () => {
+    const fastly = {
+      writeBackend: sinon.fake(),
+      writeVCL: sinon.fake(),
+    };
+
+    const config = await new HelixConfig()
+      .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
+      .init();
+
+    assert.ok(await updatestrains(fastly, 1, config.strains));
+    assert.ok(fastly.writeBackend.calledOnce);
+
+    assert.ok(fastly.writeVCL.calledOnce);
+
+    assert.ok(fastly.writeBackend.calledWith(1, 'Proxywwwadobeio3a0a'));
+  });
 });
