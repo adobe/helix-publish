@@ -40,7 +40,7 @@ describe('Testing backends.js', () => {
       .init();
 
     assert.ok(await updatestrains(fastly, 1, config.strains));
-    assert.ok(fastly.writeBackend.calledTwice);
+    assert.ok(fastly.writeBackend.calledThrice);
 
     assert.ok(fastly.writeVCL.calledOnce);
 
