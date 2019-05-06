@@ -72,3 +72,7 @@ strains:
       address: 192.168.0.1
       name: publish
       use_ssl: false
+
+  proxy-path:
+    origin: https://www.adobe.io/newdir
+    url: https://developer.adobe.com/olddir

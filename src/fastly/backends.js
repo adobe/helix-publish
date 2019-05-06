@@ -57,16 +57,19 @@ async function updatestrains(fastly, version, strains) {
   // filter out all proxy strains
   const proxystrains = strains.getProxyStrains();
   // create a new backend or update and existing one for each origin defined
-  const origins = proxystrains.map(proxystrain => proxystrain.origin);
-  const updateorigins = origins.map(origin => fastly.writeBackend(
+  const origins = {};
+  proxystrains.forEach((proxystrain) => {
+    origins[proxystrain.origin.name] = proxystrain.origin;
+  });
+  const updateorigins = Object.values(origins).map(origin => fastly.writeBackend(
     version,
     origin.name,
-    origin.toJSON(),
+    origin.toFastlyJSON(),
   ));
 
   return Promise.all([
     ...updateorigins,
-    writevcl(fastly, version, reset([...Object.values(backends), ...origins]), 'reset.vcl')]);
+    writevcl(fastly, version, reset([...Object.values(backends), ...Object.values(origins)]), 'reset.vcl')]);
 }
 
 module.exports = {

@@ -65,11 +65,28 @@ function proxy([strain, vcl]) {
 # Enable passing through of requests
 
 set req.http.X-Proxy = "${strain.origin.useSSL ? 'https' : 'http'}://${strain.origin.address}:${strain.origin.port}/";
+set req.http.X-Proxy-Root = "${strain.origin.path}";
 set req.http.X-Request-Type = "Proxy";
 
 set req.backend = F_${strain.origin.name};
 set req.http.host = "${strain.origin.hostname}";
 `);
+    return [strain, Object.assign(vcl, { body })];
+  }
+  return [strain, vcl];
+}
+
+function proxyurls([strain, vcl]) {
+  const uri = URI.parse(strain.url ? strain.url : '/');
+  const oldpath = uri.path ? uri.path : '/';
+
+  const newpath = (strain.origin && strain.origin.path) ? strain.origin.path : '/';
+
+  if (oldpath !== '/' || newpath !== '/') {
+    const body = vclbody(vcl.body);
+
+    body.push(`# Rewrite the URL to include the proxy path
+set req.url = regsub(req.url, "^${oldpath}", "${newpath}");`);
     return [strain, Object.assign(vcl, { body })];
   }
   return [strain, vcl];
@@ -108,6 +125,7 @@ function resolve(mystrains) {
     .map(strain => [strain, { body: vclbody() }])
     .map(conditions)
     .map(proxy)
+    .map(proxyurls)
     .map(stickybody)
     .map(namebody)
     .filter(([strain, vcl]) => strain.condition || vcl.condition)
@@ -148,7 +166,13 @@ function shielding({ name }) {
 function reset(backends) {
   let retval = '# This file resets shielding for all known backends\n';
 
-  const backendresets = Object.values(backends).map(shielding);
+  const origins = {};
+  Object.values(backends).forEach((backend) => {
+    origins[backend.name] = backend;
+  });
+
+
+  const backendresets = Object.values(origins).map(shielding);
 
   retval += backendresets.join('\n');
 
