@@ -64,7 +64,7 @@ async function updatestrains(fastly, version, strains) {
   const updateorigins = Object.values(origins).map(origin => fastly.writeBackend(
     version,
     origin.name,
-    origin.toJSON(),
+    origin.toFastlyJSON(),
   ));
 
   return Promise.all([
