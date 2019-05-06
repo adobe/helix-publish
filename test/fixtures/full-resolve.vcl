@@ -14,7 +14,7 @@ if (req.http.Host == "client.project-helix.io") {
   set req.http.X-Proxy-Root = "/";
   set req.http.X-Request-Type = "Proxy";
   
-  set req.backend = F_Proxywwwadobeio861b;
+  set req.backend = F_Proxywwwadobeio3a0a;
   set req.http.host = "www.adobe.io";
   
   set req.http.X-Sticky = "true";
@@ -42,7 +42,7 @@ if (req.http.Host == "client.project-helix.io") {
   set req.http.X-Proxy-Root = "/newdir";
   set req.http.X-Request-Type = "Proxy";
   
-  set req.backend = F_Proxywwwadobeio6fab;
+  set req.backend = F_Proxywwwadobeio3a0a;
   set req.http.host = "www.adobe.io";
   
   # Rewrite the URL to include the proxy path

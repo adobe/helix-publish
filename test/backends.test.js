@@ -40,11 +40,11 @@ describe('Testing backends.js', () => {
       .init();
 
     assert.ok(await updatestrains(fastly, 1, config.strains));
-    assert.ok(fastly.writeBackend.calledThrice);
+    assert.ok(fastly.writeBackend.calledTwice);
 
     assert.ok(fastly.writeVCL.calledOnce);
 
-    assert.ok(fastly.writeBackend.calledWith(1, 'Proxywwwadobeio861b'));
+    assert.ok(fastly.writeBackend.calledWith(1, 'Proxywwwadobeio3a0a'));
     assert.ok(fastly.writeBackend.calledWith(1, 'publish'));
   });
 });
