@@ -50,7 +50,7 @@ Contributions are highly welcome.
 
 ## Deploying Helix Publish
 
-Deploying Helix Logging requires the `wsk` command line client, authenticated to a namespace of your choice. For Project Helix, we use the `helix` namespace.
+Deploying Helix Publish requires the `wsk` command line client, authenticated to a namespace of your choice. For Project Helix, we use the `helix` namespace.
 
 Run `npm run deploy` to do a one-shot deploment of Helix Publish. All commits to master that pass the testing will be deployed automatically.
 
