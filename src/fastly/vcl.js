@@ -10,7 +10,10 @@
  * governing permissions and limitations under the License.
  */
 const path = require('path');
-const include = require('./include-util');
+const {
+  include,
+  synthetize,
+} = require('./include-util');
 const {
   resolve,
   parameters,
@@ -26,9 +29,15 @@ async function init(fastly, version) {
   return fastly.setMainVCL(version, 'helix.vcl');
 }
 
-async function extensions(fastly, version) {
+async function extensions(fastly, version, vclOverride = {}) {
   const vclfile = path.resolve(__dirname, '../../layouts/fastly/extensions.vcl');
-  const content = include(vclfile);
+  let content;
+  if (vclOverride.extensions) {
+    // found a extensions.vcl override
+    content = synthetize(vclOverride.extensions, path.dirname(vclfile));
+  } else {
+    content = include(vclfile);
+  }
   return writevcl(fastly, version, content, 'extensions.vcl');
 }
 
