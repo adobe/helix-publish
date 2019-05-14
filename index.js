@@ -32,7 +32,6 @@ async function main(params) {
     params.service,
     params.token,
     params.version,
-    params.vcl,
   );
 
   return result;

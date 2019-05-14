@@ -36,6 +36,8 @@
 # When forwarding the request from edge POP to shield POP, the original URL and
 # original domain name will be used.
 
+# VCL extension points
+include "extensions.vcl";
 
 /**
  * Check the `X-From-Edge` header, which allows us to determine whether
@@ -895,9 +897,6 @@ sub vcl_recv {
 
   # re-enable shielding for changed backends
   # include "reset.vcl";
-
-  # VCL extension points
-  include "extensions.vcl";
 
   # We only handle GET and HEAD requests, but Proxy strains might
   if (req.request != "HEAD" && req.request != "GET" && req.request != "FASTLYPURGE") {
