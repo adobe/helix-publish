@@ -32,7 +32,7 @@ describe('Testing vcl.js', () => {
 
   it('#extensions', async () => {
     const fastly = {
-      writeVCL: sinon.fake.returns({})
+      writeVCL: sinon.fake.returns({}),
     };
 
     assert.ok(await extensions(fastly, 1));
