@@ -212,7 +212,31 @@ sub hlx_owner {
 
   if (req.http.host ~ "project-helix.dev$") {
     # For helix pages we calculate the repo to use based on the url
-    set req.http.X-Owner = regsub(regsub(req.http.host, "\..*$", ""), "^.*-", "");
+    # unfortunately this relies on some overly clever string substitution
+    # Note: This is carefully designed to produce the following outputs:
+    # "helix-pages.dev" -> ""
+    #   So no one can put something on the top level domain by having the github
+    #   repo pages/helix
+    # "foo.helix-pages.dev" -> "foo"
+    #   So we can have default/user wide helix pages repos
+    # "foo-bar.helix-pages.dev" -> "bar"
+    #   Default branch and explicit repo
+    # "foo-bar-baz.helix-pages.dev" -> "baz"
+    #   Explicit branch and explicit repo
+    # "foo--bar-baz--bang-a--b--c.helix-pages.dev" -> "a-b-c"
+    #   Dashes can be escaped
+    # "foo.bar-baz.bang" –> "foo"
+    #   Helix pages domain can be changed
+    declare local var.tmp STRING;
+    # First we extract the lowest level domain (third level should be)
+    set var.tmp = regsub(req.http.host, "\.?[^\.]*\.[^\.]*$", "");
+    # Now we substitute all escaped dashes (double dashes) with dots, so we can recover them later.
+    # Dots are guaranteed to be unused because they are used to separate domains...
+    set var.tmp = regsuball(var.tmp, "--", ".");
+    # Strip all but the last dash separated component in the url (this works due to regexp greediness)
+    set var.tmp = regsub(var.tmp, "^.*-", "");
+    # Recover escaped dashes and unescape
+    set req.http.X-Owner = regsuball(var.tmp, "\.", "-");
   } else {
     set req.http.X-Owner = table.lookup(strain_owners, req.http.X-Strain);
     if (!req.http.X-Owner) {
@@ -236,7 +260,36 @@ sub hlx_repo {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_repo";
 
   if (req.http.host ~ "project-helix.dev$") {
-    set req.http.X-Repo = regsub(regsub(req.http.host, "\..*$", ""), "-[^-]*$", "");set req.http.X-Repo = regsub(regsub(req.http.host, "\..*$", ""), "-[^-]*$", "");
+    # For helix pages we calculate the repo to use based on the url
+    # unfortunately this relies on some overly clever string substitution
+    # Note: This is carefully designed to produce the following outputs:
+    # "helix-pages.dev" -> "helix-page"
+    #   So no one can put something on the top level domain by having the github
+    #   repo pages/helix
+    # "foo.helix-pages.dev" -> "helix-page"
+    #   So we can have default/user wide helix pages repos
+    # "foo-bar.helix-pages.dev" -> "foo"
+    #   Default branch and explicit repo
+    # "foo-bar-baz.helix-pages.dev" -> "bar"
+    #   Explicit branch and explicit repo
+    # "foo--bar-baz--bang-a--b--c.helix-pages.dev" -> "baz-bang"
+    #   Dashes can be escaped
+    # "foo-bar.bar-baz.bang" –> "foo"
+    #   Helix pages domain can be changed
+    declare local var.tmp STRING;
+    # First we extract the lowest level domain (third level should be)
+    set var.tmp = regsub(req.http.host, "\.?[^\.]*\.[^\.]*$", "");
+    # Now we substitute all escaped dashes (double dashes) with dots, so we can recover them later.
+    # Dots are guaranteed to be unused because they are used to separate domains...
+    set var.tmp = regsuball(var.tmp, "--", ".");
+    # Strip the very last dash separated element, yielding "branch-repo" or "repo" or ""
+    set var.tmp = regsub(var.tmp, "-?[^-]*$", "");
+    # Strip all but the last dash separated component in the url (this works due to regexp greediness)
+    set var.tmp = regsub(var.tmp, "^.*-", "");
+    # Recover escaped dashes and unescape
+    set var.tmp = regsuball(var.tmp, "\.", "-");
+    # Set a "helix-page" as the default repository
+    set req.http.X-Repo = regsub(var.tmp, "^$", "helix-page");
   } else {
     set req.http.X-Repo = table.lookup(strain_repos, req.http.X-Strain);
     if (!req.http.X-Repo) {
@@ -248,20 +301,59 @@ sub hlx_repo {
 # Gets the content ref
 sub hlx_ref {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_ref";
-  set req.http.X-Ref = table.lookup(strain_refs, req.http.X-Strain);
-  # fall back to default strain
-  if (!req.http.X-Ref) {
-    set req.http.X-Ref = table.lookup(strain_refs, "default");
-  }
-  # if default isn't set, use 'master'
-  if (!req.http.X-Ref) {
-    set req.http.X-Ref = "master";
+  if (req.http.host ~ "project-helix.dev$") {
+    # For helix pages we calculate the repo to use based on the url
+    # unfortunately this relies on some overly clever string substitution
+    # Note: This is carefully designed to produce the following outputs:
+    # "helix-pages.dev" -> "master"
+    #   So no one can put something on the top level domain by having the github
+    #   repo pages/helix
+    # "foo.helix-pages.dev" -> "master"
+    #   So we can have default/user wide helix pages repos
+    # "foo-bar.helix-pages.dev" -> "master"
+    #   Default branch and explicit repo
+    # "foo-bar-baz.helix-pages.dev" -> "foo"
+    #   Explicit branch and explicit repo
+    # "foo--bar-baz--bang-a--b--c.helix-pages.dev" -> "foo-bar"
+    #   Dashes can be escaped
+    # "foo-bar-baz.bar-baz.bang" –> "foo"
+    #   Helix pages domain can be changed
+    declare local var.tmp STRING;
+    # First we extract the lowest level domain (third level should be)
+    set var.tmp = regsub(req.http.host, "\.?[^\.]*\.[^\.]*$", "");
+    # Now we substitute all escaped dashes (double dashes) with dots, so we can recover them later.
+    # Dots are guaranteed to be unused because they are used to separate domains...
+    set var.tmp = regsuball(var.tmp, "--", ".");
+    # Strip the very last dash separated element, yielding "branch-repo" or "repo" or ""
+    set var.tmp = regsub(var.tmp, "-?[^-]*$", "");
+    # Strip the very last dash separated element, yielding "branch-repo" or "repo" or ""
+    set var.tmp = regsub(var.tmp, "-?[^-]*$", "");
+    # Strip all but the last dash separated component in the url (this works due to regexp greediness)
+    # This is not technically necessary for any permitted inputs, but it does make sure
+    # we ignore invalid fourth elements
+    set var.tmp = regsub(var.tmp, "^.*-", "");
+    # Recover escaped dashes and unescape
+    set var.tmp = regsuball(var.tmp, "\.", "-");
+    # Set the default branch
+    set req.http.X-Ref = regsuball(var.tmp, "^$", "master");
+  } else {
+    set req.http.X-Ref = table.lookup(strain_refs, req.http.X-Strain);
+    # fall back to default strain
+    if (!req.http.X-Ref) {
+      set req.http.X-Ref = table.lookup(strain_refs, "default");
+    }
+    # if default isn't set, use 'master'
+    if (!req.http.X-Ref) {
+      set req.http.X-Ref = "master";
+    }
   }
 }
 
 # Gets the content path root
 sub hlx_root_path {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_root_path";
+
+
   set req.http.X-Repo-Root-Path = table.lookup(strain_root_paths, req.http.X-Strain);
   if (!req.http.X-Repo-Root-Path) {
     set req.http.X-Repo-Root-Path = table.lookup(strain_root_paths, "default");
@@ -323,9 +415,13 @@ sub hlx_github_static_root {
 # Gets the github static ref
 sub hlx_github_static_ref {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_ref";
-  set req.http.X-Github-Static-Ref = table.lookup(strain_github_static_refs, req.http.X-Strain);
-  if (!req.http.X-Github-Static-Ref) {
-    set req.http.X-Github-Static-Ref = table.lookup(strain_github_static_refs, "default");
+  if (req.http.host ~ "project-helix.dev$") {
+    set req.http.X-Github-Static-Ref = req.http.X-Ref;
+  } else {
+    set req.http.X-Github-Static-Ref = table.lookup(strain_github_static_refs, req.http.X-Strain);
+    if (!req.http.X-Github-Static-Ref) {
+      set req.http.X-Github-Static-Ref = table.lookup(strain_github_static_refs, "default");
+    }
   }
 }
 
