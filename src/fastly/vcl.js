@@ -26,6 +26,12 @@ async function init(fastly, version) {
   return fastly.setMainVCL(version, 'helix.vcl');
 }
 
+async function extensions(fastly, version) {
+  const vclfile = path.resolve(__dirname, '../../layouts/fastly/extensions.vcl');
+  const content = include(vclfile);
+  return writevcl(fastly, version, content, 'extensions.vcl');
+}
+
 function updatestrains(fastly, version, strains) {
   return Promise.all([
     writevcl(fastly, version, resolve(strains), 'strains.vcl'),
@@ -37,4 +43,5 @@ function updatestrains(fastly, version, strains) {
 module.exports = {
   init,
   updatestrains,
+  extensions,
 };
