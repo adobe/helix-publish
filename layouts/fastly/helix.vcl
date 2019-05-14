@@ -210,9 +210,14 @@ sub hlx_block_recv {
 sub hlx_owner {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_owner";
 
-  set req.http.X-Owner = table.lookup(strain_owners, req.http.X-Strain);
-  if (!req.http.X-Owner) {
-    set req.http.X-Owner = table.lookup(strain_owners, "default");
+  if (req.http.host ~ "project-helix.dev$") {
+    # For helix pages we calculate the repo to use based on the url
+    set req.http.X-Owner = regsub(regsub(req.http.host, "\..*$", ""), "^.*-", "");
+  } else {
+    set req.http.X-Owner = table.lookup(strain_owners, req.http.X-Strain);
+    if (!req.http.X-Owner) {
+      set req.http.X-Owner = table.lookup(strain_owners, "default");
+    }
   }
 }
 
@@ -229,9 +234,14 @@ sub hlx_index {
 # Gets the content repo
 sub hlx_repo {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_repo";
-  set req.http.X-Repo = table.lookup(strain_repos, req.http.X-Strain);
-  if (!req.http.X-Repo) {
-    set req.http.X-Repo = table.lookup(strain_repos, "default");
+
+  if (req.http.host ~ "project-helix.dev$") {
+    set req.http.X-Repo = regsub(regsub(req.http.host, "\..*$", ""), "-[^-]*$", "");set req.http.X-Repo = regsub(regsub(req.http.host, "\..*$", ""), "-[^-]*$", "");
+  } else {
+    set req.http.X-Repo = table.lookup(strain_repos, req.http.X-Strain);
+    if (!req.http.X-Repo) {
+      set req.http.X-Repo = table.lookup(strain_repos, "default");
+    }
   }
 }
 
@@ -273,18 +283,27 @@ sub hlx_action_root {
 # Gets the github static repo
 sub hlx_github_static_repo {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_repo";
-  set req.http.X-Github-Static-Repo = table.lookup(strain_github_static_repos, req.http.X-Strain);
-  if (!req.http.X-Github-Static-Repo) {
-    set req.http.X-Github-Static-Repo = table.lookup(strain_github_static_repos, "default");
+  if (req.http.host ~ "project-helix.dev$") {
+    set req.http.X-Github-Static-Repo = req.http.X-Repo;
+  } else {
+    set req.http.X-Github-Static-Repo = table.lookup(strain_github_static_repos, req.http.X-Strain);
+    if (!req.http.X-Github-Static-Repo) {
+      set req.http.X-Github-Static-Repo = table.lookup(strain_github_static_repos, "default");
+    }
   }
 }
 
 # Gets the github static owner
 sub hlx_github_static_owner {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_owner";
-  set req.http.X-Github-Static-Owner = table.lookup(strain_github_static_owners, req.http.X-Strain);
-  if (!req.http.X-Github-Static-Owner) {
-    set req.http.X-Github-Static-Owner = table.lookup(strain_github_static_owners, "default");
+  if (req.http.host ~ "project-helix.dev$") {
+    set req.http.X-Github-Static-Owner = req.http.X-Owner;
+  } else {
+      # For helix pages we calculate the repo to use based on the url
+    set req.http.X-Github-Static-Owner = table.lookup(strain_github_static_owners, req.http.X-Strain);
+    if (!req.http.X-Github-Static-Owner) {
+      set req.http.X-Github-Static-Owner = table.lookup(strain_github_static_owners, "default");
+    }
   }
 }
 
@@ -978,6 +997,12 @@ sub vcl_fetch {
   unset beresp.http.Set-Cookie;
   unset beresp.http.Vary;
   unset beresp.http.Expires;
+
+
+  if (req.http.host ~ "project-helix.dev$") {
+    set beresp.http.Surrogate-Key = req.http.X-Owner + "/" + req.http.X-Repo;
+    set beresp.http.X-Surrogate-Key = req.http.X-Owner + "/" + req.http.X-Repo;
+  }
 
   # We Vary on X-Debug, so that it's automatically a cache-miss, and we go to
   # origin. Origin will raise the log level for such requests too. So all roung
