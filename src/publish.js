@@ -36,6 +36,7 @@ async function publish(configuration, service, token, version) {
       backends.init(fastly, version),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version),
+      vcl.extensions(fastly, version),
       vcl.updatestrains(fastly, version, config.strains),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
