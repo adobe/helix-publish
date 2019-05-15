@@ -41,6 +41,7 @@ Send a POST request with following (`Content-Type: application/json`-encoded) bo
 * `service`: the service ID of your Fastly service config
 * `token`: a Fastly authentication token that has `global` permission on the service config
 * `version`: the version number of a checked-out (editable) version of the above service config
+* `vcl`: an object containing the name of the vcl file (key) to override and its content. For now, only `extensions.vcl` override is supported
 
 ## Developing Helix Publish
 
@@ -75,4 +76,3 @@ CircleCI will deploy successful builds (passing all tests) to publish https://ad
 Deploying Helix Publish requires the `wsk` command line client, authenticated to a namespace of your choice. For Project Helix, we use the `helix` namespace.
 
 Run `npm run deploy` to do a one-shot deploment of Helix Publish. All commits to master that pass the testing will be deployed automatically.
-

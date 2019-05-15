@@ -13,7 +13,7 @@
 const fs = require('fs-extra');
 const assert = require('assert');
 const path = require('path');
-const include = require('../src/fastly/include-util');
+const { include, synthetize } = require('../src/fastly/include-util');
 
 describe('Testing include-util.js', () => {
   ['simple'].forEach((f) => {
@@ -21,6 +21,16 @@ describe('Testing include-util.js', () => {
       const res = include(path.resolve(__dirname, `fixtures/include-${f}.vcl`));
       const expect = fs.readFileSync(path.resolve(__dirname, `fixtures/include-${f}-resolved.vcl`)).toString();
       assert.equal(res, expect);
+    });
+
+    it('#synthetize', () => {
+      const res = synthetize('some content', '');
+      assert.equal(res, 'some content');
+    });
+
+    it('#synthetize', () => {
+      const res = synthetize('some content with an include\nsynthetic {"include:include.html"};\n', path.resolve(__dirname, 'fixtures'));
+      assert.equal(res, 'some content with an include\nsynthetic {"<html lang="en_US">\n  Haha!\n</html>"};\n');
     });
   });
 });

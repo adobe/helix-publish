@@ -13,11 +13,18 @@
 const fs = require('fs-extra');
 const path = require('path');
 
-module.exports = function include(srcfile) {
-  return fs.readFileSync(srcfile).toString().replace(/(synthetic \{"include:.*"\};)/g, (m) => {
+function synthetize(content, filePath) {
+  return content.replace(/(synthetic \{"include:.*"\};)/g, (m) => {
     const ref = m.replace(/^synthetic \{"include:/, '').replace(/"};$/, '');
-    const name = path.resolve(path.dirname(srcfile), ref);
-    const content = fs.readFileSync(name).toString();
-    return `synthetic {"${content}"};`;
+    const name = path.resolve(filePath, ref);
+    const c = fs.readFileSync(name).toString();
+    return `synthetic {"${c}"};`;
   });
-};
+}
+
+function include(srcfile) {
+  return synthetize(fs.readFileSync(srcfile).toString(), path.dirname(srcfile));
+}
+
+module.exports.include = include;
+module.exports.synthetize = synthetize;

@@ -10,10 +10,6 @@
 # governing permissions and limitations under the License.
 #
 
-sub hlx_type_pipeline_before {
+sub hlx_type_pipeline_before {}
 
-}
-
-sub hlx_type_pipeline_after {
-    
-}
+sub hlx_type_pipeline_after {}

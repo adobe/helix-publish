@@ -17,7 +17,7 @@ const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 
-async function publish(configuration, service, token, version) {
+async function publish(configuration, service, token, version, vclOverrides = {}) {
   if (!(!!token && !!service)) {
     return {
       body: {
@@ -36,7 +36,7 @@ async function publish(configuration, service, token, version) {
       backends.init(fastly, version),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version),
-      vcl.extensions(fastly, version),
+      vcl.extensions(fastly, version, vclOverrides),
       vcl.updatestrains(fastly, version, config.strains),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
