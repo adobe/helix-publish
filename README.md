@@ -47,7 +47,29 @@ Send a POST request with following (`Content-Type: application/json`-encoded) bo
 
 You need `node>=8.0.0` and `npm>=5.4.0`. Follow the typical `npm install`, `npm test` workflow.
 
-Contributions are highly welcome.
+### Basic Unit Testing
+
+When you run `npm test`, some integration tests that require Fastly credentials will be skipped. This means, you won't get full test coverage, which is not an issue, as the credentials will be used in integration tests running on CircleCI.
+
+### Basic Integration Testing
+
+If you set up a Fastly service configuration and set the `HLX_FASTLY_NAMESPACE`, `HLX_FASTLY_AUTH`, and `VERSION_NUM` environment variables, then re-running `npm test` will also include the integration tests and achieve full code coverage. Note that these integration tests override your existing Fastly service configuration and should not be run against a production service config.
+
+### Local Troubleshooting
+
+If you are having trouble with specific configurations and set-ups, it is possible to intercept the `hlx publish` API call with a developer proxy like [Charles](https://www.charlesproxy.com). To do so, run 
+
+```bash
+NODE_TLS_REJECT_UNAUTHORIZED=0  HTTPS_PROXY=http://localhost:4321 hlx publish
+```
+
+and save the JSON body of the first `POST` request made to publish `https://adobeioruntime.net/api/v1/web/helix/default/publish` in the `test/troubleshoot` directory. Re-running `npm test` will now pick up your JSON and use it for an integration test, giving you the ability to debug and step through the execution.
+
+### Remote Testing
+
+CircleCI will deploy successful builds (passing all tests) to publish https://adobeioruntime.net/api/v1/web/helix/default/publish-test. You can run `hlx publish --api-publish publish https://adobeioruntime.net/api/v1/web/helix/default/publish-test` to force Helix to use this alternate deployment during the publish process (you can also deploy `helix-publish` to your own namespace and test it there).
+
+[Contributions](CONTRIBUTING.md) are highly welcome.
 
 ## Deploying Helix Publish
 
