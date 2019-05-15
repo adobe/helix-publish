@@ -11,5 +11,13 @@
 #
 
 sub hlx_type_pipeline_before {}
-
 sub hlx_type_pipeline_after {}
+
+sub hlx_owner_before {}
+sub hlx_owner_after {}
+
+sub hlx_repo_before {}
+sub hlx_repo_after {}
+
+sub hlx_ref_before {}
+sub hlx_ref_after {}
