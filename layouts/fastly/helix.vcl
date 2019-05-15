@@ -210,7 +210,9 @@ sub hlx_block_recv {
 sub hlx_owner {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_owner";
 
-  if (req.http.host ~ "project-helix.dev$") {
+  if (req.http.X-Helix-Pages-State == "Fallback") {
+    set req.http.X-Owner = "adobe";
+  } elsif (req.http.host ~ "project-helix.dev$") {
     # For helix pages we calculate the repo to use based on the url
     # unfortunately this relies on some overly clever string substitution
     # Note: This is carefully designed to produce the following outputs:
@@ -259,7 +261,9 @@ sub hlx_index {
 sub hlx_repo {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_repo";
 
-  if (req.http.host ~ "project-helix.dev$") {
+  if (req.http.X-Helix-Pages-State == "Fallback") {
+    set req.http.X-Repo = "helix-central-deploy-action";
+  } elsif (req.http.host ~ "project-helix.dev$") {
     # For helix pages we calculate the repo to use based on the url
     # unfortunately this relies on some overly clever string substitution
     # Note: This is carefully designed to produce the following outputs:
@@ -301,7 +305,10 @@ sub hlx_repo {
 # Gets the content ref
 sub hlx_ref {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_ref";
-  if (req.http.host ~ "project-helix.dev$") {
+
+  if (req.http.X-Helix-Pages-State == "Fallback") {
+    set req.http.X-Ref = "master";
+  } elsif (req.http.host ~ "project-helix.dev$") {
     # For helix pages we calculate the repo to use based on the url
     # unfortunately this relies on some overly clever string substitution
     # Note: This is carefully designed to produce the following outputs:
@@ -402,7 +409,12 @@ sub hlx_github_static_owner {
 # Gets the github static root
 sub hlx_github_static_root {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_root";
-  set req.http.X-Github-Static-Root = table.lookup(strain_github_static_root, req.http.X-Strain);
+
+  if (req.http.host ~ "project-helix.dev$") {
+    set req.http.X-Github-Static-Root = "/";
+  } else {
+    set req.http.X-Github-Static-Root = table.lookup(strain_github_static_root, req.http.X-Strain);
+  }
   if (!req.http.X-Github-Static-Root) {
     set req.http.X-Github-Static-Root = table.lookup(strain_github_static_root, "default");
   }
@@ -723,6 +735,7 @@ sub hlx_fetch_static {
 
 sub hlx_deliver_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
+  set req.http.X-Trace = req.http.X-Trace + "; FNOOOORD";
   if (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
     # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
     # clustering. Changes made to most `req` variables don't make it back to
@@ -738,10 +751,11 @@ sub hlx_deliver_static {
       set resp.response = "Redirect to wrong hostname";
       set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
     }
-  } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1 && req.http.X-Request-Type != "Proxy") {
+  } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.http.X-Restarted != "true" && req.http.X-Request-Type != "Proxy") {
     # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
     set resp.status = 404;
+    set req.http.X-Restarted = "true";
     
     set req.http.X-Trace = req.http.X-Trace + "(404)";
 
@@ -750,6 +764,15 @@ sub hlx_deliver_static {
     } else {
       set req.http.X-Request-Type = "Static";
     }
+    restart;
+
+  # For helix pages: Fall back to the default repository on 404 so we can provide
+  # defaults for style.css/index.md/...
+  } elsif (req.http.host ~ "project-helix.dev$" && resp.status == 404 && req.http.X-Helix-Pages-State != "Fallback") {
+    set req.http.X-Trace = req.http.X-Trace + "; restart due to helix pages";
+    set req.http.X-Helix-Pages-State = "Fallback";
+    set req.http.X-Restarted = "false";
+    set req.http.X-Request-Type = "Dynamic";
     restart;
   }
 }
