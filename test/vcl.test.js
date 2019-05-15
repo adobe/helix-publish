@@ -40,6 +40,33 @@ describe('Testing vcl.js', () => {
     assert.ok(fastly.writeVCL.calledWith(1, 'extensions.vcl'));
   });
 
+  it('#extensions - valid override', async () => {
+    const fastly = {
+      writeVCL: sinon.fake.returns({}),
+    };
+
+    assert.ok(await extensions(fastly, 1, { extensions: 'custom extension' }));
+    assert.ok(fastly.writeVCL.calledOnce);
+    assert.ok(fastly.writeVCL.calledWith(1, 'extensions.vcl', sinon.match({
+      content: 'custom extension',
+      name: 'extensions.vcl',
+    })));
+  });
+
+  it('#extensions - unknown override', async () => {
+    const fastly = {
+      writeVCL: sinon.fake.returns({}),
+    };
+
+    assert.ok(await extensions(fastly, 1, { unknown: 'custom extension' }));
+    assert.ok(fastly.writeVCL.calledOnce);
+    assert.ok(fastly.writeVCL.calledWith(
+      1,
+      'extensions.vcl',
+      sinon.match(arg => arg.content !== 'custom extension' && arg.name === 'extensions.vcl'),
+    ));
+  });
+
   it('#updatestrains/full', async () => {
     const fastly = {
       writeVCL: sinon.fake(),
