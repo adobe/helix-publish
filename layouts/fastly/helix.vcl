@@ -36,6 +36,8 @@
 # When forwarding the request from edge POP to shield POP, the original URL and
 # original domain name will be used.
 
+# VCL extension points
+include "extensions.vcl";
 
 /**
  * Check the `X-From-Edge` header, which allows us to determine whether
@@ -702,6 +704,8 @@ sub hlx_type_image {
  * Handles requests for the main Helix rendering pipeline.
  */
 sub hlx_type_pipeline {
+  call hlx_type_pipeline_before;
+
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_pipeline";
   # This is a dynamic request.
 
@@ -787,7 +791,8 @@ sub hlx_type_pipeline {
     set req.http.X-Backend-URL = req.http.X-Backend-URL
       + "&params=" + req.http.X-Encoded-Params;
   }
-    
+
+  call hlx_type_pipeline_after;
 }
 
 /**
