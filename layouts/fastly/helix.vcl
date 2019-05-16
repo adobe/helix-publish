@@ -210,12 +210,16 @@ sub hlx_block_recv {
 
 # Gets the content owner for the current strain and sets the X-Owner header
 sub hlx_owner {
+  call hlx_owner_before;
+
   set req.http.X-Trace = req.http.X-Trace + "; hlx_owner";
 
   set req.http.X-Owner = table.lookup(strain_owners, req.http.X-Strain);
   if (!req.http.X-Owner) {
     set req.http.X-Owner = table.lookup(strain_owners, "default");
   }
+
+  call hlx_owner_after;
 }
 
 # Gets the directory index for the current strain
@@ -230,15 +234,21 @@ sub hlx_index {
 
 # Gets the content repo
 sub hlx_repo {
+  call hlx_repo_before;
+
   set req.http.X-Trace = req.http.X-Trace + "; hlx_repo";
   set req.http.X-Repo = table.lookup(strain_repos, req.http.X-Strain);
   if (!req.http.X-Repo) {
     set req.http.X-Repo = table.lookup(strain_repos, "default");
   }
+
+  call hlx_repo_after;
 }
 
 # Gets the content ref
 sub hlx_ref {
+  call hlx_ref_before;
+
   set req.http.X-Trace = req.http.X-Trace + "; hlx_ref";
   set req.http.X-Ref = table.lookup(strain_refs, req.http.X-Strain);
   # fall back to default strain
@@ -249,6 +259,8 @@ sub hlx_ref {
   if (!req.http.X-Ref) {
     set req.http.X-Ref = "master";
   }
+
+  call hlx_ref_after;
 }
 
 # Gets the content path root
