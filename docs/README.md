@@ -10,11 +10,11 @@
 
 VCL is a domain specific language for specifying a state machine for HTTP request and response processing. The processing flow is shown in the diagram below (adapted from [Varnish Docs](https://github.com/jensens/varnish-docs/blob/master/varnish-vcl-flow.svg)).
 
-![Complete VCL Flow](docs/Complete VCL Flow.svg)
+![Complete VCL Flow](./vcl/Complete%20VCL%20Flow.svg)
 
 A simplified view (adapted from the [Varnish Book](https://book.varnish-software.com/3.0/VCL_Basics.html#vcl-request-flow)) can be seen below.
 
-![Core VCL Flow](docs/Core VCL Flow.svg)
+![Core VCL Flow](./vcl/Core%20VCL%20Flow.svg)
 
 The Helix Flow leverages the basic capabilities of the VCL state engine and implements multiple request types:
 
@@ -27,4 +27,4 @@ The Helix Flow leverages the basic capabilities of the VCL state engine and impl
 - `proxy` is for proxy strains and simply passes through the response of another origin server
 - `embed` calls the [Helix Embed](https://github.com/adobe/helix-embed/) Action on Adobe I/O Runtime
 
-![Helix Flow](docs/Helix Flow.svg)
+![Helix Flow](./vcl/Helix%20Flow.svg)
