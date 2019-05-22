@@ -1056,7 +1056,7 @@ sub vcl_fetch {
 
 sub vcl_hash {
   set req.http.X-Trace = req.http.X-Trace "; vcl_hash(" req.http.host req.url ")";
-#FASTLY fetch
+#FASTLY hash
 }
 
 sub vcl_hit {
