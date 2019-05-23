@@ -371,6 +371,8 @@ sub hlx_headers_deliver {
  }
 
   call hlx_deliver_errors;
+
+  set resp.http.X-SEQ-DEBUG = resp.http.X-SEQ-DEBUG + "Note over Fastly: Hlx delivers: " + resp.status + "\\n";
 }
 
 sub hlx_request_type {
@@ -588,6 +590,7 @@ sub hlx_fetch_static {
       set beresp.http.X-Trace = "etag=" + beresp.http.ETag + "; ext=" + var.ext;
 
     }
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Note over Fastly: Fetch static (hard-cached) - " + req.http.X-Location + "\\n";
     return(deliver);
   }
   if (beresp.http.X-Static == "Raw/Static") {
@@ -597,6 +600,7 @@ sub hlx_fetch_static {
       set beresp.cacheable = true;
       set beresp.ttl = 5s;
     }
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Note over Fastly: Fetch Static (raw static) - " + req.http.X-Location + "\\n";
     return(deliver);
   } elsif (req.http.X-Request-Type == "Redirect" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(redirect)";
@@ -614,6 +618,7 @@ sub hlx_fetch_static {
     set req.http.X-Trace = req.http.X-Trace + "(400)";
     # Cache for a short time, restart will get rid of it anyway
     set beresp.ttl = 60s;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Note over Fastly: Fetch static (short cache) - " + req.http.X-Location + "\\n";
     return(deliver);
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(none)";
@@ -631,6 +636,7 @@ sub hlx_deliver_static {
       set req.http.X-Backend-URL = re.group.1;
       set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
       set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->GitHub: Get raw content - " + req.http.X-Backend-URL + "\\n";
       restart;
     } else {
       set resp.status = 500;
@@ -827,6 +833,8 @@ sub hlx_type_proxy {
  * This is where all requests are received.
  */
 sub vcl_recv {
+  set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Note over Fastly: Received request\n" + req.url + "\\n";
+  set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Note over Fastly: Restarts == " + req.restarts + "\\n";
   if (req.restarts == 0) {
     if (req.http.X-Trace) {
       set req.http.X-Trace = req.http.X-Trace + "; vcl_recv";
@@ -837,7 +845,6 @@ sub vcl_recv {
     # So we don't have to add `RESTART` to `X-Trace` whenever we use `restart`
     set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
-
   call hlx_recv_init;
 
 #FASTLY recv
@@ -888,20 +895,28 @@ sub vcl_recv {
 
   if (req.http.X-Request-Type == "Proxy") {
     call hlx_type_proxy;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->GitHub: Proxy - " + req.http.X-Backend-URL + "\\n";
   } elsif (req.http.X-Request-Type == "Static") {
     call hlx_type_static;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->AdobeIORuntime: Static - " + req.http.X-Backend-URL + "\\n";
   } elsif (req.http.X-Request-Type == "Redirect") {
     call hlx_type_redirect;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Note over Fastly: Redirect - " + req.http.X-Backend-URL + "\\n";
   } elsif (req.http.X-Request-Type == "Embed") { 
     call hlx_type_embed;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->GitHub: Embed - " + req.http.X-Backend-URL + "\\n";
   } elseif (req.http.X-Request-Type == "Image") {
     call hlx_type_image;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->GitHub: Image - " + req.http.X-Backend-URL + "\\n";
   } elseif (req.http.X-Request-Type == "Static-URL") {
     call hlx_type_static_url;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->AdobeIORuntime: Static-URL - " + req.http.X-Backend-URL + "\\n";
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->AdobeIORuntime: Static-302 - " + req.http.X-Backend-URL + "\\n";
   } else {
     call hlx_type_pipeline;
+    set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Fastly->AdobeIORuntime: Pipeline - " + req.http.X-Backend-URL + "\\n";
   }
 
   # run generated vcl
@@ -920,6 +935,7 @@ sub vcl_recv {
 
 sub hlx_fetch_errors {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_errors";
+  set req.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + "Note over Fastly: Hlx fetch error: " + beresp.status + "\\n";
   # Interpreting OpenWhisk errors is a bit tricky, because we don't have access to the JSON
   # of the response body. Instead we are using the Content-Length of known error messages
   # to determine the most likely root cause. Each root cause will get an internal status code
@@ -980,6 +996,7 @@ sub hlx_error_errors {
 
 sub vcl_fetch {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_fetch";
+  set bereq.http.X-SEQ-DEBUG-FETCH = "\\nNote over Fastly: Fetch\\n" + ;
 #FASTLY fetch
 
   # Sprinkling in our debugging
@@ -1046,6 +1063,8 @@ sub vcl_fetch {
     esi;
   }
 
+  set beresp.http.X-SEQ-DEBUG-FETCH = bereq.http.X-SEQ-DEBUG-FETCH + beresp.http.X-SEQ-DEBUG;
+
   return(deliver);
 }
 
@@ -1110,7 +1129,6 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Owner;
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
-
 }
 
 sub vcl_miss {
@@ -1137,6 +1155,10 @@ sub vcl_pass {
 
 sub vcl_deliver {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
+  set resp.http.X-SEQ-DEBUG-REQ = req.http.X-SEQ-DEBUG;
+  set resp.http.X-SEQ-DEBUG-RESP = resp.http.X-SEQ-DEBUG;
+
+  set resp.http.X-SEQ-DEBUG = req.http.X-SEQ-DEBUG + resp.http.X-SEQ-DEBUG + "Note over Fastly: In deliver\\n";
 #FASTLY deliver
 
   call hlx_headers_deliver;
