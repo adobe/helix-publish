@@ -979,7 +979,12 @@ sub hlx_error_errors {
 }
 
 sub vcl_fetch {
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_fetch";
+  # store trace information in backend response headers in order 
+  # to make them available in vcl_deliver
+  set beresp.http.X-Trace = req.http.X-Trace;
+  set beresp.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
+  set beresp.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
+  set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url ")";
 #FASTLY fetch
 
   # Sprinkling in our debugging
@@ -1049,8 +1054,13 @@ sub vcl_fetch {
   return(deliver);
 }
 
+sub vcl_hash {
+  set req.http.X-Trace = req.http.X-Trace "; vcl_hash(" req.http.host req.url ")";
+#FASTLY hash
+}
+
 sub vcl_hit {
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_hit";
+  set req.http.X-Trace = req.http.X-Trace + "; vcl_hit(" req.url ")";
 #FASTLY hit
 
   if (!obj.cacheable) {
@@ -1114,7 +1124,7 @@ sub hlx_bereq {
 }
 
 sub vcl_miss {
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_miss";
+  set req.http.X-PreFetch-Miss = ",vcl_miss(" bereq.http.host bereq.url ")";
 #FASTLY miss
 
   call hlx_set_from_edge;
@@ -1125,7 +1135,7 @@ sub vcl_miss {
 }
 
 sub vcl_pass {
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_pass";
+  set req.http.X-PreFetch-Pass = "; vcl_pass";
 #FASTLY pass
 
   call hlx_set_from_edge;
@@ -1136,6 +1146,32 @@ sub vcl_pass {
 }
 
 sub vcl_deliver {
+  # reconstruct VCL trace from information stored in backend response headers
+  if (resp.http.X-Trace) {
+    set req.http.X-Trace = resp.http.X-Trace;
+  }
+
+  if (fastly_info.state ~ "^HITPASS") {
+    set req.http.X-Trace = req.http.X-Trace "; vcl_hit(object: uncacheable, return: pass)";
+  } elseif (fastly_info.state ~ "^HIT") {
+    set req.http.X-Trace= req.http.X-Trace "; vcl_hit(" req.http.host req.url ")";
+  } else {
+    if (resp.http.X-PreFetch-Pass) {
+      set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Pass;
+      unset resp.http.X-PreFetch-Pass;
+    }
+
+    if (resp.http.X-PreFetch-Miss) {
+      set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Miss;
+      unset resp.http.X-PreFetch-Miss;
+    }
+
+    if (resp.http.X-PostFetch) {
+      set req.http.X-Trace = req.http.X-Trace resp.http.X-PostFetch;
+      unset resp.http.X-PostFetch;
+    }
+  }
+
   set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
 #FASTLY deliver
 
