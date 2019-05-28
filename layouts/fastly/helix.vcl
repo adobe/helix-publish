@@ -494,7 +494,7 @@ sub hlx_type_static {
 
   
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
-  if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
+  if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     # and keep only the non-hashed part, i.e. everything before .hlx_
     set var.path = re.group.1;
@@ -503,10 +503,12 @@ sub hlx_type_static {
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(normal)";
     # TODO: check for URL ending with `/` and look up index file
-    set var.path = req.http.X-Orig-URL;
-    set var.entry = req.http.X-Orig-URL;
+    set var.path = req.url;
+    set var.entry = req.url;
     set var.esi = "";
   }
+  set var.path = regsuball(var.path, "/+", "/");
+  set var.entry = regsuball(var.entry, "/+", "/");
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
   set req.http.X-Backend-URL = req.http.X-Action-Root
