@@ -373,8 +373,8 @@ sub hlx_headers_deliver {
   call hlx_deliver_errors;
 }
 
-sub hlx_request_type {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_request_type";
+sub hlx_determine_request_type {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
 
   if (req.http.X-Request-Type == "Static" && req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
@@ -401,12 +401,6 @@ sub hlx_request_type {
     return;
   }
 
-  # Binary type images
-  if (req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$") {
-    set req.http.X-Trace = req.http.X-Trace + "(image)";
-    set req.http.X-Request-Type = "Image";
-    return;
-  }
   # TODO:
   # Possibly have a list of extensions that are always static 
   # if (req.url.ext ~ "(?i)^(?:css|js|svg)$") {
@@ -622,23 +616,18 @@ sub hlx_fetch_static {
   }
 }
 
-sub hlx_deliver_static {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
-  if (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
-    # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
-    # clustering. Changes made to most `req` variables don't make it back to
-    # the edge node, when `vcl_fetch` is run on a different node.
-    if (resp.http.Location ~ "https://raw.githubusercontent.com(/.*)") {
-      set req.http.X-Request-Type = "Redirect";
-      set req.http.X-Backend-URL = re.group.1;
-      set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
-      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
-      restart;
-    } else {
-      set resp.status = 500;
-      set resp.response = "Redirect to wrong hostname";
-      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
-    }
+/**
+ * Fallback handling. Depending on the previous step and the previous status code, either
+ * deliver or restart.
+ */
+sub hlx_deliver_type {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type";
+  if (req.http.X-Request-Type == "Raw") {
+    call hlx_deliver_raw;
+  } elsif (req.http.X-Request-Type == "Pipeline") {
+    call hlx_deliver_pipeline;
+  } elsif (req.http.X-Request-Type == "Static") {
+    call hlx_deliver_static;
   } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1 && req.http.X-Request-Type != "Proxy") {
     # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
@@ -651,6 +640,99 @@ sub hlx_deliver_static {
     } else {
       set req.http.X-Request-Type = "Static";
     }
+    restart;
+  }
+}
+
+/**
+ * Handle the delivery of error handlers. There are two scenarios here:
+ * 1. either the error page could be delivered from GitHub, then set the correct status code and deliver it
+ * 2. no error page could be found, so set the correct status code and deliver a fallback
+ */
+sub hlx_fetch_error {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error";
+  if (resp.status == 200) {
+    # TODO: fix headers
+  } else {
+    error 954 "No error page found";
+  }
+
+  if (req.url.basename ~ "^([0-9][0-9][0-9])") {
+    set resp.status = re.group.1;
+  } else {
+    # this should never happen
+    set resp.status = 500;
+  }
+}
+
+/**
+ * Handle delivery of static stuff. If there is a 404, restart with error
+ * if there is content, just deliver it. If there is a redirect, fetch
+ * from redirect and adjust headers
+ */
+sub hlx_deliver_static {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
+  if (resp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    return;
+  } elsif (resp.status == 307) {
+    # perform some additional validation
+    if (resp.http.Location ~ "https://raw.githubusercontent.com(/.*)") {
+      set req.http.X-Request-Type = "Redirect";
+      set req.http.X-Backend-URL = re.group.1;
+      set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
+      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      restart;
+    } else {
+      set resp.status = 500;
+      set resp.response = "Redirect to wrong hostname";
+      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+    }
+  } else {
+    # any other error
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
+    set req.http.X-Request-Type = "Error";
+    set req.url = resp.status + "." _ req.url.ext; // fall back to 500.html
+    restart;
+  }
+}
+
+/**
+ * Handle delivery of the raw content. If there is content, just deliver as is.
+ * If there isn't any content, restart with a pipeline request type.
+ */
+sub hlx_deliver_raw {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_raw";
+  if (resp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    # TODO: fix headers (mime-type, etc.)
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "(fallback)";
+    set req.http.X-Request-Type = "Pipeline";
+    restart;
+  }
+}
+
+/**
+ * Handle delivery of pipeline responses (from OpenWhisk action). If there is content,
+ * just deliver as is. If there is a 404, restart with the static request type.
+ * If there is any other error, restart with the error request type.
+ */
+sub hlx_deliver_pipeline {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_pipeline";
+  if (resp.status < 400) {
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    # stuff looks ok, just deliver
+    return;
+  } elseif (resp.status == 404) {
+    set req.http.X-Trace = req.http.X-Trace + "(404)";
+    # not found, ergo restart as Static
+    set req.http.X-Request-Type = "Static";
+    restart;
+  } elseif {
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
+    set req.url = resp.status + "." _ req.url.ext; // fall back to 500.html
+    set req.http.X-Request-Type = "Error";
     restart;
   }
 }
@@ -672,10 +754,11 @@ sub hlx_type_embed {
 }
 
 /**
- * Handles requests for images.
+ * Handles requests for resources coming straight out of the content repository. This
+ * enables image serving, but also custom CSS and JS overrides from the content repo.
  */
-sub hlx_type_image {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_image";
+sub hlx_type_raw {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_raw";
 
   set req.backend = F_GitHub;
   # enable shielding, needed for Image Optimization
@@ -711,7 +794,20 @@ sub hlx_type_image {
      + var.path + "?" + req.url.qs;
 
   # enable IO for image file-types
-  set req.http.X-Fastly-Imageopto-Api = "fastly";
+  if (req.url.ext ~ "(?i)^(gif|png|jpe?g|webp)$") {
+    set req.http.X-Trace = req.http.X-Trace + "(image-opti))";
+    set req.http.X-Fastly-Imageopto-Api = "fastly";
+  }
+}
+
+/**
+ * Fetches a file like /404.html from the content repo.
+ */
+sub hlx_type_error {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_error";
+
+  # delegate to the normal "Raw" handler, as this does exactly what we need
+  call hlx_type_raw;
 }
 
 /**
@@ -880,7 +976,7 @@ sub vcl_recv {
   call hlx_block_recv;
 
   # Must be after `hlx_strain`, because that might set `Proxy` as type
-  call hlx_request_type;
+  call hlx_determine_request_type;
 
   # Force clustering (despite the name of the header) to make sure we get good
   # cache efficiency with restarts. Without this, Fastly clustering would be
@@ -896,14 +992,17 @@ sub vcl_recv {
     call hlx_type_redirect;
   } elsif (req.http.X-Request-Type == "Embed") { 
     call hlx_type_embed;
-  } elseif (req.http.X-Request-Type == "Image") {
-    call hlx_type_image;
   } elseif (req.http.X-Request-Type == "Static-URL") {
     call hlx_type_static_url;
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
-  } else {
+  } elseif (req.http.X-Request-Type == "Pipeline") {
     call hlx_type_pipeline;
+  } elseif (req.http.X-Request-Type == "Error") {
+    call hlx_type_error;
+  } else {
+    set req.http.X-Request-Type = "Raw";
+    call ;
   }
 
   # run generated vcl
@@ -958,6 +1057,14 @@ sub hlx_deliver_errors {
      set resp.status = 500;
      set resp.response = "Internal Server Error";
   }
+  if (resp.status == 954) {
+    if (req.url.basename ~ "^([0-9][0-9][0-9])") {
+      set resp.status = re.group.1;
+    } else {
+      # this should never happen
+      set resp.status = 500;
+    }
+  }
 }
 
 sub hlx_error_errors {
@@ -976,6 +1083,19 @@ sub hlx_error_errors {
   if (obj.status == 953 ) {
     set obj.http.Content-Type = "text/html";
     synthetic {"include:953.html"};
+    return(deliver);
+  }
+  if (obj.status == 954) {
+    set obj.http.Content-Type = "text/html";
+    if (req.url.basename ~ "^404") {
+      synthetic {"include:404.html"};
+      return(deliver);
+    }
+    if (req.url.basename ~ "^500") {
+      synthetic {"include:500.html"};
+      return(deliver);
+    }
+    synthetic {"include:generic-error.html"};
     return(deliver);
   }
 }
@@ -1035,18 +1155,15 @@ sub vcl_fetch {
     if (beresp.status == 200) {
       set beresp.ttl = 604800s;
       set beresp.http.Cache-Control = "max-age=604800, public";
-
-      # apply a longer ttl for images
-      if (req.http.X-Request-Type == "Image") {
-        set beresp.ttl = 2592000s;
-        set beresp.http.Cache-Control = "max-age=2592000, public";
-      }
-
     } else {
       set beresp.ttl = 60s;
     }
   }
 
+  if (req.http.X-Request-Type == "Error") {
+    # check the response from /404.html, /500.html, etc.
+    call hlx_fetch_error;
+  }
   call hlx_fetch_static;
 
   if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
@@ -1179,7 +1296,7 @@ sub vcl_deliver {
 
   call hlx_headers_deliver;
 
-  call hlx_deliver_static;
+  call hlx_deliver_type;
 
   # only set the strain cookie for sticky strains
   # and only do it for the Adobe I/O Runtime backend
