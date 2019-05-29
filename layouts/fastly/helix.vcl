@@ -658,7 +658,7 @@ sub hlx_fetch_error {
   }
 
   if (req.url.basename ~ "^([0-9][0-9][0-9])") {
-    set resp.status = re.group.1;
+    set resp.status = std.atoi(re.group.1);
   } else {
     # this should never happen
     set resp.status = 500;
