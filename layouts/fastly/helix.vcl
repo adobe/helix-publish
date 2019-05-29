@@ -731,7 +731,7 @@ sub hlx_deliver_pipeline {
     restart;
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(error)";
-    set req.url = resp.status + "." _ req.url.ext; // fall back to 500.html
+    set req.url = resp.status + "." + req.url.ext; // fall back to 500.html
     set req.http.X-Request-Type = "Error";
     restart;
   }
