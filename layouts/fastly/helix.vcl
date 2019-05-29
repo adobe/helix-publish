@@ -692,7 +692,7 @@ sub hlx_deliver_static {
     # any other error
     set req.http.X-Trace = req.http.X-Trace + "(error)";
     set req.http.X-Request-Type = "Error";
-    set req.url = resp.status + "." _ req.url.ext; // fall back to 500.html
+    set req.url = resp.status + "." + req.url.ext; // fall back to 500.html
     restart;
   }
 }
