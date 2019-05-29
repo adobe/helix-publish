@@ -1059,7 +1059,7 @@ sub hlx_deliver_errors {
   }
   if (resp.status == 954) {
     if (req.url.basename ~ "^([0-9][0-9][0-9])") {
-      set resp.status = re.group.1;
+      set resp.status = std.atoi(re.group.1);
     } else {
       # this should never happen
       set resp.status = 500;
