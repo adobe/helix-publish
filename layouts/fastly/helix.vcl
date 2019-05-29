@@ -1002,7 +1002,7 @@ sub vcl_recv {
     call hlx_type_error;
   } else {
     set req.http.X-Request-Type = "Raw";
-    call ;
+    call hlx_type_raw;
   }
 
   # run generated vcl
