@@ -692,7 +692,7 @@ sub hlx_deliver_static {
     # any other error
     set req.http.X-Trace = req.http.X-Trace + "(error)";
     set req.http.X-Request-Type = "Error";
-    set req.url = resp.status + "." + req.url.ext; // fall back to 500.html
+    set req.url = resp.status + ".html"; // fall back to 500.html
     restart;
   }
 }
@@ -1189,7 +1189,7 @@ sub vcl_fetch {
 }
 
 sub vcl_hash {
-  set req.http.X-Trace = req.http.X-Trace "; vcl_hash(" req.http.host "/" req.url ")";
+  set req.http.X-Trace = req.http.X-Trace "; vcl_hash(" req.http.host req.url ")";
 #FASTLY hash
 }
 
