@@ -10,6 +10,13 @@
  * governing permissions and limitations under the License.
  */
 const publish = require('./src/publish');
+const epsagon = require('epsagon');
+
+epsagon.init({
+    token: 'ef190fb8-5a16-4923-9148-ee7899c8564b',
+    appName: 'helix-publish',
+    metadataOnly: false, // Optional, send more trace data
+});
 
 async function main(params) {
   // log the date to get the response time
@@ -38,4 +45,14 @@ async function main(params) {
   return result;
 }
 
-module.exports.main = main;
+async function wrap(params) {
+  epsagon.init({
+    token: params.EPSAGON_TOKEN,
+    appName: 'helix-publish',
+    metadataOnly: false, // Optional, send more trace data
+  });
+
+  return epsagon.openWhiskWrapper(main)(params);
+}
+
+module.exports.main = wrap;
