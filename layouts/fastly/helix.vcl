@@ -628,8 +628,6 @@ sub hlx_deliver_type {
     call hlx_deliver_pipeline;
   } elsif (req.http.X-Request-Type == "Static") {
     call hlx_deliver_static;
-  } elsif (req.http.X-Request-Type == "Error") {
-    call hlx_deliver_error;
   } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1 && req.http.X-Request-Type != "Proxy") {
     # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
@@ -651,8 +649,8 @@ sub hlx_deliver_type {
  * 1. either the error page could be delivered from GitHub, then set the correct status code and deliver it
  * 2. no error page could be found, so set the correct status code and deliver a fallback
  */
-sub hlx_deliver_error {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" + beresp.status + ")";
+sub hlx_fetch_error {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error(" + beresp.status + ")";
   if (beresp.status == 200) {
     # TODO: fix headers
   } else {
@@ -1176,7 +1174,11 @@ sub vcl_fetch {
       set beresp.ttl = 60s;
     }
   }
-  
+
+  if (req.http.X-Request-Type == "Error") {
+    # check the response from /404.html, /500.html, etc.
+    call hlx_fetch_error;
+  }
   call hlx_fetch_static;
 
   if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
