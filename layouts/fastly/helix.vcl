@@ -652,7 +652,7 @@ sub hlx_deliver_type {
  * 2. no error page could be found, so set the correct status code and deliver a fallback
  */
 sub hlx_deliver_error {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" + resp.status + ")";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" + beresp.status + ")";
   if (resp.status == 200) {
     # TODO: fix headers
   } else {
