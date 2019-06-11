@@ -705,6 +705,9 @@ sub hlx_deliver_raw {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_raw";
   if (resp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    if (req.url.ext == "html") {
+      set resp.http.Content-Type = "text/html";
+    }
     # TODO: fix headers (mime-type, etc.)
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(fallback)";
