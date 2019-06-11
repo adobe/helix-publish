@@ -621,7 +621,7 @@ sub hlx_fetch_static {
  * deliver or restart.
  */
 sub hlx_deliver_type {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
   if (req.http.X-Request-Type == "Raw") {
     call hlx_deliver_raw;
   } elsif (req.http.X-Request-Type == "Pipeline") {
