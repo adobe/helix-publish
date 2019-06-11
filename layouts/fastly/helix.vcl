@@ -1329,6 +1329,7 @@ sub vcl_deliver {
     unset resp.http.Access-Control-Allow-Origin;
     unset resp.http.Perf-Br-Resp-Out;
     unset resp.http.Server;
+    unset resp.http.Server-Timing;
     unset resp.http.Via;
     unset resp.http.X-Backend-Name;
     unset resp.http.X-Backend-URL;
@@ -1337,6 +1338,7 @@ sub vcl_deliver {
     unset resp.http.X-CDN-Request-ID;
     unset resp.http.X-Content-Type-Options;
     unset resp.http.X-Content-Type;
+    unset resp.http.X-ESI;
     unset resp.http.X-Fastly-Request-ID;
     unset resp.http.X-Frame-Options;
     unset resp.http.X-FullDirname;
@@ -1350,6 +1352,7 @@ sub vcl_deliver {
     unset resp.http.X-Sticky;
     unset resp.http.X-Strain;
     unset resp.http.X-Timer;
+    unset resp.http.X-Trace;
     unset resp.http.X-URL;
     unset resp.http.x-xss-protection;
   } else {
