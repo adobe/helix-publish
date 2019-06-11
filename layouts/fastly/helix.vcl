@@ -629,7 +629,7 @@ sub hlx_deliver_type {
   } elsif (req.http.X-Request-Type == "Static") {
     call hlx_deliver_static;
   } elsif (req.http.X-Request-Type == "Error") {
-    call hlx_deliver_static;
+    call hlx_deliver_error;
   } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1 && req.http.X-Request-Type != "Proxy") {
     # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
