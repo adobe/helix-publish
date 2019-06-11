@@ -9,13 +9,13 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-const publish = require('./src/publish');
 const epsagon = require('epsagon');
+const publish = require('./src/publish');
 
 epsagon.init({
-    token: 'ef190fb8-5a16-4923-9148-ee7899c8564b',
-    appName: 'helix-publish',
-    metadataOnly: false, // Optional, send more trace data
+  token: 'ef190fb8-5a16-4923-9148-ee7899c8564b',
+  appName: 'helix-publish',
+  metadataOnly: false, // Optional, send more trace data
 });
 
 async function main(params) {
