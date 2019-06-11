@@ -700,7 +700,7 @@ sub hlx_deliver_static {
 }
 
 sub hlx_deliver_error {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" resp.status ")";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" req.backend " " req.host req.url " " resp.status ")";
 }
 
 /**
