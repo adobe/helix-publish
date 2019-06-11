@@ -46,7 +46,7 @@ async function wrap(params) {
     metadataOnly: false, // Optional, send more trace data
   });
 
-  return await epsagon.openWhiskWrapper(main)(params);
+  return epsagon.openWhiskWrapper(main)(params);
 }
 
 module.exports.main = wrap;
