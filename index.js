@@ -12,12 +12,6 @@
 const epsagon = require('epsagon');
 const publish = require('./src/publish');
 
-epsagon.init({
-  token: 'ef190fb8-5a16-4923-9148-ee7899c8564b',
-  appName: 'helix-publish',
-  metadataOnly: false, // Optional, send more trace data
-});
-
 async function main(params) {
   // log the date to get the response time
   const start = Date.now();
@@ -48,7 +42,7 @@ async function main(params) {
 async function wrap(params) {
   epsagon.init({
     token: params.EPSAGON_TOKEN,
-    appName: 'helix-publish',
+    appName: 'Helix Services',
     metadataOnly: false, // Optional, send more trace data
   });
 
