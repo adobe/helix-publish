@@ -653,17 +653,17 @@ sub hlx_deliver_type {
  */
 sub hlx_deliver_error {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" + beresp.status + ")";
-  if (beresp.status == 200) {
+  if (resp.status == 200) {
     # TODO: fix headers
   } else {
     # error 954 "No error page found";
   }
 
   if (req.url.basename ~ "^([0-9][0-9][0-9])") {
-    set beresp.status = std.atoi(re.group.1);
+    set resp.status = std.atoi(re.group.1);
   } else {
     # this should never happen
-    set beresp.status = 500;
+    set resp.status = 500;
   }
 }
 
