@@ -656,7 +656,7 @@ sub hlx_deliver_error {
   if (beresp.status == 200) {
     # TODO: fix headers
   } else {
-    # error 954 "No error page found";
+    error 954 "No error page found";
   }
 
   if (req.url.basename ~ "^([0-9][0-9][0-9])") {
@@ -1176,7 +1176,7 @@ sub vcl_fetch {
       set beresp.ttl = 60s;
     }
   }
-
+  
   call hlx_fetch_static;
 
   if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
