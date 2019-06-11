@@ -650,7 +650,7 @@ sub hlx_deliver_type {
  * 2. no error page could be found, so set the correct status code and deliver a fallback
  */
 sub hlx_fetch_error {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error(" + beresp.status + ")";
   if (beresp.status == 200) {
     # TODO: fix headers
   } else {
@@ -692,7 +692,7 @@ sub hlx_deliver_static {
     # any other error
     set req.http.X-Trace = req.http.X-Trace + "(error)";
     set req.http.X-Request-Type = "Error";
-    set req.url = resp.status + ".html"; // fall back to 500.html
+    set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     restart;
   }
 }
@@ -739,7 +739,7 @@ sub hlx_deliver_pipeline {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
     # stuff looks ok, just deliver
     return;
-  } elseif (resp.status == 404) {
+  } elseif (resp.status == 404 || resp.status == 400) {
     set req.http.X-Trace = req.http.X-Trace + "(404)";
     # not found, ergo restart as Static
     set req.http.X-Request-Type = "Static";
