@@ -628,6 +628,8 @@ sub hlx_deliver_type {
     call hlx_deliver_pipeline;
   } elsif (req.http.X-Request-Type == "Static") {
     call hlx_deliver_static;
+  } elsif (req.http.X-Request-Type == "Error") {
+    call hlx_deliver_static;
   } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1 && req.http.X-Request-Type != "Proxy") {
     # That was a miss. Let's try to restart, but only restart once
     set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
@@ -695,6 +697,10 @@ sub hlx_deliver_static {
     set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     restart;
   }
+}
+
+sub hlx_deliver_error {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" resp.status ")";
 }
 
 /**
@@ -1121,7 +1127,7 @@ sub vcl_fetch {
   set beresp.http.X-Trace = req.http.X-Trace;
   set beresp.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
   set beresp.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
-  set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url ")";
+  set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url " " req.http.X-Request-Type ")";
 #FASTLY fetch
 
   # Sprinkling in our debugging
