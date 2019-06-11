@@ -390,7 +390,7 @@ sub hlx_determine_request_type {
 
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
-    set req.http.X-Trace = req.http.X-Trace + "(existing)";
+    set req.http.X-Trace = req.http.X-Trace + "(existing:" + req.http.X-Request-Type + ")" ;
     return;
   }
 
@@ -746,7 +746,7 @@ sub hlx_deliver_pipeline {
     restart;
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(error)";
-    set req.url = resp.status + "." + req.url.ext; // fall back to 500.html
+    set req.url = "/" + resp.status + "." + req.url.ext; // fall back to 500.html
     set req.http.X-Request-Type = "Error";
     restart;
   }
@@ -1189,7 +1189,7 @@ sub vcl_fetch {
 }
 
 sub vcl_hash {
-  set req.http.X-Trace = req.http.X-Trace "; vcl_hash(" req.http.host req.url ")";
+  set req.http.X-Trace = req.http.X-Trace "; vcl_hash(" req.http.host "/" req.url ")";
 #FASTLY hash
 }
 
