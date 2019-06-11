@@ -708,6 +708,18 @@ sub hlx_deliver_raw {
     if (req.url.ext == "html") {
       set resp.http.Content-Type = "text/html";
     }
+    if (req.url.ext == "css") {
+      set resp.http.Content-Type = "text/css";
+    }
+    if (req.url.ext == "js") {
+      set resp.http.Content-Type = "text/javascript";
+    }
+    if (req.url.ext == "json") {
+      set resp.http.Content-Type = "application/json";
+    }
+    if (req.url.ext == "xml") {
+      set resp.http.Content-Type = "application/xml";
+    }
     # TODO: fix headers (mime-type, etc.)
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(fallback)";
