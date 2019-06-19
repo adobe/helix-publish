@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+const epsagon = require('epsagon');
 const publish = require('./src/publish');
 
 async function main(params) {
@@ -38,4 +39,14 @@ async function main(params) {
   return result;
 }
 
-module.exports.main = main;
+async function wrap(params) {
+  epsagon.init({
+    token: params.EPSAGON_TOKEN,
+    appName: 'Helix Services',
+    metadataOnly: false, // Optional, send more trace data
+  });
+
+  return epsagon.openWhiskWrapper(main)(params);
+}
+
+module.exports.main = wrap;
