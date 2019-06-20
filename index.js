@@ -10,24 +10,11 @@
  * governing permissions and limitations under the License.
  */
 const epsagon = require('epsagon');
+
+const status = require('@adobe/helix-pingdom-status');
 const publish = require('./src/publish');
 
 async function main(params) {
-  // log the date to get the response time
-  const start = Date.now();
-  // eslint-disable-next-line no-underscore-dangle
-  if (params && params.__ow_method && params.__ow_method === 'get') {
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/xml',
-      },
-      body: `<pingdom_http_custom_check>
-      <status>OK</status>
-      <response_time>${Math.abs(Date.now() - start)}</response_time>
-  </pingdom_http_custom_check>`,
-    };
-  }
   const result = await publish(
     params.configuration,
     params.service,
@@ -49,4 +36,4 @@ async function wrap(params) {
   return epsagon.openWhiskWrapper(main)(params);
 }
 
-module.exports.main = wrap;
+module.exports.main = status.main(wrap, { fastly: 'https://api.fastly.com/' });
