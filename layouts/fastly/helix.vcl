@@ -894,8 +894,8 @@ sub hlx_type_dispatch {
   
   # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
-  set var.namespace = regsuball(req.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
-  set var.package = regsuball(var.path, "^.*/", ""); // cut away everything from the start up to (including) the slash
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
 
 
   # get (strain-specific) parameter whitelist
