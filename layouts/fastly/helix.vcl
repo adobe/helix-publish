@@ -401,12 +401,6 @@ sub hlx_determine_request_type {
     return;
   }
 
-  # TODO:
-  # Possibly have a list of extensions that are always static 
-  # if (req.url.ext ~ "(?i)^(?:css|js|svg)$") {
-  #   set req.http.X-Request-Type = "Static";
-  #   return;
-  # }
   if (req.http.host == "adobeioruntime.net") {
     set req.http.X-Trace = req.http.X-Trace + "(embed)";
     set req.http.X-Request-Type = "Embed";
@@ -622,27 +616,8 @@ sub hlx_fetch_static {
  */
 sub hlx_deliver_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
-  if (req.http.X-Request-Type == "Raw") {
-    call hlx_deliver_raw;
-  } elsif (req.http.X-Request-Type == "Pipeline") {
-    call hlx_deliver_pipeline;
-  } elsif (req.http.X-Request-Type == "Static") {
+  if (req.http.X-Request-Type == "Dispatch") {
     call hlx_deliver_static;
-  } elsif (req.http.X-Request-Type == "Error") {
-    call hlx_deliver_error;
-  } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1 && req.http.X-Request-Type != "Proxy") {
-    # That was a miss. Let's try to restart, but only restart once
-    set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
-    set resp.status = 404;
-    
-    set req.http.X-Trace = req.http.X-Trace + "(404)";
-
-    if (req.http.X-Request-Type == "Static") {
-      set req.http.X-Request-Type = "Dynamic";
-    } else {
-      set req.http.X-Request-Type = "Static";
-    }
-    restart;
   }
 }
 
@@ -701,61 +676,6 @@ sub hlx_deliver_static {
 
 sub hlx_deliver_error {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" req.backend " " req.http.host req.url " " resp.status ")";
-}
-
-/**
- * Handle delivery of the raw content. If there is content, just deliver as is.
- * If there isn't any content, restart with a pipeline request type.
- */
-sub hlx_deliver_raw {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_raw";
-  if (resp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(ok)";
-    if (req.url.ext == "html") {
-      set resp.http.Content-Type = "text/html";
-    }
-    if (req.url.ext == "css") {
-      set resp.http.Content-Type = "text/css";
-    }
-    if (req.url.ext == "js") {
-      set resp.http.Content-Type = "text/javascript";
-    }
-    if (req.url.ext == "json") {
-      set resp.http.Content-Type = "application/json";
-    }
-    if (req.url.ext == "xml") {
-      set resp.http.Content-Type = "application/xml";
-    }
-    # TODO: fix headers (mime-type, etc.)
-  } else {
-    set req.http.X-Trace = req.http.X-Trace + "(fallback)";
-    set req.http.X-Request-Type = "Pipeline";
-    restart;
-  }
-}
-
-/**
- * Handle delivery of pipeline responses (from OpenWhisk action). If there is content,
- * just deliver as is. If there is a 404, restart with the static request type.
- * If there is any other error, restart with the error request type.
- */
-sub hlx_deliver_pipeline {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_pipeline";
-  if (resp.status < 400) {
-    set req.http.X-Trace = req.http.X-Trace + "(ok)";
-    # stuff looks ok, just deliver
-    return;
-  } elseif (resp.status == 404 || resp.status == 400) {
-    set req.http.X-Trace = req.http.X-Trace + "(404)";
-    # not found, ergo restart as Static
-    set req.http.X-Request-Type = "Static";
-    restart;
-  } else {
-    set req.http.X-Trace = req.http.X-Trace + "(error)";
-    set req.url = "/" + resp.status + "." + req.url.ext; // fall back to 500.html
-    set req.http.X-Request-Type = "Error";
-    restart;
-  }
 }
 
 /**
@@ -882,101 +802,6 @@ sub hlx_type_dispatch {
 }
 
 /**
- * Handles requests for the main Helix rendering pipeline.
- */
-sub hlx_type_pipeline {
-  call hlx_type_pipeline_before;
-
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_pipeline";
-  # This is a dynamic request.
-
-  # get it from OpenWhisk
-  set req.backend = F_AdobeRuntime;
-
-  # Only declare local variables for things we mean to change before putting
-  # them into the URL
-  declare local var.dir STRING; # the directory of the content
-  declare local var.name STRING; # the name (without extension) of the resource
-  declare local var.selector STRING; # the selector (between name and extension)
-  declare local var.extension STRING;
-  declare local var.action STRING; # the action to call
-  declare local var.path STRING; # resource path
-  declare local var.entry STRING; # bundler entry point
-  declare local var.rootPath STRING; # the root-path (aka mount point) of a strain
-
-  set var.rootPath = req.http.X-Root-Path;
-
-  # Load important information from edge dicts
-  call hlx_owner;
-  call hlx_repo;
-  call hlx_ref;
-  call hlx_root_path;
-
-  if (req.http.X-Dirname) {
-    # set root path based on strain-specific dirname (strips away strain root)
-    set var.dir = req.http.X-Repo-Root-Path + req.http.X-Dirname;
-  } else {
-    set var.dir = req.http.X-Repo-Root-Path + req.url.dirname;
-  }
-  set var.dir = regsuball(var.dir, "/+", "/");
-
-  # repeat the regex in case another re-function has been called in the meantime
-  if (req.url.basename ~ "(^[^\.]+)(\.?(.+))?(\.[^\.]*$)") {
-    set var.name = re.group.1;
-    set var.selector = re.group.3;
-    set var.extension = req.url.ext;
-  } else {
-    call hlx_index;
-    # enable ESI
-    set req.http.x-esi = "1";
-    if (req.http.X-Index ~ "(^[^\.]+)\.?(.*)\.([^\.]+$)") {
-      # determine directory index from strain config
-      set var.name = re.group.1;
-      set var.selector = re.group.2;
-      set var.extension = re.group.3;
-    } else {
-      # force default directory index
-      set req.http.X-Index = "default";
-      set var.name = "index";
-      set var.selector = "";
-      set var.extension = "html";
-    }
-  }
-
-  call hlx_action_root;
-
-  if (std.strlen(var.selector) > 0) {
-    set var.action = "/" + req.http.X-Action-Root + "/" + var.selector + "_" + var.extension;
-  } else {
-    set var.action = "/" + req.http.X-Action-Root + "/" + var.extension;
-  }
-
-  # get (strain-specific) parameter whitelist
-  include "params.vcl";
-
-  set var.path = var.dir + "/" + var.name + ".md";
-  set var.path = regsuball(var.path, "/+", "/");
-  # Invoke OpenWhisk
-  set req.http.X-Backend-URL = "/api/v1/web" + var.action
-    + "?owner=" + req.http.X-Owner
-    + "&repo=" + req.http.X-Repo
-    + "&ref=" + req.http.X-Ref
-    + "&path=" + var.path
-    + "&selector=" + var.selector
-    + "&extension=" + req.url.ext
-    + "&strain=" + req.http.X-Strain
-    + "&rootPath=" + var.rootPath;
-
-  # only append the encoded params if there are encoded params
-  if (req.http.X-Encoded-Params) {
-    set req.http.X-Backend-URL = req.http.X-Backend-URL
-      + "&params=" + req.http.X-Encoded-Params;
-  }
-
-  call hlx_type_pipeline_after;
-}
-
-/**
  * Handle requests to Proxy Strains.
  * These requests already have a backend set as part of the strain resolution
  * so there is no need for URL rewriting.
@@ -1058,7 +883,6 @@ sub vcl_recv {
   if (req.http.X-Request-Type == "Proxy") {
     call hlx_type_proxy;
   } elsif (req.http.X-Request-Type == "Static") {
-    # TODO: remove
     call hlx_type_static;
   } elsif (req.http.X-Request-Type == "Redirect") {
     call hlx_type_redirect;
@@ -1068,14 +892,10 @@ sub vcl_recv {
     call hlx_type_static_url;
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
-  } elseif (req.http.X-Request-Type == "Pipeline") {
-    # TODO: remove
-    call hlx_type_pipeline;
   } elseif (req.http.X-Request-Type == "Error") {
     call hlx_type_error;
   } else {
     set req.http.X-Request-Type = "Dispatch";
-    # TODO: remove raw
     call hlx_type_dispatch;
   }
 
