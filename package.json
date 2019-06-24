@@ -67,5 +67,8 @@
     "fs-extra": "8.0.1",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
+  },
+  "wsk": {
+
   }
 }
