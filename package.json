@@ -33,7 +33,7 @@
   "homepage": "https://github.com/adobe/helix-publish#readme",
   "devDependencies": {
     "@adobe/helix-testutils": "^0.2.0",
-    "@adobe/openwhisk-action-builder": "^1.0.2",
+    "@adobe/openwhisk-action-builder": "^1.1.0",
     "@semantic-release/changelog": "^3.0.2",
     "@semantic-release/commit-analyzer": "^6.1.0",
     "@semantic-release/exec": "^3.3.2",
