@@ -674,10 +674,6 @@ sub hlx_deliver_static {
   }
 }
 
-sub hlx_deliver_error {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_error(" req.backend " " req.http.host req.url " " resp.status ")";
-}
-
 /**
  * Handle requests to Adobe I/O Runtime services.
  * When Fastly handles ESI requests to 3rd-party domains, they still get routed
