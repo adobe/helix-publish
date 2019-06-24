@@ -854,6 +854,80 @@ sub hlx_type_error {
      + var.path;
 }
 
+
+/**
+ * Handles requests for the main Helix rendering pipeline.
+ */
+sub hlx_type_dispatch {
+  call hlx_type_pipeline_before;
+
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_dispatch";
+  # This is a dynamic request.
+
+  # get it from OpenWhisk
+  set req.backend = F_AdobeRuntime;
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.action STRING; # the action to call
+  declare local var.namespace STRING;
+  declare local var.package STRING;
+
+  # Load important information for content repo from edge dicts
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+  call hlx_root_path;
+  call hlx_index;
+
+  # Load important information for fallback repo from edge dicts
+  call hlx_github_static_owner;
+  call hlx_github_static_repo;
+  call hlx_github_static_ref;
+  call hlx_github_static_root;
+
+
+  # enable ESI
+  # TODO: move to dispatch action
+  set req.http.x-esi = "1";
+
+  
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  call hlx_action_root;
+  set var.namespace = regsuball(req.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+  set var.package = regsuball(var.path, "^.*/", ""); // cut away everything from the start up to (including) the slash
+
+
+  # get (strain-specific) parameter whitelist
+  include "params.vcl";
+
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace // i.e. /trieloff
+    + "/helix-services/experimental-dispatch@v1"
+    // fallback repo
+    + "?static.owner" + req.http.X-Github-Static-Owner
+    + "&static.repo" + req.http.X-Github-Static-Repo
+    + "&static.ref" + req.http.X-Github-Static-Ref
+    + "&static.root" + req.http.X-Github-Static-Root
+    // content repo
+    + "&content.owner" + req.http.X-Owner
+    + "&content.repo" + req.http.X-Repo
+    + "&content.ref" + req.http.X-Ref
+    + "&content.root" + req.http.X-Repo-Root-Path
+    + "&content.package" + var.package
+    + "&content.index" + req.http.X-Index
+    + "&path=" + req.url.path
+    + "&strain=" + req.http.X-Strain;
+
+  # only append the encoded params if there are encoded params
+  if (req.http.X-Encoded-Params) {
+    set req.http.X-Backend-URL = req.http.X-Backend-URL
+      + "&params=" + req.http.X-Encoded-Params;
+  }
+
+  call hlx_type_pipeline_after;
+}
+
 /**
  * Handles requests for the main Helix rendering pipeline.
  */
@@ -1031,6 +1105,7 @@ sub vcl_recv {
   if (req.http.X-Request-Type == "Proxy") {
     call hlx_type_proxy;
   } elsif (req.http.X-Request-Type == "Static") {
+    # TODO: remove
     call hlx_type_static;
   } elsif (req.http.X-Request-Type == "Redirect") {
     call hlx_type_redirect;
@@ -1041,12 +1116,14 @@ sub vcl_recv {
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
   } elseif (req.http.X-Request-Type == "Pipeline") {
+    # TODO: remove
     call hlx_type_pipeline;
   } elseif (req.http.X-Request-Type == "Error") {
     call hlx_type_error;
   } else {
-    set req.http.X-Request-Type = "Raw";
-    call hlx_type_raw;
+    set req.http.X-Request-Type = "Dispatch";
+    # TODO: remove raw
+    call hlx_type_dispatch;
   }
 
   # run generated vcl
