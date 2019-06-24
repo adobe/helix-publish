@@ -35,7 +35,7 @@ There are a number of important tasks involved in publishing that it does not do
 
 ## Usage
 
-Send a POST request with following (`Content-Type: application/json`-encoded) body parameters to `https://adobeioruntime.net/api/v1/web/helix/default/publish`:
+Send a POST request with following (`Content-Type: application/json`-encoded) body parameters to `https://adobeioruntime.net/api/v1/web/helix/helix-services/publish@v1`:
 
 * `configuration`: your `helix-config.yaml`, as a JSON document
 * `service`: the service ID of your Fastly service config
