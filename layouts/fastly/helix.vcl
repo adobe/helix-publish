@@ -775,53 +775,6 @@ sub hlx_type_embed {
 }
 
 /**
- * Handles requests for resources coming straight out of the content repository. This
- * enables image serving, but also custom CSS and JS overrides from the content repo.
- */
-sub hlx_type_raw {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_raw";
-
-  set req.backend = F_GitHub;
-  # enable shielding, needed for Image Optimization
-  if (server.identity !~ "-IAD$" && req.http.Fastly-FF !~ "-IAD") {
-    set req.backend = ssl_shield_iad_va_us;
-  }
-  if (!req.backend.healthy) {
-    # the shield datacenter is broken so dont go to it
-    set req.backend = F_GitHub;
-  }
-
-  # Load important information from edge dicts
-  call hlx_owner;
-  call hlx_repo;
-  call hlx_ref;
-  call hlx_root_path;
-
-  declare local var.dir STRING; # directory name
-  declare local var.path STRING; # full path
-  if (req.http.X-Dirname) {
-    # set root path based on strain-specific dirname (strips away strain root)
-    set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
-  } else {
-    set var.dir = req.http.X-Root-Path + req.url.dirname;
-  }
-  set var.dir = regsuball(var.dir, "/+", "/");
-
-  set var.path = var.dir + "/" + req.url.basename;
-  set var.path = regsuball(var.path, "/+", "/");
-  set req.http.X-Backend-URL = "/" + req.http.X-Owner
-     + "/" + req.http.X-Repo
-     + "/" + req.http.X-Ref
-     + var.path + "?" + req.url.qs;
-
-  # enable IO for image file-types
-  if (req.url.ext ~ "(?i)^(gif|png|jpe?g|webp)$") {
-    set req.http.X-Trace = req.http.X-Trace + "(image-opti))";
-    set req.http.X-Fastly-Imageopto-Api = "fastly";
-  }
-}
-
-/**
  * Fetches a file like /404.html from the content repo.
  */
 sub hlx_type_error {
