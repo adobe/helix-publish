@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nyc --reporter=text --reporter=lcov --check-coverage --branches 100 --statements 100 --lines 100 mocha",
-    "test-ci": "nyc --reporter=text --reporter=lcov --check-coverage --branches 100 --statements 100 --lines 100 mocha -i -g 'Post-Deploy' && codecov",
+    "test": "nyc --reporter=text --reporter=lcov --check-coverage --statements 100 --lines 100 mocha",
+    "test-ci": "nyc --reporter=text --reporter=lcov --check-coverage --statements 100 --lines 100 mocha -i -g 'Post-Deploy' && codecov",
     "lint": "./node_modules/.bin/eslint .",
     "junit": "mocha --exit -R mocha-junit-reporter",
     "preversion": "npm run junit",
