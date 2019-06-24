@@ -69,6 +69,6 @@
     "uri-js": "4.2.2"
   },
   "wsk": {
-
+    "name": "helix-services/publish@1.0.0"
   }
 }
