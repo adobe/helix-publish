@@ -8,15 +8,19 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nyc --reporter=text --reporter=lcov --check-coverage --branches 100 --statements 100 --lines 100 mocha",
+    "test": "nyc --reporter=text --reporter=lcov --check-coverage --statements 100 --lines 100 mocha",
+    "test-ci": "nyc --reporter=text --reporter=lcov --check-coverage --statements 100 --lines 100 mocha -i -g 'Post-Deploy' && codecov",
     "lint": "./node_modules/.bin/eslint .",
     "junit": "mocha --exit -R mocha-junit-reporter",
     "preversion": "npm run junit",
     "postversion": "git push origin master --follow-tags",
     "zip": "npm ls --prod --parseable | grep node_modules | sed -e 's/.*node_modules/node_modules/' | xargs zip publish.zip -r src layouts package.json index.js",
-    "deploy": "npm run zip && wsk action update publish publish.zip --kind nodejs:10 --web true --web-secure false --timeout 60000",
-    "test-deploy": "npm run zip && wsk action update publish-test publish.zip --kind nodejs:10 --web true --web-secure false --timeout 60000",
-    "delete-git-tag": "git tag -d v$npm_package_version && git push origin :v$npm_package_version"
+    "deploy": "wsk-builder -v --deploy --test  --param EPSAGON_TOKEN $EPSAGON_TOKEN --entryFile index.js",
+    "test-postdeploy": "mocha --reporter xunit --reporter-options output=./junit/test-results.xml -g 'Post-Deploy'",
+    "delete-git-tag": "git tag -d v$npm_package_version && git push origin :v$npm_package_version",
+    "semantic-release": "semantic-release",
+    "semantic-prepare": "node ./build/prepare.js",
+    "build": "wsk-builder -v"
   },
   "repository": {
     "type": "git",
@@ -30,6 +34,15 @@
   "homepage": "https://github.com/adobe/helix-publish#readme",
   "devDependencies": {
     "@adobe/helix-testutils": "^0.2.0",
+    "@adobe/openwhisk-action-builder": "^1.1.0",
+    "@semantic-release/changelog": "^3.0.2",
+    "@semantic-release/commit-analyzer": "^6.1.0",
+    "@semantic-release/exec": "^3.3.2",
+    "@semantic-release/git": "^7.0.8",
+    "@semantic-release/github": "^5.2.10",
+    "@semantic-release/npm": "^5.1.9",
+    "@semantic-release/release-notes-generator": "^7.1.4",
+    "semantic-release": "^15.13.3",
     "codecov": "^3.2.0",
     "eslint": "^5.15.3",
     "eslint-config-airbnb": "^17.1.0",
@@ -39,7 +52,7 @@
     "eslint-plugin-react": "^7.12.4",
     "istanbul": "^1.1.0-alpha.1",
     "junit-report-builder": "^1.3.2",
-    "mocha": "^6.0.2",
+    "mocha": "^6.1.4",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-parallel-tests": "^2.0.3",
     "nyc": "^14.0.0",
@@ -47,10 +60,15 @@
     "sinon": "^7.3.1"
   },
   "dependencies": {
-    "@adobe/fastly-native-promises": "1.9.1",
-    "@adobe/helix-shared": "1.4.0",
+    "@adobe/fastly-native-promises": "1.10.0",
+    "@adobe/helix-pingdom-status": "^1.3.0",
+    "@adobe/helix-shared": "1.5.0",
+    "epsagon": "^1.25.1",
     "fs-extra": "8.0.1",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
+  },
+  "wsk": {
+    "name": "helix-services/publish@1.0.0"
   }
 }
