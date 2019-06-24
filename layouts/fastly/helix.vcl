@@ -690,39 +690,6 @@ sub hlx_type_embed {
   set req.backend = F_AdobeRuntime;
 }
 
-/**
- * Fetches a file like /404.html from the content repo.
- */
-sub hlx_type_error {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_error";
-
-  set req.backend = F_GitHub;
-  set req.http.host = "raw.githubusercontent.com";
-
-  # Load important information from edge dicts
-  call hlx_owner;
-  call hlx_repo;
-  call hlx_ref;
-  call hlx_root_path;
-
-  declare local var.dir STRING; # directory name
-  declare local var.path STRING; # full path
-  if (req.http.X-Dirname) {
-    # set root path based on strain-specific dirname (strips away strain root)
-    set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
-  } else {
-    set var.dir = req.http.X-Root-Path + req.url.dirname;
-  }
-  set var.dir = regsuball(var.dir, "/+", "/");
-
-  set var.path = var.dir + "/" + req.url.basename;
-  set var.path = regsuball(var.path, "/+", "/");
-  set req.http.X-Backend-URL = "/" + req.http.X-Owner
-     + "/" + req.http.X-Repo
-     + "/" + req.http.X-Ref
-     + var.path;
-}
-
 
 /**
  * Handles requests for the main Helix rendering pipeline.
@@ -888,8 +855,6 @@ sub vcl_recv {
     call hlx_type_static_url;
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
-  } elseif (req.http.X-Request-Type == "Error") {
-    call hlx_type_error;
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
