@@ -22,15 +22,19 @@ const {
 } = require('./vcl-utils');
 const package = require('../../package.json');
 
+function basedir() {
+  return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
+}
+
 async function init(fastly, version) {
-  const vclfile = path.resolve(__dirname, '../../layouts/fastly/helix.vcl');
+  const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
   const content = include(vclfile);
   await writevcl(fastly, version, content, 'helix.vcl');
   return fastly.setMainVCL(version, 'helix.vcl');
 }
 
 async function extensions(fastly, version, vclOverride = {}) {
-  const vclfile = path.resolve(__dirname, '../../layouts/fastly/extensions.vcl');
+  const vclfile = path.resolve(basedir(), 'layouts/fastly/extensions.vcl');
   let content;
   if (vclOverride.extensions) {
     // found a extensions.vcl override

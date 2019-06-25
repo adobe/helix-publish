@@ -70,11 +70,11 @@
   },
   "wsk": {
     "static": [
-      "layouts/fastly/helix.vcl",
-      "layouts/fastly/extensions.vcl",
-      "layouts/fastly/951.html",
-      "layouts/fastly/952.html",
-      "layouts/fastly/953.html"
+      "./layouts/fastly/helix.vcl",
+      "./layouts/fastly/extensions.vcl",
+      "./layouts/fastly/951.html",
+      "./layouts/fastly/952.html",
+      "./layouts/fastly/953.html"
     ],
     "name": "helix-services/publish@1.0.2"
   }
