@@ -439,7 +439,7 @@ sub hlx_type_static_url {
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
   set var.entry = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -499,7 +499,7 @@ sub hlx_type_static {
   set var.path = regsuball(var.path, "/+", "/");
   set var.entry = regsuball(var.entry, "/+", "/");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
