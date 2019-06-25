@@ -72,9 +72,12 @@
     "static": [
       "./layouts/fastly/helix.vcl",
       "./layouts/fastly/extensions.vcl",
+      "./layouts/fastly/404.html",
+      "./layouts/fastly/500.html",
       "./layouts/fastly/951.html",
       "./layouts/fastly/952.html",
-      "./layouts/fastly/953.html"
+      "./layouts/fastly/953.html",
+      "./layouts/fastly/generic-error.html"
     ],
     "name": "helix-services/publish@1.0.2"
   }
