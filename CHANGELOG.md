@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/adobe/helix-publish/compare/v1.0.1...v1.0.2) (2019-06-25)
+
+
+### Bug Fixes
+
+* **dependencies:** move epsagon from dev to real dependencies ([99a9629](https://github.com/adobe/helix-publish/commit/99a9629))
+
 ## [1.0.1](https://github.com/adobe/helix-publish/compare/v1.0.0...v1.0.1) (2019-06-25)
 
 
