@@ -5,4 +5,5 @@ test/integration
 test/tmp/*
 tmp/*
 coverage/*
+node_modules/*
 src/publish.cmd.js
