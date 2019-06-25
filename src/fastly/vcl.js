@@ -23,7 +23,7 @@ const {
 const package = require('../../package.json');
 
 function basedir() {
-  return __dirname === '/' ? '' : path.resolve(__dirname, '../..');
+  return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
 }
 
 async function init(fastly, version) {
