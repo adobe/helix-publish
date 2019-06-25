@@ -741,17 +741,17 @@ sub hlx_type_dispatch {
     + "/" + var.namespace // i.e. /trieloff
     + "/helix-services/experimental-dispatch@v1"
     // fallback repo
-    + "?static.owner" + req.http.X-Github-Static-Owner
-    + "&static.repo" + req.http.X-Github-Static-Repo
-    + "&static.ref" + req.http.X-Github-Static-Ref
-    + "&static.root" + req.http.X-Github-Static-Root
+    + "?static.owner=" + req.http.X-Github-Static-Owner
+    + "&static.repo=" + req.http.X-Github-Static-Repo
+    + "&static.ref=" + req.http.X-Github-Static-Ref
+    + "&static.root=" + req.http.X-Github-Static-Root
     // content repo
-    + "&content.owner" + req.http.X-Owner
-    + "&content.repo" + req.http.X-Repo
-    + "&content.ref" + req.http.X-Ref
-    + "&content.root" + req.http.X-Repo-Root-Path
-    + "&content.package" + var.package
-    + "&content.index" + req.http.X-Index
+    + "&content.owner=" + req.http.X-Owner
+    + "&content.repo=" + req.http.X-Repo
+    + "&content.ref=" + req.http.X-Ref
+    + "&content.root=" + req.http.X-Repo-Root-Path
+    + "&content.package=" + var.package
+    + "&content.index=" + req.http.X-Index
     + "&path=" + req.url.path
     + "&strain=" + req.http.X-Strain;
 
