@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/adobe/helix-publish/compare/v1.0.2...v1.0.3) (2019-06-25)
+
+
+### Bug Fixes
+
+* **bundle:** use different approach to access files ([845c0d9](https://github.com/adobe/helix-publish/commit/845c0d9))
+* **vcl.js:** use different approach to detect webpack ([c356c1b](https://github.com/adobe/helix-publish/commit/c356c1b))
+
 ## [1.0.2](https://github.com/adobe/helix-publish/compare/v1.0.1...v1.0.2) (2019-06-25)
 
 
