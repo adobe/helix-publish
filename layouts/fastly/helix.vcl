@@ -375,14 +375,15 @@ sub hlx_headers_deliver {
 
 sub hlx_determine_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
-
-  if (req.http.X-Request-Type == "Static" && req.url.ext == "url") {
+  // TODO check for topurl
+  if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
     set req.http.X-Request-Type = "Static-URL";
     return;
   }
 
-  if (req.http.X-Request-Type == "Static" && req.url.ext == "302") {
+  // TODO check for topurl
+  if (req.url.ext == "302") {
     set req.http.X-Trace = req.http.X-Trace + "(static-302)";
     set req.http.X-Request-Type = "Static-302";
     return;
