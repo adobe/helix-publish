@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/adobe/helix-publish/compare/v1.0.0...v1.0.1) (2019-06-25)
+
+
+### Bug Fixes
+
+* **build:** include missing VCL and HTML files in deployment bundle ([17aa8ee](https://github.com/adobe/helix-publish/commit/17aa8ee))
+
 # 1.0.0 (2019-06-24)
 
 
