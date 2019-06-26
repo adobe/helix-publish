@@ -63,10 +63,10 @@
     "@adobe/fastly-native-promises": "1.10.0",
     "@adobe/helix-pingdom-status": "^1.3.0",
     "@adobe/helix-shared": "1.5.0",
+    "epsagon": "^1.27.2",
     "fs-extra": "8.0.1",
     "glob-to-regexp": "0.4.1",
-    "uri-js": "4.2.2",
-    "epsagon": "^1.27.1"
+    "uri-js": "4.2.2"
   },
   "wsk": {
     "static": [
