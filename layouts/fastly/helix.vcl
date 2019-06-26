@@ -373,16 +373,17 @@ sub hlx_headers_deliver {
   call hlx_deliver_errors;
 }
 
-sub hlx_request_type {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_request_type";
-
-  if (req.http.X-Request-Type == "Static" && req.url.ext == "url") {
+sub hlx_determine_request_type {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
+  // TODO check for topurl
+  if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
     set req.http.X-Request-Type = "Static-URL";
     return;
   }
 
-  if (req.http.X-Request-Type == "Static" && req.url.ext == "302") {
+  // TODO check for topurl
+  if (req.url.ext == "302") {
     set req.http.X-Trace = req.http.X-Trace + "(static-302)";
     set req.http.X-Request-Type = "Static-302";
     return;
@@ -390,7 +391,7 @@ sub hlx_request_type {
 
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
-    set req.http.X-Trace = req.http.X-Trace + "(existing)";
+    set req.http.X-Trace = req.http.X-Trace + "(existing:" + req.http.X-Request-Type + ")" ;
     return;
   }
 
@@ -401,18 +402,6 @@ sub hlx_request_type {
     return;
   }
 
-  # Binary type images
-  if (req.url.ext ~ "(?i)^(?:gif|png|jpe?g|webp)$") {
-    set req.http.X-Trace = req.http.X-Trace + "(image)";
-    set req.http.X-Request-Type = "Image";
-    return;
-  }
-  # TODO:
-  # Possibly have a list of extensions that are always static 
-  # if (req.url.ext ~ "(?i)^(?:css|js|svg)$") {
-  #   set req.http.X-Request-Type = "Static";
-  #   return;
-  # }
   if (req.http.host == "adobeioruntime.net") {
     set req.http.X-Trace = req.http.X-Trace + "(embed)";
     set req.http.X-Request-Type = "Embed";
@@ -450,7 +439,7 @@ sub hlx_type_static_url {
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
   set var.entry = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -510,7 +499,7 @@ sub hlx_type_static {
   set var.path = regsuball(var.path, "/+", "/");
   set var.entry = regsuball(var.entry, "/+", "/");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/default/hlx--static";
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -622,12 +611,50 @@ sub hlx_fetch_static {
   }
 }
 
+/**
+ * Fallback handling. Depending on the previous step and the previous status code, either
+ * deliver or restart.
+ */
+sub hlx_deliver_type {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
+  if (req.http.X-Request-Type == "Dispatch") {
+    call hlx_deliver_static;
+  }
+}
+
+/**
+ * Handle the delivery of error handlers. There are two scenarios here:
+ * 1. either the error page could be delivered from GitHub, then set the correct status code and deliver it
+ * 2. no error page could be found, so set the correct status code and deliver a fallback
+ */
+sub hlx_fetch_error {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error(" + beresp.status + ")";
+  if (beresp.status == 200) {
+    # TODO: fix headers
+  } else {
+    error 954 "No error page found";
+  }
+
+  if (req.url.basename ~ "^([0-9][0-9][0-9])") {
+    set beresp.status = std.atoi(re.group.1);
+  } else {
+    # this should never happen
+    set beresp.status = 500;
+  }
+}
+
+/**
+ * Handle delivery of static stuff. If there is a 404, restart with error
+ * if there is content, just deliver it. If there is a redirect, fetch
+ * from redirect and adjust headers
+ */
 sub hlx_deliver_static {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
-  if (resp.http.X-Static == "Raw/Static" && resp.status == 307) {
-    # This is done in `vcl_deliver` instead of `vcl_fetch` because of Fastly
-    # clustering. Changes made to most `req` variables don't make it back to
-    # the edge node, when `vcl_fetch` is run on a different node.
+  if (resp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    return;
+  } elsif (resp.status == 307) {
+    # perform some additional validation
     if (resp.http.Location ~ "https://raw.githubusercontent.com(/.*)") {
       set req.http.X-Request-Type = "Redirect";
       set req.http.X-Backend-URL = re.group.1;
@@ -639,18 +666,11 @@ sub hlx_deliver_static {
       set resp.response = "Redirect to wrong hostname";
       set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
     }
-  } elsif ((resp.status == 404 || resp.status == 204) && !req.http.X-Disable-Static && req.restarts < 1 && req.http.X-Request-Type != "Proxy") {
-    # That was a miss. Let's try to restart, but only restart once
-    set resp.http.X-Status = resp.status + "-Restart " + req.restarts;
-    set resp.status = 404;
-    
-    set req.http.X-Trace = req.http.X-Trace + "(404)";
-
-    if (req.http.X-Request-Type == "Static") {
-      set req.http.X-Request-Type = "Dynamic";
-    } else {
-      set req.http.X-Request-Type = "Static";
-    }
+  } else {
+    # any other error
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
+    set req.http.X-Request-Type = "Error";
+    set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     restart;
   }
 }
@@ -671,56 +691,14 @@ sub hlx_type_embed {
   set req.backend = F_AdobeRuntime;
 }
 
-/**
- * Handles requests for images.
- */
-sub hlx_type_image {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_image";
-
-  set req.backend = F_GitHub;
-  # enable shielding, needed for Image Optimization
-  if (server.identity !~ "-IAD$" && req.http.Fastly-FF !~ "-IAD") {
-    set req.backend = ssl_shield_iad_va_us;
-  }
-  if (!req.backend.healthy) {
-    # the shield datacenter is broken so dont go to it
-    set req.backend = F_GitHub;
-  }
-
-  # Load important information from edge dicts
-  call hlx_owner;
-  call hlx_repo;
-  call hlx_ref;
-  call hlx_root_path;
-
-  declare local var.dir STRING; # directory name
-  declare local var.path STRING; # full path
-  if (req.http.X-Dirname) {
-    # set root path based on strain-specific dirname (strips away strain root)
-    set var.dir = req.http.X-Root-Path + req.http.X-Dirname;
-  } else {
-    set var.dir = req.http.X-Root-Path + req.url.dirname;
-  }
-  set var.dir = regsuball(var.dir, "/+", "/");
-
-  set var.path = var.dir + "/" + req.url.basename;
-  set var.path = regsuball(var.path, "/+", "/");
-  set req.http.X-Backend-URL = "/" + req.http.X-Owner
-     + "/" + req.http.X-Repo
-     + "/" + req.http.X-Ref
-     + var.path + "?" + req.url.qs;
-
-  # enable IO for image file-types
-  set req.http.X-Fastly-Imageopto-Api = "fastly";
-}
 
 /**
  * Handles requests for the main Helix rendering pipeline.
  */
-sub hlx_type_pipeline {
+sub hlx_type_dispatch {
   call hlx_type_pipeline_before;
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_pipeline";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_dispatch";
   # This is a dynamic request.
 
   # get it from OpenWhisk
@@ -728,77 +706,55 @@ sub hlx_type_pipeline {
 
   # Only declare local variables for things we mean to change before putting
   # them into the URL
-  declare local var.dir STRING; # the directory of the content
-  declare local var.name STRING; # the name (without extension) of the resource
-  declare local var.selector STRING; # the selector (between name and extension)
-  declare local var.extension STRING;
   declare local var.action STRING; # the action to call
-  declare local var.path STRING; # resource path
-  declare local var.entry STRING; # bundler entry point
-  declare local var.rootPath STRING; # the root-path (aka mount point) of a strain
+  declare local var.namespace STRING;
+  declare local var.package STRING;
 
-  set var.rootPath = req.http.X-Root-Path;
-
-  # Load important information from edge dicts
+  # Load important information for content repo from edge dicts
   call hlx_owner;
   call hlx_repo;
   call hlx_ref;
   call hlx_root_path;
+  call hlx_index;
 
-  if (req.http.X-Dirname) {
-    # set root path based on strain-specific dirname (strips away strain root)
-    set var.dir = req.http.X-Repo-Root-Path + req.http.X-Dirname;
-  } else {
-    set var.dir = req.http.X-Repo-Root-Path + req.url.dirname;
-  }
-  set var.dir = regsuball(var.dir, "/+", "/");
+  # Load important information for fallback repo from edge dicts
+  call hlx_github_static_owner;
+  call hlx_github_static_repo;
+  call hlx_github_static_ref;
+  call hlx_github_static_root;
 
-  # repeat the regex in case another re-function has been called in the meantime
-  if (req.url.basename ~ "(^[^\.]+)(\.?(.+))?(\.[^\.]*$)") {
-    set var.name = re.group.1;
-    set var.selector = re.group.3;
-    set var.extension = req.url.ext;
-  } else {
-    call hlx_index;
-    # enable ESI
-    set req.http.x-esi = "1";
-    if (req.http.X-Index ~ "(^[^\.]+)\.?(.*)\.([^\.]+$)") {
-      # determine directory index from strain config
-      set var.name = re.group.1;
-      set var.selector = re.group.2;
-      set var.extension = re.group.3;
-    } else {
-      # force default directory index
-      set req.http.X-Index = "default";
-      set var.name = "index";
-      set var.selector = "";
-      set var.extension = "html";
-    }
-  }
 
+  # enable ESI
+  # TODO: move to dispatch action
+  set req.http.x-esi = "1";
+
+  
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
 
-  if (std.strlen(var.selector) > 0) {
-    set var.action = "/" + req.http.X-Action-Root + "/" + var.selector + "_" + var.extension;
-  } else {
-    set var.action = "/" + req.http.X-Action-Root + "/" + var.extension;
-  }
 
   # get (strain-specific) parameter whitelist
   include "params.vcl";
 
-  set var.path = var.dir + "/" + var.name + ".md";
-  set var.path = regsuball(var.path, "/+", "/");
-  # Invoke OpenWhisk
-  set req.http.X-Backend-URL = "/api/v1/web" + var.action
-    + "?owner=" + req.http.X-Owner
-    + "&repo=" + req.http.X-Repo
-    + "&ref=" + req.http.X-Ref
-    + "&path=" + var.path
-    + "&selector=" + var.selector
-    + "&extension=" + req.url.ext
-    + "&strain=" + req.http.X-Strain
-    + "&rootPath=" + var.rootPath;
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace // i.e. /trieloff
+    + "/helix-services/experimental-dispatch@v1"
+    // fallback repo
+    + "?static.owner=" + req.http.X-Github-Static-Owner
+    + "&static.repo=" + req.http.X-Github-Static-Repo
+    + "&static.ref=" + req.http.X-Github-Static-Ref
+    + "&static.root=" + req.http.X-Github-Static-Root
+    // content repo
+    + "&content.owner=" + req.http.X-Owner
+    + "&content.repo=" + req.http.X-Repo
+    + "&content.ref=" + req.http.X-Ref
+    + "&content.root=" + req.http.X-Repo-Root-Path
+    + "&content.package=" + var.package
+    + "&content.index=" + req.http.X-Index
+    + "&path=" + req.url.path
+    + "&strain=" + req.http.X-Strain;
 
   # only append the encoded params if there are encoded params
   if (req.http.X-Encoded-Params) {
@@ -880,7 +836,7 @@ sub vcl_recv {
   call hlx_block_recv;
 
   # Must be after `hlx_strain`, because that might set `Proxy` as type
-  call hlx_request_type;
+  call hlx_determine_request_type;
 
   # Force clustering (despite the name of the header) to make sure we get good
   # cache efficiency with restarts. Without this, Fastly clustering would be
@@ -896,14 +852,13 @@ sub vcl_recv {
     call hlx_type_redirect;
   } elsif (req.http.X-Request-Type == "Embed") { 
     call hlx_type_embed;
-  } elseif (req.http.X-Request-Type == "Image") {
-    call hlx_type_image;
   } elseif (req.http.X-Request-Type == "Static-URL") {
     call hlx_type_static_url;
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
   } else {
-    call hlx_type_pipeline;
+    set req.http.X-Request-Type = "Dispatch";
+    call hlx_type_dispatch;
   }
 
   # run generated vcl
@@ -958,6 +913,14 @@ sub hlx_deliver_errors {
      set resp.status = 500;
      set resp.response = "Internal Server Error";
   }
+  if (resp.status == 954) {
+    if (req.url.basename ~ "^([0-9][0-9][0-9])") {
+      set resp.status = std.atoi(re.group.1);
+    } else {
+      # this should never happen
+      set resp.status = 500;
+    }
+  }
 }
 
 sub hlx_error_errors {
@@ -978,6 +941,19 @@ sub hlx_error_errors {
     synthetic {"include:953.html"};
     return(deliver);
   }
+  if (obj.status == 954) {
+    set obj.http.Content-Type = "text/html";
+    if (req.url.basename ~ "^404") {
+      synthetic {"include:404.html"};
+      return(deliver);
+    }
+    if (req.url.basename ~ "^500") {
+      synthetic {"include:500.html"};
+      return(deliver);
+    }
+    synthetic {"include:generic-error.html"};
+    return(deliver);
+  }
 }
 
 sub vcl_fetch {
@@ -986,7 +962,7 @@ sub vcl_fetch {
   set beresp.http.X-Trace = req.http.X-Trace;
   set beresp.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
   set beresp.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
-  set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url ")";
+  set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url " " req.http.X-Request-Type ")";
 #FASTLY fetch
 
   # Sprinkling in our debugging
@@ -1035,18 +1011,15 @@ sub vcl_fetch {
     if (beresp.status == 200) {
       set beresp.ttl = 604800s;
       set beresp.http.Cache-Control = "max-age=604800, public";
-
-      # apply a longer ttl for images
-      if (req.http.X-Request-Type == "Image") {
-        set beresp.ttl = 2592000s;
-        set beresp.http.Cache-Control = "max-age=2592000, public";
-      }
-
     } else {
       set beresp.ttl = 60s;
     }
   }
 
+  if (req.http.X-Request-Type == "Error") {
+    # check the response from /404.html, /500.html, etc.
+    call hlx_fetch_error;
+  }
   call hlx_fetch_static;
 
   if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
@@ -1179,7 +1152,7 @@ sub vcl_deliver {
 
   call hlx_headers_deliver;
 
-  call hlx_deliver_static;
+  call hlx_deliver_type;
 
   # only set the strain cookie for sticky strains
   # and only do it for the Adobe I/O Runtime backend
@@ -1197,6 +1170,7 @@ sub vcl_deliver {
     unset resp.http.Access-Control-Allow-Origin;
     unset resp.http.Perf-Br-Resp-Out;
     unset resp.http.Server;
+    unset resp.http.Server-Timing;
     unset resp.http.Via;
     unset resp.http.X-Backend-Name;
     unset resp.http.X-Backend-URL;
@@ -1205,6 +1179,7 @@ sub vcl_deliver {
     unset resp.http.X-CDN-Request-ID;
     unset resp.http.X-Content-Type-Options;
     unset resp.http.X-Content-Type;
+    unset resp.http.X-ESI;
     unset resp.http.X-Fastly-Request-ID;
     unset resp.http.X-Frame-Options;
     unset resp.http.X-FullDirname;
@@ -1218,6 +1193,7 @@ sub vcl_deliver {
     unset resp.http.X-Sticky;
     unset resp.http.X-Strain;
     unset resp.http.X-Timer;
+    unset resp.http.X-Trace;
     unset resp.http.X-URL;
     unset resp.http.x-xss-protection;
   } else {
