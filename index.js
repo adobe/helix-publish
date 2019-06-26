@@ -26,14 +26,8 @@ async function main(params) {
   return result;
 }
 
-async function wrap(params) {
-  epsagon.init({
-    token: params.EPSAGON_TOKEN,
-    appName: 'Helix Services',
-    metadataOnly: false, // Optional, send more trace data
-  });
-
-  return epsagon.openWhiskWrapper(main)(params);
-}
-
-module.exports.main = status.main(wrap, { fastly: 'https://api.fastly.com/' });
+module.exports.main = status.main(epsagon.openWhiskWrapper(main, {
+  token_param: 'EPSAGON_TOKEN',
+  appName: 'Helix Services',
+  metadataOnly: false,
+}), { fastly: 'https://api.fastly.com/' });
