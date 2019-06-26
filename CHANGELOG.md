@@ -1,3 +1,47 @@
+# [2.0.0](https://github.com/adobe/helix-publish/compare/v1.0.3...v2.0.0) (2019-06-26)
+
+
+### Bug Fixes
+
+* **error:** fix remaining resp ([d89b2f6](https://github.com/adobe/helix-publish/commit/d89b2f6))
+* **error:** separate error handler from raw handler ([00beb7a](https://github.com/adobe/helix-publish/commit/00beb7a))
+* **error:** use http.host ([03b4ec3](https://github.com/adobe/helix-publish/commit/03b4ec3))
+* **error:** use new error subroutin ([29cac81](https://github.com/adobe/helix-publish/commit/29cac81))
+* **error:** use resp instead of beresp in error delivery ([dab068b](https://github.com/adobe/helix-publish/commit/dab068b))
+* **package:** add missing error pages ([ebcf05c](https://github.com/adobe/helix-publish/commit/ebcf05c))
+* **raw:** set correct content type for popular file endings ([1455d3f](https://github.com/adobe/helix-publish/commit/1455d3f))
+* **raw:** set correct content type for raw HTML responses ([fafd955](https://github.com/adobe/helix-publish/commit/fafd955))
+* **static:** use the versioned shared static function ([2e18192](https://github.com/adobe/helix-publish/commit/2e18192))
+* **vcl:** add missing equals sign for request parameters ([c238503](https://github.com/adobe/helix-publish/commit/c238503))
+* **vcl:** always use HTML for error pages ([dec8b51](https://github.com/adobe/helix-publish/commit/dec8b51))
+* **vcl:** fix data flow error ([22897d1](https://github.com/adobe/helix-publish/commit/22897d1))
+* **vcl:** fix req.http.X-Action-Root ([c6c7e7d](https://github.com/adobe/helix-publish/commit/c6c7e7d))
+* **vcl:** fix syntax error ([e28ec3d](https://github.com/adobe/helix-publish/commit/e28ec3d))
+* **vcl:** fix syntax error ([6825bae](https://github.com/adobe/helix-publish/commit/6825bae))
+* **vcl:** fix syntax error ([1fe37f2](https://github.com/adobe/helix-publish/commit/1fe37f2))
+* **vcl:** fix syntax error ([b0b9829](https://github.com/adobe/helix-publish/commit/b0b9829))
+* **vcl:** fix syntax error ([ebf0807](https://github.com/adobe/helix-publish/commit/ebf0807))
+* **vcl:** fix syntax error ([d8afe05](https://github.com/adobe/helix-publish/commit/d8afe05))
+* **vcl:** move error from fetch to deliver ([061fa10](https://github.com/adobe/helix-publish/commit/061fa10))
+* **vcl:** relax conditions for 302 and url extensions ([8da5e1e](https://github.com/adobe/helix-publish/commit/8da5e1e))
+* **vcl:** remove error request type ([9c72d4b](https://github.com/adobe/helix-publish/commit/9c72d4b))
+* **vcl:** remove unused error subroutine ([a58e8e0](https://github.com/adobe/helix-publish/commit/a58e8e0))
+* **vcl:** remove unused raw function ([9fb2e05](https://github.com/adobe/helix-publish/commit/9fb2e05))
+* **vcl:** remove unused subroutines ([1cbdec4](https://github.com/adobe/helix-publish/commit/1cbdec4))
+* **vcl:** shut up chatty headers ([31fcc7c](https://github.com/adobe/helix-publish/commit/31fcc7c))
+* **vlc:** don't drop out of error handler function ([35a9f81](https://github.com/adobe/helix-publish/commit/35a9f81))
+
+
+### Features
+
+* **static:** Give content repository precedence in serving resources and error pages ([bf8cbae](https://github.com/adobe/helix-publish/commit/bf8cbae)), closes [#96](https://github.com/adobe/helix-publish/issues/96)
+* **vcl:** introduce new dispatch flow ([53a3dbe](https://github.com/adobe/helix-publish/commit/53a3dbe)), closes [#96](https://github.com/adobe/helix-publish/issues/96) [#105](https://github.com/adobe/helix-publish/issues/105) [#96](https://github.com/adobe/helix-publish/issues/96)
+
+
+### BREAKING CHANGES
+
+* **static:** As described in #96, this introduces a new request type `raw` which works like the old `image` request type, but applies to all resources. In case `raw` fails, we will fall back to `pipeline`, which will fall back to `static` which will fall back to `error`. `error` is very similar to `raw` in that it tries to fetch an error page like `404.html` from the content repository
+
 ## [1.0.3](https://github.com/adobe/helix-publish/compare/v1.0.2...v1.0.3) (2019-06-25)
 
 
