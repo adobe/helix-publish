@@ -1121,6 +1121,8 @@ sub vcl_pass {
 }
 
 sub vcl_deliver {
+  call hlx_vcl_deliver_before;
+
   # reconstruct VCL trace from information stored in backend response headers
   if (resp.http.X-Trace) {
     set req.http.X-Trace = resp.http.X-Trace;
@@ -1199,6 +1201,9 @@ sub vcl_deliver {
   } else {
     set resp.http.X-Trace = req.http.X-Trace;
   }
+
+  call hlx_vcl_deliver_after;
+
   return(deliver);
 }
 

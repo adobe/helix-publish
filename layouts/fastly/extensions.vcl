@@ -21,3 +21,6 @@ sub hlx_repo_after {}
 
 sub hlx_ref_before {}
 sub hlx_ref_after {}
+
+sub hlx_vcl_deliver_before {}
+sub hlx_vcl_deliver_after {}
