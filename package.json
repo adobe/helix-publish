@@ -15,7 +15,7 @@
     "preversion": "npm run junit",
     "postversion": "git push origin master --follow-tags",
     "zip": "npm ls --prod --parseable | grep node_modules | sed -e 's/.*node_modules/node_modules/' | xargs zip publish.zip -r src layouts package.json index.js",
-    "deploy": "wsk-builder -v --deploy --test  -p EPSAGON_TOKEN $EPSAGON_TOKEN --entryFile index.js",
+    "deploy": "wsk-builder -v --deploy --test  -p EPSAGON_TOKEN=$EPSAGON_TOKEN --entryFile index.js",
     "test-postdeploy": "mocha --reporter xunit --reporter-options output=./junit/test-results.xml -g 'Post-Deploy'",
     "delete-git-tag": "git tag -d v$npm_package_version && git push origin :v$npm_package_version",
     "semantic-release": "semantic-release",
