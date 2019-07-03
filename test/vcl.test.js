@@ -13,7 +13,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const path = require('path');
 const { HelixConfig } = require('@adobe/helix-shared');
-const { init, updatestrains, extensions } = require('../src/fastly/vcl');
+const { init, updatestrains, extensions, dynamic } = require('../src/fastly/vcl');
 
 /* eslint-env mocha */
 
@@ -78,9 +78,19 @@ describe('Testing vcl.js', () => {
 
     assert.ok(await updatestrains(fastly, 1, config.strains));
 
-    assert.ok(fastly.writeVCL.calledThrice);
+    assert.ok(fastly.writeVCL.calledTwice);
     assert.ok(fastly.writeVCL.calledWith(1, 'strains.vcl'));
     assert.ok(fastly.writeVCL.calledWith(1, 'params.vcl'));
+  });
+
+  it('#dynamic', async () => {
+    const fastly = {
+      writeVCL: sinon.fake(),
+    };
+
+    assert.ok(await dynamic(fastly, 1, 1));
+
+    assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'dynamic.vcl'));
   });
 });

@@ -234,7 +234,7 @@ function xversion(configVersion, cliVersion, revision = 'online') {
 }
 
 function reqHeader(name, value) {
-  return `set req.http.${name} = "${value}"\n`;
+  return `set req.http.${name} = "${value}";\n`;
 }
 
 /**

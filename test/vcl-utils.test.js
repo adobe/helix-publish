@@ -31,6 +31,11 @@ describe('Testing vcl-utils.js', () => {
     assert.equal(line2, 'set req.http.X-Version = req.http.X-Version + "; src=1; cli=0.9; rev=online";');
   });
 
+  it('#reqHeader', () => {
+    const content = utils.reqHeader('X-Test-Header', 'testheadervalue');
+    assert.equal(content, 'set req.http.X-Test-Header = "testheadervalue";\n');
+  });
+
   function resolvetest(name) {
     return async function test() {
       const config = await new HelixConfig()
