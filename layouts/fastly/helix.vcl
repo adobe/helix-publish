@@ -17,10 +17,10 @@
 # `req.http.X-Orig-URL` - The URL as received from the client
 # `req.http.X-Backend-URL` - The URL as should be sent to the origin (backend)
 #
-# Having `req.url` be canonical, vs `X-Backend-URL` being what's sent to origin 
+# Having `req.url` be canonical, vs `X-Backend-URL` being what's sent to origin
 # allows us to do restarts to find content on other origins, and use origin
-# specific URLs, yet have the object stored under a single hash, meaning that 
-# a cache lookup will find the proper object on the first attempt once an 
+# specific URLs, yet have the object stored under a single hash, meaning that
+# a cache lookup will find the proper object on the first attempt once an
 # object is in the cache.
 #
 # So `req.url` is what should be left after filtering query string parameters,
@@ -81,7 +81,7 @@ sub hlx_set_from_edge {
     set var.data = strftime({"%s"}, now) + "," + server.datacenter;
     set bereq.http.X-From-Edge =
       var.data + "," + digest.hmac_sha256(
-        # This must match whatever key is being used 
+        # This must match whatever key is being used
         req.service_id + table.lookup(secrets, "OPENWHISK_AUTH"), var.data);
   }
 }
@@ -407,7 +407,7 @@ sub hlx_determine_request_type {
     set req.http.X-Request-Type = "Embed";
     return;
   }
-  
+
   set req.http.X-Trace = req.http.X-Trace + "(none)";
 }
 
@@ -481,7 +481,7 @@ sub hlx_type_static {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
-  
+
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
@@ -541,22 +541,22 @@ sub hlx_fetch_static {
   if (req.http.X-Request-Type == "Static-URL" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(url)";
     # Get the ETag response header and use it to construct a stable URL
-    
+
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
     set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
     set req.http.X-Location = regsub(req.http.X-Orig-URL, ".url$", var.ext);
-    error 303 "URL"; 
+    error 303 "URL";
   }
   if (req.http.X-Request-Type == "Static-302" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(302)";
     # Get the ETag response header and use it to construct a stable URL
-    
+
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
     set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
     set req.http.X-Location = regsub(req.http.X-Orig-URL, ".302$", var.ext);
-    error 902 "302"; 
+    error 902 "302";
   }
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
@@ -624,23 +624,25 @@ sub hlx_deliver_type {
 
 /**
  * Handle the delivery of error handlers. There are two scenarios here:
- * 1. either the error page could be delivered from GitHub, then set the correct status code and deliver it
+ * 1. either the error page could be delivered from dispatch, then do nothing
  * 2. no error page could be found, so set the correct status code and deliver a fallback
  */
 sub hlx_fetch_error {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error(" + beresp.status + ")";
-  if (beresp.status == 200) {
+  if (beresp.status != 200 && beresp.http.Content-Length == "0") {
     # TODO: fix headers
-  } else {
-    error 954 "No error page found";
+    if (beresp.status == 404) {
+       error 951 "Not Found";
+    } else {
+       error 952 "Internal Server Error";
+    }
   }
-
-  if (req.url.basename ~ "^([0-9][0-9][0-9])") {
-    set beresp.status = std.atoi(re.group.1);
-  } else {
-    # this should never happen
-    set beresp.status = 500;
-  }
+//  if (req.url.basename ~ "^([0-9][0-9][0-9])") {
+//    set beresp.status = std.atoi(re.group.1);
+//  } else {
+//    # this should never happen
+//    set beresp.status = 500;
+//  }
 }
 
 /**
@@ -667,11 +669,11 @@ sub hlx_deliver_static {
       set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
     }
   } else {
-    # any other error
+    # any other error, ignore
     set req.http.X-Trace = req.http.X-Trace + "(error)";
-    set req.http.X-Request-Type = "Error";
-    set req.url = "/" + resp.status + ".html"; // fall back to 500.html
-    restart;
+    #set req.http.X-Request-Type = "Error";
+    #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
+    #restart;
   }
 }
 
@@ -728,7 +730,7 @@ sub hlx_type_dispatch {
   # TODO: move to dispatch action
   set req.http.x-esi = "1";
 
-  
+
   # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
   set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
@@ -810,7 +812,7 @@ sub vcl_recv {
   # that acts as a canary. If requests reach it, the VCL isn't setting a backend
   # somewhere.
   set req.backend = F_AdobeRuntime;
-  
+
   if (req.http.X-From-Edge) {
     # Request came from a Fastly POP, send the raw response without ESI processing
     set req.esi = false;
@@ -841,7 +843,7 @@ sub vcl_recv {
   # Force clustering (despite the name of the header) to make sure we get good
   # cache efficiency with restarts. Without this, Fastly clustering would be
   # disabled after a restart, which means that each node in a Fastly POP would
-  # use its own cache, instead of checking the designated node for the object. 
+  # use its own cache, instead of checking the designated node for the object.
   set req.http.Fastly-Force-Shield = "yes";
 
   if (req.http.X-Request-Type == "Proxy") {
@@ -850,7 +852,7 @@ sub vcl_recv {
     call hlx_type_static;
   } elsif (req.http.X-Request-Type == "Redirect") {
     call hlx_type_redirect;
-  } elsif (req.http.X-Request-Type == "Embed") { 
+  } elsif (req.http.X-Request-Type == "Embed") {
     call hlx_type_embed;
   } elseif (req.http.X-Request-Type == "Static-URL") {
     call hlx_type_static_url;
@@ -957,7 +959,7 @@ sub hlx_error_errors {
 }
 
 sub vcl_fetch {
-  # store trace information in backend response headers in order 
+  # store trace information in backend response headers in order
   # to make them available in vcl_deliver
   set beresp.http.X-Trace = req.http.X-Trace;
   set beresp.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
@@ -989,7 +991,7 @@ sub vcl_fetch {
       set beresp.http.Vary = "X-Debug";
     }
   }
-  # Vary on Strain for pipeline and static, since we're sending strain in the 
+  # Vary on Strain for pipeline and static, since we're sending strain in the
   # backend URL.
   if (beresp.http.Vary !~ "X-Strain") {
     # Vary is already set above
@@ -1016,10 +1018,12 @@ sub vcl_fetch {
     }
   }
 
-  if (req.http.X-Request-Type == "Error") {
-    # check the response from /404.html, /500.html, etc.
-    call hlx_fetch_error;
-  }
+  # check if an error response has an empty body, in this case, the dispatcher didn't deliver
+  # a valid error page and we use the synthentic one.
+  # todo: this logic needs to be improved. maybe with a specific response header from the action
+  call hlx_fetch_error;
+
+  # checks if the request is a redirect or .hlx_xxxx request and then call helix-static respectively.
   call hlx_fetch_static;
 
   if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
@@ -1068,7 +1072,7 @@ sub hlx_bereq {
     }
   }
 
-  
+
   if (req.backend == F_AdobeRuntime) {
     # set backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
