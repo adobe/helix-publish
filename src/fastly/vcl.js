@@ -19,6 +19,7 @@ const {
   parameters,
   xversion,
   writevcl,
+  reqHeader,
 } = require('./vcl-utils');
 const package = require('../../package.json');
 
@@ -49,7 +50,15 @@ function updatestrains(fastly, version, strains) {
   return Promise.all([
     writevcl(fastly, version, resolve(strains), 'strains.vcl'),
     writevcl(fastly, version, parameters(strains), 'params.vcl'),
-    writevcl(fastly, version, xversion(version, package.version), 'dynamic.vcl'),
+  ]);
+}
+
+function dynamic(fastly, version, dispatchVersion) {
+  let content = '';
+  content += xversion(version, package.version);
+  content += reqHeader('X-Dispatch-Version', dispatchVersion);
+  return Promise.all([
+    writevcl(fastly, version, content, 'dynamic.vcl'),
   ]);
 }
 
@@ -57,4 +66,5 @@ module.exports = {
   init,
   updatestrains,
   extensions,
+  dynamic,
 };

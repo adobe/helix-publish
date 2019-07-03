@@ -233,6 +233,10 @@ function xversion(configVersion, cliVersion, revision = 'online') {
   return retvcl;
 }
 
+function reqHeader(name, value) {
+  return `set req.http.${name} = "${value}"\n`;
+}
+
 /**
  * Turns regex-like replacement patterns into valid VCL statements, e.g. `/foo/$1.html` becomes
  * `"/foo/" + re.group.1 + ".html"`
@@ -254,5 +258,5 @@ function condition(pattern, strain) {
 }
 
 module.exports = {
-  resolve, reset, parameters, xversion, regexp, writevcl, pattern2vcl, condition,
+  resolve, reset, parameters, xversion, regexp, writevcl, pattern2vcl, condition, reqHeader
 };
