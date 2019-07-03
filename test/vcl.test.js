@@ -13,7 +13,9 @@ const assert = require('assert');
 const sinon = require('sinon');
 const path = require('path');
 const { HelixConfig } = require('@adobe/helix-shared');
-const { init, updatestrains, extensions, dynamic } = require('../src/fastly/vcl');
+const {
+  init, updatestrains, extensions, dynamic,
+} = require('../src/fastly/vcl');
 
 /* eslint-env mocha */
 
