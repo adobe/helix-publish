@@ -258,5 +258,5 @@ function condition(pattern, strain) {
 }
 
 module.exports = {
-  resolve, reset, parameters, xversion, regexp, writevcl, pattern2vcl, condition, reqHeader
+  resolve, reset, parameters, xversion, regexp, writevcl, pattern2vcl, condition, reqHeader,
 };
