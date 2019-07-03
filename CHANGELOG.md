@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/adobe/helix-publish/compare/v2.0.0...v2.0.1) (2019-07-03)
+
+
+### Bug Fixes
+
+* **vcl:** Avoid multiple requests if resource is not found and fix error page handling. ([#126](https://github.com/adobe/helix-publish/issues/126)) ([1b05bd1](https://github.com/adobe/helix-publish/commit/1b05bd1)), closes [#125](https://github.com/adobe/helix-publish/issues/125)
+
 # [2.0.0](https://github.com/adobe/helix-publish/compare/v1.0.3...v2.0.0) (2019-06-26)
 
 
