@@ -742,7 +742,7 @@ sub hlx_type_dispatch {
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/experimental-dispatch@v1"
+    + "/helix-services/experimental-dispatch@latest"
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
     + "&static.repo=" + req.http.X-Github-Static-Repo
