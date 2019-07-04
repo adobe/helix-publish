@@ -1,3 +1,11 @@
+# [2.1.0](https://github.com/adobe/helix-publish/compare/v2.0.1...v2.1.0) (2019-07-04)
+
+
+### Features
+
+* **dispatch:** use latest instead of v1 ([0b564a2](https://github.com/adobe/helix-publish/commit/0b564a2))
+* **dispatch:** use latest instead of v1 ([3384c85](https://github.com/adobe/helix-publish/commit/3384c85))
+
 ## [2.0.1](https://github.com/adobe/helix-publish/compare/v2.0.0...v2.0.1) (2019-07-03)
 
 
