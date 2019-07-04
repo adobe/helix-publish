@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/adobe/helix-publish/compare/v2.1.0...v2.2.0) (2019-07-04)
+
+
+### Features
+
+* **dispatch:** allow dynamic version of the dispatch url ([#130](https://github.com/adobe/helix-publish/issues/130)) ([32f8645](https://github.com/adobe/helix-publish/commit/32f8645))
+
 # [2.1.0](https://github.com/adobe/helix-publish/compare/v2.0.1...v2.1.0) (2019-07-04)
 
 
