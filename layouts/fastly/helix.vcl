@@ -742,7 +742,7 @@ sub hlx_type_dispatch {
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/experimental-dispatch@latest"
+    + "/helix-services/experimental-dispatch@" + req.http.X-Dispatch-Version
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
     + "&static.repo=" + req.http.X-Github-Static-Repo
@@ -799,6 +799,9 @@ sub vcl_recv {
   }
 
   call hlx_recv_init;
+
+  # run generated vcl
+  include "dynamic.vcl";
 
 #FASTLY recv
 
@@ -862,9 +865,6 @@ sub vcl_recv {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
   }
-
-  # run generated vcl
-  include "dynamic.vcl";
 
   # re-enable shielding for changed backends
   # include "reset.vcl";

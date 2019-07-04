@@ -108,7 +108,7 @@ describe('Integration Test', () => {
     assert.deepStrictEqual(res, {
       body: {
         status: 'published',
-        completed: 7,
+        completed: 8,
       },
       statusCode: 200,
     });

@@ -21,6 +21,7 @@ async function main(params) {
     params.token,
     params.version,
     params.vcl,
+    params.dispatchVersion,
   );
 
   return result;

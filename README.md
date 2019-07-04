@@ -42,6 +42,7 @@ Send a POST request with following (`Content-Type: application/json`-encoded) bo
 * `token`: a Fastly authentication token that has `global` permission on the service config
 * `version`: the version number of a checked-out (editable) version of the above service config
 * `vcl`: an object containing the name of the vcl file (key) to override and its content. For now, only `extensions.vcl` override is supported
+* `dispatchVersion`: the version of the dispatch action to use. Defaults to `latest`.
 
 ## Developing Helix Publish
 
