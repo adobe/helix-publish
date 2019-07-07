@@ -17,8 +17,9 @@ const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'latest') {
+async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'latest', log = console) {
   if (!(!!token && !!service)) {
+    log.error('No token or service.');
     return {
       body: {
         status: 'missing credentials',
@@ -28,10 +29,12 @@ async function publish(configuration, service, token, version, vclOverrides = {}
   }
 
   try {
-    const config = await new HelixConfig().withJSON(configuration).init();
+    const config = await new HelixConfig()
+      .withLogger(log)
+      .withJSON(configuration)
+      .init();
     const fastly = await initfastly(token, service);
-
-
+    log.info('running publishing tasks...');
     return Promise.all([
       backends.init(fastly, version),
       backends.updatestrains(fastly, version, config.strains),
@@ -43,27 +46,37 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       dictionaries.init(
         fastly,
         version,
-      ).then(() => dictionaries.updatestrains(
-        fastly,
-        version,
-        config.strains,
-      )),
-    ]).then(tasks => ({
-      body: {
-        status: 'published',
-        completed: tasks.length,
-      },
-      statusCode: 200,
-    })).catch(e => ({
-      body: {
-        status: 'error',
-        message: `${e}`,
-        stack: e.stack.split('\n'),
-      },
-      statusCode: 500,
-    }));
+      )
+        .then(() => dictionaries.updatestrains(
+          fastly,
+          version,
+          config.strains,
+        )),
+    ])
+      .then((tasks) => {
+        log.info(`completed ${tasks.length} tasks.`);
+        return {
+          body: {
+            status: 'published',
+            completed: tasks.length,
+          },
+          statusCode: 200,
+        };
+      })
+      .catch((e) => {
+        log.error(`error executing tasks: ${e}`, e);
+        return {
+          body: {
+            status: 'error',
+            message: `${e}`,
+            stack: e.stack.split('\n'),
+          },
+          statusCode: 500,
+        };
+      });
   } catch (e) {
     // invalid configuration
+    log.error(e);
     return {
       body: {
         status: 'invalid configuration',

@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 const { condit } = require('@adobe/helix-testutils');
+const { Logger } = require('@adobe/helix-shared');
 const assert = require('assert');
 const request = require('request-promise-native');
 const { main } = require('../index');
@@ -147,5 +148,36 @@ describe('Integration Test', () => {
 
     assert.equal(res.statusCode, 200);
     assert.ok(res.body.match(/<status>OK<\/status>/));
+  });
+
+  it('index function instruments epsagon', async () => {
+    const logger = Logger.getTestLogger({
+      // tune this for debugging
+      level: 'info',
+    });
+    logger.fields = {}; // avoid errors during setup. test logger is winston, but we need bunyan.
+    logger.flush = () => {};
+    await main({
+      EPSAGON_TOKEN: 'foobar',
+    }, logger);
+
+    const output = await logger.getOutput();
+    assert.ok(output.indexOf('instrumenting epsagon.') >= 0);
+  });
+
+  it('error in main function is caught', async () => {
+    const logger = Logger.getTestLogger({
+      // tune this for debugging
+      level: 'info',
+    });
+    logger.fields = {}; // avoid errors during setup. test logger is winston, but we need bunyan.
+    logger.flush = () => {
+      throw new Error('error during flush.');
+    };
+    const result = await main({}, logger);
+
+    assert.deepEqual(result, {
+      statusCode: 500,
+    });
   });
 });
