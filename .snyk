@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.12.0
+version: v1.13.5
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
@@ -68,3 +68,6 @@ patch:
         patched: '2018-07-06T10:49:39.622Z'
     - codecov > request > hawk > cryptiles > boom > hoek:
         patched: '2018-07-06T10:49:39.622Z'
+  SNYK-JS-LODASH-450202:
+    - '@adobe/openwhisk-action-builder > archiver > async > lodash':
+        patched: '2019-07-07T05:03:37.053Z'
