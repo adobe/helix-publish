@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Adobe. All rights reserved.
+ * Copyright 2019 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -29,12 +29,21 @@ module.exports = {
   'rules': {
     'strict': 0,
 
+    // Forbid multiple statements in one line
+    'max-statements-per-line': ["error", { "max": 1 }],
+
+    // Allow for-of loops
+    'no-restricted-syntax': ['error', 'ForInStatement', 'LabeledStatement', 'WithStatement'],
+
+    // Allow return before else & redundant else statements
+    'no-else-return': 'off',
+
     // allow dangling underscores for 'fields'
     'no-underscore-dangle': ['error', {'allowAfterThis': true}],
 
-    // enforce license header (todo: improve plugin to support patterns for multi-lines)
+    // enforce license header
     'header/header': [2, 'block', ['',
-      ' * Copyright 2018 Adobe. All rights reserved.',
+      { pattern: ' * Copyright \\d{4} Adobe\\. All rights reserved\\.', template: ' * Copyright 2019 Adobe. All rights reserved.'},
       ' * This file is licensed to you under the Apache License, Version 2.0 (the "License");',
       ' * you may not use this file except in compliance with the License. You may obtain a copy',
       ' * of the License at http://www.apache.org/licenses/LICENSE-2.0',

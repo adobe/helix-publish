@@ -1,3 +1,11 @@
+## [2.2.1](https://github.com/adobe/helix-publish/compare/v2.2.0...v2.2.1) (2019-07-07)
+
+
+### Bug Fixes
+
+* **package:** update dependencies ([009573f](https://github.com/adobe/helix-publish/commit/009573f))
+* **pingdom:** improve error reporting. ([04b56f0](https://github.com/adobe/helix-publish/commit/04b56f0))
+
 # [2.2.0](https://github.com/adobe/helix-publish/compare/v2.1.0...v2.2.0) (2019-07-04)
 
 
