@@ -756,7 +756,8 @@ sub hlx_type_dispatch {
     + "&content.package=" + var.package
     + "&content.index=" + req.http.X-Index
     + "&path=" + req.url.path
-    + "&strain=" + req.http.X-Strain;
+    + "&strain=" + req.http.X-Strain
+    + "&rootPath=" + req.http.X-Root-Path;
 
   # only append the encoded params if there are encoded params
   if (req.http.X-Encoded-Params) {
