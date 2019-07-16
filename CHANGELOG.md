@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/adobe/helix-publish/compare/v2.2.1...v2.2.2) (2019-07-16)
+
+
+### Bug Fixes
+
+* **dispatch:** add params.rootPath ([#140](https://github.com/adobe/helix-publish/issues/140)) ([9ef4f36](https://github.com/adobe/helix-publish/commit/9ef4f36)), closes [#139](https://github.com/adobe/helix-publish/issues/139)
+
 ## [2.2.1](https://github.com/adobe/helix-publish/compare/v2.2.0...v2.2.1) (2019-07-07)
 
 
