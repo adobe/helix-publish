@@ -629,7 +629,8 @@ sub hlx_deliver_type {
  */
 sub hlx_fetch_error {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error(" + beresp.status + ")";
-  if (beresp.status != 200 && beresp.http.Content-Length == "0") {
+  # only use syntethic errors if not in esi sub-request and no content is delivered from the dispatcher.
+  if (!req.http.x-topurl && beresp.status != 200 && beresp.http.Content-Length == "0") {
     # TODO: fix headers
     if (beresp.status == 404) {
        error 951 "Not Found";
@@ -637,12 +638,12 @@ sub hlx_fetch_error {
        error 952 "Internal Server Error";
     }
   }
-//  if (req.url.basename ~ "^([0-9][0-9][0-9])") {
-//    set beresp.status = std.atoi(re.group.1);
-//  } else {
-//    # this should never happen
-//    set beresp.status = 500;
-//  }
+  # if (req.url.basename ~ "^([0-9][0-9][0-9])") {
+  #   set beresp.status = std.atoi(re.group.1);
+  # } else {
+  #   # this should never happen
+  #   set beresp.status = 500;
+  # }
 }
 
 /**
@@ -824,6 +825,11 @@ sub vcl_recv {
     set req.http.x-esi = "1";
   }
 
+  # somehow we don't see the req.topurl in vcl_fetch, so we remember it here
+  if (req.topurl) {
+    set req.http.x-topurl = req.topurl;
+  }
+
   // compute X-FullDirname which contains the real incoming path of directories
   if (req.url.ext == "") {
     // case url = /a/b -> for Fastly, dirname = /a and basename = b
@@ -879,6 +885,11 @@ sub vcl_recv {
 }
 
 sub hlx_fetch_errors {
+  if (req.http.x-topurl) {
+    # don't set syntethic error for ESI sub-requests
+    return;
+  }
+
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_errors";
   # Interpreting OpenWhisk errors is a bit tricky, because we don't have access to the JSON
   # of the response body. Instead we are using the Content-Length of known error messages
