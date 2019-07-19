@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/adobe/helix-publish/compare/v2.2.2...v2.2.3) (2019-07-19)
+
+
+### Bug Fixes
+
+* **vcl:** don't send synthetic errors for esi sub-requests ([#143](https://github.com/adobe/helix-publish/issues/143)) ([979b8b9](https://github.com/adobe/helix-publish/commit/979b8b9)), closes [#132](https://github.com/adobe/helix-publish/issues/132)
+
 ## [2.2.2](https://github.com/adobe/helix-publish/compare/v2.2.1...v2.2.2) (2019-07-16)
 
 
