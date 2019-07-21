@@ -46,7 +46,7 @@
     "@semantic-release/npm": "^5.1.13",
     "@semantic-release/release-notes-generator": "^7.2.1",
     "codecov": "^3.5.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.1.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-header": "^2.0.0",
     "eslint-plugin-import": "^2.18.0",
