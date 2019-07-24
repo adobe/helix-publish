@@ -188,7 +188,7 @@ describe('Integration Test', () => {
       });
     }
 
-    const res = await main({ __ow_method: 'get' });
+    const res = await main({ __ow_method: 'get', __ow_path: '/_status_check/pingdom.xml' });
 
     assert.equal(res.statusCode, 200);
     assert.ok(res.body.match(/<status>OK<\/status>/));
