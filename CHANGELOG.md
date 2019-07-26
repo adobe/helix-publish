@@ -1,3 +1,10 @@
+## [2.2.5](https://github.com/adobe/helix-publish/compare/v2.2.4...v2.2.5) (2019-07-26)
+
+
+### Bug Fixes
+
+* **package:** update @adobe/helix-pingdom-status to version 3.0.0 ([ecf1b22](https://github.com/adobe/helix-publish/commit/ecf1b22))
+
 ## [2.2.4](https://github.com/adobe/helix-publish/compare/v2.2.3...v2.2.4) (2019-07-24)
 
 
