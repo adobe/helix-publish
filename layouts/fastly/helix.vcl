@@ -328,6 +328,13 @@ sub hlx_github_static_ref {
 sub hlx_headers_fetch {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_fetch";
 
+  # Add Surrogate-Key headers for soft purges
+  if (!beresp.http.Surrogate-Key) {
+    set beresp.http.Surrogate-Key = "all";
+  } else{
+    set beresp.http.Surrogate-Key = "all " + beresp.http.Surrogate-Key;
+  }
+
   # Only do this when X-Debug is present, since `Vary: X-Debug` will cause
   # misses, making it useless to keep this on regular objects.
   if (req.http.X-Debug) {
