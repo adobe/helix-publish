@@ -62,7 +62,7 @@
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@adobe/fastly-native-promises": "1.10.0",
+    "@adobe/fastly-native-promises": "1.11.0",
     "@adobe/helix-pingdom-status": "^3.0.0",
     "@adobe/helix-shared": "2.1.1",
     "@adobe/openwhisk-action-builder": "^1.1.1",
