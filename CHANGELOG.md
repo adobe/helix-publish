@@ -1,3 +1,15 @@
+# [2.3.0](https://github.com/adobe/helix-publish/compare/v2.2.6...v2.3.0) (2019-07-31)
+
+
+### Bug Fixes
+
+* **monitoring:** hide Epsagon and Fastly token from Epsagon ([9aaed69](https://github.com/adobe/helix-publish/commit/9aaed69))
+
+
+### Features
+
+* **vcl:** add `all` as a surrogate key header value to all requests for better soft purges ([eff8c9c](https://github.com/adobe/helix-publish/commit/eff8c9c)), closes [#152](https://github.com/adobe/helix-publish/issues/152)
+
 ## [2.2.6](https://github.com/adobe/helix-publish/compare/v2.2.5...v2.2.6) (2019-07-30)
 
 
