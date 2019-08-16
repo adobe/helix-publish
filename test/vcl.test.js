@@ -65,7 +65,7 @@ describe('Testing vcl.js', () => {
     assert.ok(fastly.writeVCL.calledWith(
       1,
       'extensions.vcl',
-      sinon.match(arg => arg.content !== 'custom extension' && arg.name === 'extensions.vcl'),
+      sinon.match((arg) => arg.content !== 'custom extension' && arg.name === 'extensions.vcl'),
     ));
   });
 

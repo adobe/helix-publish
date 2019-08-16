@@ -18,7 +18,7 @@ const { main } = require('../index');
 describe('Troubleshooting Tests', () => {
   if (fs.existsSync(path.resolve(__dirname, 'troubleshoot'))) {
     fs.readdirSync(path.resolve(__dirname, 'troubleshoot'))
-      .filter(file => file.match(/\.json$/))
+      .filter((file) => file.match(/\.json$/))
       .forEach((file) => {
         it(`Troubleshooting ${file}`, async () => {
           const config = fs.readJSONSync(path.resolve(__dirname, 'troubleshoot', file));

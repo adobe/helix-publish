@@ -115,9 +115,7 @@ describe('Integration Test', () => {
   });
 
   it('Test publish function with invalid credentials', async () => {
-    const params = Object.assign({
-      version: 2,
-    }, config);
+    const params = { version: 2, ...config };
 
     const res = await main(params);
     assert.equal(res.statusCode, 401);
@@ -129,22 +127,24 @@ describe('Integration Test', () => {
         res.sendStatus(500);
       });
     }
-    const params = Object.assign({
+    const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       version: -10,
-    }, config);
+      ...config,
+    };
 
     const res = await main(params);
     assert.equal(res.statusCode, 500);
   }).timeout(60000);
 
   it('Test publish function locally', async () => {
-    const params = Object.assign({
+    const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       version: VERSION_NUM,
-    }, config);
+      ...config,
+    };
 
     const res = await main(params);
     assert.deepStrictEqual(res, {
@@ -171,11 +171,11 @@ describe('Integration Test', () => {
   }).timeout(60000);
 
   it('Test publish function with invalid configuration', async () => {
-    const params = Object.assign({
+    const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       version: VERSION_NUM,
-    }, {});
+    };
 
     const res = await main(params);
     assert.equal(res.statusCode, 400);

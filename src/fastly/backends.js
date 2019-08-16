@@ -46,7 +46,7 @@ const backends = {
 };
 async function init(fastly, version) {
   // go over all defined backends and create a new one
-  return Promise.all(Object.values(backends).map(backend => fastly.writeBackend(
+  return Promise.all(Object.values(backends).map((backend) => fastly.writeBackend(
     version,
     backend.name,
     backend,
@@ -61,7 +61,7 @@ async function updatestrains(fastly, version, strains) {
   proxystrains.forEach((proxystrain) => {
     origins[proxystrain.origin.name] = proxystrain.origin;
   });
-  const updateorigins = Object.values(origins).map(origin => fastly.writeBackend(
+  const updateorigins = Object.values(origins).map((origin) => fastly.writeBackend(
     version,
     origin.name,
     origin.toFastlyJSON(),
