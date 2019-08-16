@@ -71,6 +71,7 @@ async function main(params, logger = log) {
     }
     return result;
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e);
     return {
       statusCode: e.statusCode || 500,

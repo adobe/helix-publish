@@ -28,7 +28,7 @@ const dictionaries = [
 ];
 
 async function init(fastly, version) {
-  return Promise.all(dictionaries.map(dictionary => fastly.writeDictionary(
+  return Promise.all(dictionaries.map((dictionary) => fastly.writeDictionary(
     version,
     dictionary,
     {
@@ -53,7 +53,7 @@ function upsertstrain(p, dict, key, value) {
 
 async function updatestrains(fastly, version, strains) {
   const runtimestrains = strains.getRuntimeStrains();
-  const deployedstrains = runtimestrains.filter(strain => !!strain.package);
+  const deployedstrains = runtimestrains.filter((strain) => !!strain.package);
   const strainoperations = deployedstrains.reduce((p, strain) => {
     upsertstrain(p, 'strain_action_roots', strain.name, strain.package);
 

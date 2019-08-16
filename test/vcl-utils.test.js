@@ -59,7 +59,7 @@ describe('Testing vcl-utils.js', () => {
 
       const vcl = utils.reset([
         ...Object.values(backends),
-        ...config.strains.getProxyStrains().map(strain => strain.origin)]);
+        ...config.strains.getProxyStrains().map((strain) => strain.origin)]);
       assert.equal(vcl, expected);
     };
   }

@@ -12,7 +12,7 @@
 const { pattern2vcl, condition } = require('./vcl-utils');
 
 function listredirects(strains) {
-  const redirectingstrains = strains.getByFilter(strain => strain.redirects.length);
+  const redirectingstrains = strains.getByFilter((strain) => strain.redirects.length);
   // go over all strains (that have redirects)
   return redirectingstrains.reduce((p, { name, redirects }) => {
     // go over all redirects per strain

@@ -25,7 +25,7 @@ function writevcl(fastly, version, content, name, main) {
 }
 
 function regexp(globs) {
-  return globs.map(glob).map(re => re.toString().replace(/^\/|\/$/g, '')).join('|');
+  return globs.map(glob).map((re) => re.toString().replace(/^\/|\/$/g, '')).join('|');
 }
 
 function vclbody(arr = []) {
@@ -122,7 +122,7 @@ function resolve(mystrains) {
   const strains = Array.from(mystrains.values());
   let retvcl = '# This file handles the strain resolution\nset req.http.X-Root-Path = "";\n';
   const strainconditions = strains
-    .map(strain => [strain, { body: vclbody() }])
+    .map((strain) => [strain, { body: vclbody() }])
     .map(conditions)
     .map(proxy)
     .map(proxyurls)
@@ -130,7 +130,7 @@ function resolve(mystrains) {
     .map(namebody)
     .filter(([strain, vcl]) => strain.condition || vcl.condition)
     .map(([strain, vcl]) => `if (${strain.condition || vcl.condition}) {
-${vcl.body.map(snippet => snippet.split('\n').map(line => `  ${line}`).join('\n')).join('\n')}
+${vcl.body.map((snippet) => snippet.split('\n').map((line) => `  ${line}`).join('\n')).join('\n')}
 } else `);
   if (strainconditions.length) {
     retvcl += strainconditions.join('');
@@ -193,7 +193,7 @@ set req.url = querystring.regfilter_except(req.url, "${filter(params)}");
 set req.http.X-Encoded-Params = urlencode(req.url.qs);
 set req.url = req.http.X-Old-Url;`
     .split('\n')
-    .map(line => indent + line)
+    .map((line) => indent + line)
     .join('\n');
 }
 
@@ -203,7 +203,7 @@ set req.url = req.http.X-Old-Url;`
 function parameters(strains) {
   let retvcl = `# This file handles the URL parameter whitelist
 `;
-  const otherstrains = strains.getByFilter(strain => strain.params
+  const otherstrains = strains.getByFilter((strain) => strain.params
     && strain.params.length);
 
   retvcl += otherstrains.map(({ name, params }) => `if (req.http.X-Strain == "${name}") {

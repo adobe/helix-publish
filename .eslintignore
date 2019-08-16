@@ -7,3 +7,4 @@ tmp/*
 coverage/*
 node_modules/*
 src/publish.cmd.js
+dist
