@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/adobe/helix-publish/compare/v2.3.0...v2.3.1) (2019-08-19)
+
+
+### Bug Fixes
+
+* **package:** update @adobe/openwhisk-action-builder to version 2.0.0 ([a600a2a](https://github.com/adobe/helix-publish/commit/a600a2a))
+
 # [2.3.0](https://github.com/adobe/helix-publish/compare/v2.2.6...v2.3.0) (2019-07-31)
 
 
