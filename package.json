@@ -35,6 +35,7 @@
   "devDependencies": {
     "@adobe/eslint-config-helix": "^1.0.0",
     "@adobe/helix-testutils": "^0.2.0",
+    "@adobe/openwhisk-action-builder": "^2.0.0",
     "@pollyjs/adapter-fetch": "^2.6.2",
     "@pollyjs/adapter-node-http": "^2.6.2",
     "@pollyjs/core": "^2.6.2",
@@ -63,7 +64,7 @@
     "@adobe/fastly-native-promises": "1.11.0",
     "@adobe/helix-pingdom-status": "^3.0.0",
     "@adobe/helix-shared": "2.1.1",
-    "@adobe/openwhisk-action-builder": "^2.0.0",
+    "@adobe/openwhisk-action-utils": "^1.0.2",
     "epsagon": "^1.32.3",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
