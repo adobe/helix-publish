@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/adobe/helix-publish/compare/v2.3.1...v2.3.2) (2019-08-20)
+
+
+### Bug Fixes
+
+* **package:** update @adobe/fastly-native-promises to version 1.12.0 ([6f273f8](https://github.com/adobe/helix-publish/commit/6f273f8))
+
 ## [2.3.1](https://github.com/adobe/helix-publish/compare/v2.3.0...v2.3.1) (2019-08-19)
 
 
