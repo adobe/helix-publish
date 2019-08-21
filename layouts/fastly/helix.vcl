@@ -1037,13 +1037,13 @@ sub vcl_fetch {
     }
   }
 
+  # checks if the request is a redirect or .hlx_xxxx request and then call helix-static respectively.
+  call hlx_fetch_static;
+
   # check if an error response has an empty body, in this case, the dispatcher didn't deliver
   # a valid error page and we use the synthentic one.
   # todo: this logic needs to be improved. maybe with a specific response header from the action
   call hlx_fetch_error;
-
-  # checks if the request is a redirect or .hlx_xxxx request and then call helix-static respectively.
-  call hlx_fetch_static;
 
   if (beresp.http.X-ESI == "enabled" || req.http.x-esi) {
     esi;
