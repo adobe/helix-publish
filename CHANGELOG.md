@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/adobe/helix-publish/compare/v2.3.2...v2.4.0) (2019-08-21)
+
+
+### Features
+
+* **monitoring:** upgrade monitoring library to support JSON status ([bb84c7a](https://github.com/adobe/helix-publish/commit/bb84c7a))
+
 ## [2.3.2](https://github.com/adobe/helix-publish/compare/v2.3.1...v2.3.2) (2019-08-20)
 
 
