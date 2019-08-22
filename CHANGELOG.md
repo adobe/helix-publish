@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/adobe/helix-publish/compare/v2.4.0...v2.4.1) (2019-08-22)
+
+
+### Bug Fixes
+
+* **vlc:** ensure that static redirect is handled before errors ([b1d7065](https://github.com/adobe/helix-publish/commit/b1d7065))
+
 # [2.4.0](https://github.com/adobe/helix-publish/compare/v2.3.2...v2.4.0) (2019-08-21)
 
 
