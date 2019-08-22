@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/adobe/helix-publish/compare/v2.4.1...v2.5.0) (2019-08-22)
+
+
+### Features
+
+* **dispatch:** use released dispatch version instead of latest ([2de2109](https://github.com/adobe/helix-publish/commit/2de2109)), closes [/github.com/adobe/helix-publish/issues/128#issuecomment-513220213](https://github.com//github.com/adobe/helix-publish/issues/128/issues/issuecomment-513220213) [#128](https://github.com/adobe/helix-publish/issues/128) [#129](https://github.com/adobe/helix-publish/issues/129)
+
 ## [2.4.1](https://github.com/adobe/helix-publish/compare/v2.4.0...v2.4.1) (2019-08-22)
 
 
