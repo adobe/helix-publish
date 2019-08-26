@@ -65,7 +65,7 @@
     "@adobe/helix-shared": "2.1.1",
     "@adobe/helix-status": "4.2.0",
     "@adobe/openwhisk-action-utils": "^1.0.2",
-    "epsagon": "^1.32.3",
+    "epsagon": "^1.33.0",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"

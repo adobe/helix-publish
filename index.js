@@ -48,7 +48,7 @@ async function run(params) {
       token_param: 'EPSAGON_TOKEN',
       appName: 'Helix Services',
       metadataOnly: false, // Optional, send more trace data
-      ignoredKeys: ['EPSAGON_TOKEN', 'token'],
+      ignoredKeys: ['EPSAGON_TOKEN', 'token', /[A-Z0-9_]+/],
     });
   }
   return wrap(action, {
