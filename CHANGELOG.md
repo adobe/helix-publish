@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/adobe/helix-publish/compare/v2.5.0...v2.5.1) (2019-08-26)
+
+
+### Bug Fixes
+
+* **monitoring:** upgrade epsagon and hide more params ([a1375c7](https://github.com/adobe/helix-publish/commit/a1375c7))
+
 # [2.5.0](https://github.com/adobe/helix-publish/compare/v2.4.1...v2.5.0) (2019-08-22)
 
 
