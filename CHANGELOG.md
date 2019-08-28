@@ -1,3 +1,10 @@
+## [2.5.2](https://github.com/adobe/helix-publish/compare/v2.5.1...v2.5.2) (2019-08-28)
+
+
+### Bug Fixes
+
+* **package:** update @adobe/helix-shared to version 2.2.0 ([5c2fcba](https://github.com/adobe/helix-publish/commit/5c2fcba))
+
 ## [2.5.1](https://github.com/adobe/helix-publish/compare/v2.5.0...v2.5.1) (2019-08-26)
 
 
