@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/adobe/helix-publish/compare/v2.5.5...v2.6.0) (2019-09-03)
+
+
+### Features
+
+* **vcl:** pass github token via header on backend request ([622c886](https://github.com/adobe/helix-publish/commit/622c886))
+
 ## [2.5.5](https://github.com/adobe/helix-publish/compare/v2.5.4...v2.5.5) (2019-09-03)
 
 
