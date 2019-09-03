@@ -1,3 +1,10 @@
+## [2.5.5](https://github.com/adobe/helix-publish/compare/v2.5.4...v2.5.5) (2019-09-03)
+
+
+### Bug Fixes
+
+* **package:** update @adobe/helix-status to version 4.3.1 ([b1e958a](https://github.com/adobe/helix-publish/commit/b1e958a)), closes [#170](https://github.com/adobe/helix-publish/issues/170)
+
 ## [2.5.4](https://github.com/adobe/helix-publish/compare/v2.5.3...v2.5.4) (2019-09-02)
 
 
