@@ -523,6 +523,7 @@ sub hlx_type_static {
 
 }
 
+
 /**
  * Handle redirect-serving for static files
  * If the static file is too large for the hlx--static action to serve,
@@ -1093,8 +1094,13 @@ sub hlx_bereq {
 
 
   if (req.backend == F_AdobeRuntime) {
-    # set backend authentication
+    # set Adobe Runtime backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
+    # pass Github Token via X-Github-Token header
+    set bereq.http.X-Github-Token = table.lookup(secrets, "GITHUB_TOKEN");
+  } elsif (req.backend == F_GitHub) {
+    # set Github backend authentication
+    set bereq.http.Authorization = "token " + table.lookup(secrets, "GITHUB_TOKEN");
   }
 
   # making sure to get an uncompressed object for ESI
