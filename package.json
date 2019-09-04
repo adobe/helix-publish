@@ -63,7 +63,7 @@
   "dependencies": {
     "@adobe/fastly-native-promises": "1.13.0",
     "@adobe/helix-shared": "2.2.1",
-    "@adobe/helix-status": "4.3.1",
+    "@adobe/helix-status": "4.3.3",
     "@adobe/openwhisk-action-utils": "^1.0.2",
     "epsagon": "^1.33.0",
     "fs-extra": "8.1.0",
