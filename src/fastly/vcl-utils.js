@@ -128,8 +128,8 @@ function resolve(mystrains) {
     .map(proxyurls)
     .map(stickybody)
     .map(namebody)
-    .filter(([strain, vcl]) => strain.condition || vcl.condition)
-    .map(([strain, vcl]) => `if (${strain.condition || vcl.condition}) {
+    .filter(([strain, vcl]) => (strain.condition && strain.condition.toVCL()) || vcl.condition)
+    .map(([strain, vcl]) => `if (${(strain.condition && strain.condition.toVCL()) || vcl.condition}) {
 ${vcl.body.map((snippet) => snippet.split('\n').map((line) => `  ${line}`).join('\n')).join('\n')}
 } else `);
   if (strainconditions.length) {
