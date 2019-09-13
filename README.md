@@ -43,6 +43,7 @@ Send a POST request with following (`Content-Type: application/json`-encoded) bo
 * `version`: the version number of a checked-out (editable) version of the above service config
 * `vcl`: an object containing the name of the vcl file (key) to override and its content. For now, only `extensions.vcl` override is supported
 * `dispatchVersion`: the version of the dispatch action to use. Defaults to `latest`.
+* `debugKey`: the debug key that will be used to enable X-Debug header.
 
 ## Developing Helix Publish
 

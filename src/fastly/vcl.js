@@ -53,10 +53,11 @@ function updatestrains(fastly, version, strains) {
   ]);
 }
 
-function dynamic(fastly, version, dispatchVersion) {
+function dynamic(fastly, version, dispatchVersion, debugKey) {
   let content = '';
   content += xversion(version, package.version);
   content += reqHeader('X-Dispatch-Version', dispatchVersion);
+  content += reqHeader('X-Debug-Key', debugKey);
   return Promise.all([
     writevcl(fastly, version, content, 'dynamic.vcl'),
   ]);

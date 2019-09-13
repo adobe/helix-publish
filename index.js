@@ -24,6 +24,7 @@ async function publishConfig(params) {
     params.version,
     params.vcl,
     params.dispatchVersion,
+    params.debugKey,
     log,
   );
 

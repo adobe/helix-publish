@@ -112,8 +112,8 @@ sub hlx_recv_init {
   set req.http.X-Orig-URL = req.url;
   set req.http.X-Orig-Host = req.http.Host;
 
-  # TODO: Make X-Debug require a valid token
-  if (!req.http.X-Debug) {
+  # TODO: Make X-Debug-Enabled require a valid token
+  if (!req.http.X-Debug-Enabled) {
     # Make sure clients can't change request flow
     # X-Strain is currently settable by Cookie, not worth unsetting for now
     unset req.http.X-Backend-URL;
@@ -335,9 +335,9 @@ sub hlx_headers_fetch {
     set beresp.http.Surrogate-Key = "all " + beresp.http.Surrogate-Key;
   }
 
-  # Only do this when X-Debug is present, since `Vary: X-Debug` will cause
+  # Only do this when X-Debug-Enabled is present, since `Vary: X-Debug-Enabled` will cause
   # misses, making it useless to keep this on regular objects.
-  if (req.http.X-Debug) {
+  if (req.http.X-Debug-Enabled) {
     if (!beresp.http.X-Backend-Name) {
       set beresp.http.X-Backend-Name = beresp.backend.name;
     }
@@ -355,7 +355,7 @@ sub hlx_headers_deliver {
 
   set resp.http.X-Version = req.http.X-Version;
 
-  if( req.http.X-Debug ) {
+  if( req.http.X-Debug-Enabled ) {
     set resp.http.X-URL = req.url;
     set resp.http.X-Orig-Url = req.http.X-Orig-Url;
     set resp.http.X-Backend-URL = req.http.X-Backend-URL;
@@ -808,10 +808,15 @@ sub vcl_recv {
     set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
 
-  call hlx_recv_init;
-
   # run generated vcl
   include "dynamic.vcl";
+
+  if (req.http.X-Debug && req.http.X-Debug == req.http.X-Debug-Key) {
+    set req.http.X-Debug-Enabled = true;
+  }
+  unset req.http.X-Debug-Key;
+
+  call hlx_recv_init;
 
 #FASTLY recv
 
@@ -1001,14 +1006,14 @@ sub vcl_fetch {
   unset beresp.http.Vary;
   unset beresp.http.Expires;
 
-  # We Vary on X-Debug, so that it's automatically a cache-miss, and we go to
+  # We Vary on X-Debug-Enabled, so that it's automatically a cache-miss, and we go to
   # origin. Origin will raise the log level for such requests too. So all roung
   # convenience.
-  if (beresp.http.Vary !~ "X-Debug") {
+  if (beresp.http.Vary !~ "X-Debug-Enabled") {
     if (beresp.http.Vary) {
-      set beresp.http.Vary = beresp.http.Vary + ",X-Debug";
+      set beresp.http.Vary = beresp.http.Vary + ",X-Debug-Enabled";
     } else {
-      set beresp.http.Vary = "X-Debug";
+      set beresp.http.Vary = "X-Debug-Enabled";
     }
   }
   # Vary on Strain for pipeline and static, since we're sending strain in the
@@ -1192,7 +1197,7 @@ sub vcl_deliver {
     set resp.http.Set-Cookie = "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
   }
 
-  if (!req.http.X-Debug) {
+  if (!req.http.X-Debug-Enabled) {
     # Unless we are debugging, shut up chatty headers
     unset resp.http.Access-Control-Allow-Headers;
     unset resp.http.Access-Control-Allow-Methods;
