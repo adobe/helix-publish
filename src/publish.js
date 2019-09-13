@@ -22,6 +22,8 @@ async function publish(configuration, service, token, version, vclOverrides = {}
     log.error('No token or service.');
     return {
       body: {
+        token: token,
+        service: service,
         status: 'missing credentials',
       },
       statusCode: 401,
