@@ -24,7 +24,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       body: {
         tokenParam: token,
         serviceParam: service,
-        debugKey: debugKey,
+        debugKeyParam: debugKey,
         status: 'missing credentials',
       },
       statusCode: 401,
