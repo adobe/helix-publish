@@ -17,7 +17,7 @@ const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v2', debugKey, log = console) {
+async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v2', log = console) {
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
@@ -39,7 +39,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       backends.init(fastly, version),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version),
-      vcl.dynamic(fastly, version, dispatchVersion, debugKey),
+      vcl.dynamic(fastly, version, dispatchVersion),
       vcl.extensions(fastly, version, vclOverrides),
       vcl.updatestrains(fastly, version, config.strains),
       redirects.updatestrains(fastly, version, config.strains),
