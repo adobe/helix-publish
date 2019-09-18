@@ -112,7 +112,6 @@ sub hlx_recv_init {
   set req.http.X-Orig-URL = req.url;
   set req.http.X-Orig-Host = req.http.Host;
 
-  # TODO: Make X-Debug require a valid token
   if (!req.http.X-Debug) {
     # Make sure clients can't change request flow
     # X-Strain is currently settable by Cookie, not worth unsetting for now
