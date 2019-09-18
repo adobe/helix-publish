@@ -801,11 +801,11 @@ sub hlx_check_debug_key {
   declare local var.level STRING;
 
   set var.debugSecret = table.lookup(secrets, "DEBUG_KEY");
-  set var.key = regsub(req.http.X-Debug, ":.*", "");
+  set var.key = regsub(req.http.X-Debug, ":.*$", "");
 
-  if(req.http.X-Debug ~ ":"){
-    set var.level = regsub(req.http.X-Debug, ".*:", "");
-  }else {
+  if (req.http.X-Debug ~ ":") {
+    set var.level = regsub(req.http.X-Debug, "^.*:", "");
+  } else {
     set var.level = "debug";
   }
   
