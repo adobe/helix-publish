@@ -112,7 +112,6 @@ sub hlx_recv_init {
   set req.http.X-Orig-URL = req.url;
   set req.http.X-Orig-Host = req.http.Host;
 
-  # TODO: Make X-Debug require a valid token
   if (!req.http.X-Debug) {
     # Make sure clients can't change request flow
     # X-Strain is currently settable by Cookie, not worth unsetting for now
@@ -794,6 +793,31 @@ sub hlx_type_proxy {
 }
 
 /**
+  This checks X-Debug key
+*/
+sub hlx_check_debug_key {
+  declare local var.debugSecret STRING;
+  declare local var.key STRING;
+  declare local var.level STRING;
+
+  set var.debugSecret = table.lookup(secrets, "DEBUG_KEY");
+  set var.key = regsub(req.http.X-Debug, ":.*$", "");
+
+  if (req.http.X-Debug ~ ":") {
+    set var.level = regsub(req.http.X-Debug, "^.*:", "");
+  } else {
+    set var.level = "debug";
+  }
+  
+  //X-Debug must be protected
+  if (var.debugSecret && var.key == var.debugSecret) {
+    set req.http.X-Debug = var.level;
+  } else {
+    unset req.http.X-Debug;
+  }
+}
+
+/**
  * This is where all requests are received.
  */
 sub vcl_recv {
@@ -808,8 +832,9 @@ sub vcl_recv {
     set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
 
+  call hlx_check_debug_key;
   call hlx_recv_init;
-
+  
   # run generated vcl
   include "dynamic.vcl";
 
