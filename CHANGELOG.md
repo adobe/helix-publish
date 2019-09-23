@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/adobe/helix-publish/compare/v2.6.2...v2.7.0) (2019-09-23)
+
+
+### Features
+
+* **pub:** protect X-Debug with key ([#177](https://github.com/adobe/helix-publish/issues/177)) ([e0de6ad](https://github.com/adobe/helix-publish/commit/e0de6ad))
+
 ## [2.6.2](https://github.com/adobe/helix-publish/compare/v2.6.1...v2.6.2) (2019-09-04)
 
 
