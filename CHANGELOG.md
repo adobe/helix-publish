@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/adobe/helix-publish/compare/v2.7.0...v2.7.1) (2019-09-27)
+
+
+### Bug Fixes
+
+* **package:** update @adobe/helix-status to version 4.3.6 ([4d8be1d](https://github.com/adobe/helix-publish/commit/4d8be1d)), closes [#181](https://github.com/adobe/helix-publish/issues/181)
+
 # [2.7.0](https://github.com/adobe/helix-publish/compare/v2.6.2...v2.7.0) (2019-09-23)
 
 
