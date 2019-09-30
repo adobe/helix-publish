@@ -9,25 +9,21 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-const { logger: setupLogger } = require('@adobe/openwhisk-action-utils');
+const { logger } = require('@adobe/openwhisk-action-utils');
 const { wrap } = require('@adobe/helix-status');
 const publish = require('./src/publish');
 
-// global logger
-let log;
-
 async function publishConfig(params) {
-  const result = await publish(
+  return publish(
     params.configuration,
     params.service,
     params.token,
     params.version,
     params.vcl,
     params.dispatchVersion,
-    log,
+    // eslint-disable-next-line no-underscore-dangle
+    params.__ow_logger,
   );
-
-  return result;
 }
 
 /**
@@ -37,6 +33,7 @@ async function publishConfig(params) {
  * @returns {Promise<*>} The response
  */
 async function run(params) {
+  const { __ow_logger: log } = params;
   let action = publishConfig;
   if (params && params.EPSAGON_TOKEN) {
     // ensure that epsagon is only required, if a token is present. this is to avoid invoking their
@@ -59,24 +56,10 @@ async function run(params) {
 /**
  * Main function called by the openwhisk invoker.
  * @param params Action params
- * @param logger Existing logger to use (mainly for testing)
  * @returns {Promise<*>} The response
  */
-async function main(params, logger = log) {
-  try {
-    log = setupLogger(params, logger);
-    const result = await run(params);
-    if (log.flush) {
-      log.flush(); // don't wait
-    }
-    return result;
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    return {
-      statusCode: e.statusCode || 500,
-    };
-  }
+async function main(params) {
+  return logger.wrap(run, params);
 }
 
 module.exports.main = main;
