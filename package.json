@@ -86,7 +86,7 @@
   },
   "statuspage": {
     "name": "Helix Publish",
-    "group": "Publishing"
+    "group": "Development"
   },
   "newrelic": {
     "group_policy": "Publishing Repeated Failure"  }
