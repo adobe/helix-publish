@@ -89,5 +89,5 @@
     "group": "Development"
   },
   "newrelic": {
-    "group_policy": "Publishing Repeated Failure"  }
+    "group_policy": "Development Repeated Failure"  }
 }
