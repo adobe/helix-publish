@@ -83,5 +83,11 @@
       "./layouts/fastly/generic-error.html"
     ],
     "name": "helix-services/publish@2.7.2"
-  }
+  },
+  "statuspage": {
+    "name": "Helix Publish",
+    "group": "Publishing"
+  },
+  "newrelic": {
+    "group_policy": "Publishing Repeated Failure"  }
 }
