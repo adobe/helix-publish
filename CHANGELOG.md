@@ -1,3 +1,10 @@
+## [2.7.2](https://github.com/adobe/helix-publish/compare/v2.7.1...v2.7.2) (2019-09-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies ([7d6af28](https://github.com/adobe/helix-publish/commit/7d6af28))
+
 ## [2.7.1](https://github.com/adobe/helix-publish/compare/v2.7.0...v2.7.1) (2019-09-27)
 
 
