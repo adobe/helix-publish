@@ -15,12 +15,27 @@
     "preversion": "npm run junit",
     "postversion": "git push origin master --follow-tags",
     "zip": "npm ls --prod --parseable | grep node_modules | sed -e 's/.*node_modules/node_modules/' | xargs zip publish.zip -r src layouts package.json index.js",
-    "deploy": "wsk-builder -v --deploy --test  -p EPSAGON_TOKEN=$EPSAGON_TOKEN --entryFile index.js",
     "test-postdeploy": "mocha --reporter xunit --reporter-options output=./junit/test-results.xml -g 'Post-Deploy'",
     "delete-git-tag": "git tag -d v$npm_package_version && git push origin :v$npm_package_version",
     "semantic-release": "semantic-release",
-    "semantic-prepare": "node ./build/prepare.js",
-    "build": "wsk-builder -v"
+    "build": "wsk-builder -v",
+    "deploy": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --entryFile index.js",
+    "deploy-sequences": "wsk-builder --no-build -no-hints -l latest -l major -l minor",
+    "deploy-ci": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci --entryFile index.js"
+  },
+  "wsk": {
+    "name": "helix-services-private/publish@2.7.5",
+    "linksPackage": "helix-services",
+    "static": [
+      "./layouts/fastly/helix.vcl",
+      "./layouts/fastly/extensions.vcl",
+      "./layouts/fastly/404.html",
+      "./layouts/fastly/500.html",
+      "./layouts/fastly/951.html",
+      "./layouts/fastly/952.html",
+      "./layouts/fastly/953.html",
+      "./layouts/fastly/generic-error.html"
+    ]
   },
   "repository": {
     "type": "git",
@@ -35,7 +50,7 @@
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.0",
     "@adobe/helix-testutils": "0.2.0",
-    "@adobe/openwhisk-action-builder": "2.1.0",
+    "@adobe/openwhisk-action-builder": "2.1.1",
     "@pollyjs/adapter-fetch": "2.6.3",
     "@pollyjs/adapter-node-http": "2.6.3",
     "@pollyjs/core": "2.6.3",
@@ -70,19 +85,6 @@
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
-  },
-  "wsk": {
-    "static": [
-      "./layouts/fastly/helix.vcl",
-      "./layouts/fastly/extensions.vcl",
-      "./layouts/fastly/404.html",
-      "./layouts/fastly/500.html",
-      "./layouts/fastly/951.html",
-      "./layouts/fastly/952.html",
-      "./layouts/fastly/953.html",
-      "./layouts/fastly/generic-error.html"
-    ],
-    "name": "helix-services/publish@2.7.5"
   },
   "statuspage": {
     "name": "Helix Publish",
