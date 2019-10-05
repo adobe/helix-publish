@@ -24,7 +24,7 @@
     "deploy-ci": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci --entryFile index.js"
   },
   "wsk": {
-    "name": "helix-services-private/publish@2.7.5",
+    "name": "helix-services-private/publish@${version}",
     "linksPackage": "helix-services",
     "static": [
       "./layouts/fastly/helix.vcl",
