@@ -1,3 +1,12 @@
+## [2.7.6](https://github.com/adobe/helix-publish/compare/v2.7.5...v2.7.6) (2019-10-05)
+
+
+### Bug Fixes
+
+* **deploy:** fix semantic release ([27eb8f6](https://github.com/adobe/helix-publish/commit/27eb8f6))
+* **deploy:** use correct version field ([5d5b955](https://github.com/adobe/helix-publish/commit/5d5b955))
+* **deploy:** use helix-services-private ([ee4765e](https://github.com/adobe/helix-publish/commit/ee4765e))
+
 ## [2.7.5](https://github.com/adobe/helix-publish/compare/v2.7.4...v2.7.5) (2019-10-02)
 
 
