@@ -73,7 +73,7 @@
     "sinon": "7.5.0"
   },
   "dependencies": {
-    "@adobe/fastly-native-promises": "1.13.0",
+    "@adobe/fastly-native-promises": "1.14.0",
     "@adobe/helix-shared": "3.0.1",
     "@adobe/helix-status": "5.1.0",
     "@adobe/openwhisk-action-utils": "2.3.4",
