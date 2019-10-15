@@ -1,3 +1,10 @@
+## [2.7.10](https://github.com/adobe/helix-publish/compare/v2.7.9...v2.7.10) (2019-10-15)
+
+
+### Bug Fixes
+
+* **deps:** update any ([#208](https://github.com/adobe/helix-publish/issues/208)) ([a596dcb](https://github.com/adobe/helix-publish/commit/a596dcb))
+
 ## [2.7.9](https://github.com/adobe/helix-publish/compare/v2.7.8...v2.7.9) (2019-10-08)
 
 
