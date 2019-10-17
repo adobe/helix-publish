@@ -1153,7 +1153,7 @@ sub hlx_bereq {
 }
 
 sub vcl_miss {
-  set req.http.X-PreFetch-Miss = ",vcl_miss(" bereq.http.host bereq.url ")";
+  set req.http.X-PreFetch-Miss = "; vcl_miss(" bereq.http.host bereq.url ")";
 #FASTLY miss
 
   call hlx_set_from_edge;
