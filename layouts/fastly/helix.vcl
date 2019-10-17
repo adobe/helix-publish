@@ -1098,7 +1098,13 @@ sub vcl_hit {
  * vcl_pass, to avoid code-rot through having to update two places.
  */
 sub hlx_bereq {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
+  if (req.http.X-PreFetch-Miss) {
+    set req.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss + "; hlx_bereq";
+  } elseif (req.http.X-PreFetch-Pass) {
+    set req.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass + "; hlx_bereq";
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
+  }
 
   # If we're going to a shield (another Fastly POP) use the original URL and
   # Host header. If not a shield, we're going to origin; set the URL and Host
@@ -1116,7 +1122,6 @@ sub hlx_bereq {
       set bereq.http.Host = "raw.githubusercontent.com";
     }
   }
-
 
   if (req.backend == F_AdobeRuntime) {
     # set Adobe Runtime backend authentication
@@ -1183,7 +1188,7 @@ sub vcl_deliver {
   if (fastly_info.state ~ "^HITPASS") {
     set req.http.X-Trace = req.http.X-Trace "; vcl_hit(object: uncacheable, return: pass)";
   } elseif (fastly_info.state ~ "^HIT") {
-    set req.http.X-Trace= req.http.X-Trace "; vcl_hit(" req.http.host req.url ")";
+    set req.http.X-Trace = req.http.X-Trace "; vcl_hit(" req.http.host req.url ")";
   } else {
     if (resp.http.X-PreFetch-Pass) {
       set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Pass;
