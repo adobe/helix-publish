@@ -1,3 +1,10 @@
+## [2.7.13](https://github.com/adobe/helix-publish/compare/v2.7.12...v2.7.13) (2019-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v3.1.0 ([ba2d577](https://github.com/adobe/helix-publish/commit/ba2d577))
+
 ## [2.7.12](https://github.com/adobe/helix-publish/compare/v2.7.11...v2.7.12) (2019-10-17)
 
 
