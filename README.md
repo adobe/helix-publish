@@ -31,7 +31,7 @@ This microservice sets up a Fastly service config so that it can be used for Pro
 There are a number of important tasks involved in publishing that it does not do:
 
 - it does not create or activate a version, so that you still have full control over what goes live
-- it does not flush cache for you, so that you stay in control here, too
+- it does not flush cache for you, so that you stay in control here too
 
 ## Usage
 
