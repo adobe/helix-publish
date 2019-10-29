@@ -56,7 +56,7 @@
     "@semantic-release/exec": "3.3.8",
     "@semantic-release/git": "7.0.17",
     "@semantic-release/github": "5.5.5",
-    "@semantic-release/npm": "5.3.1",
+    "@semantic-release/npm": "5.3.2",
     "@semantic-release/release-notes-generator": "7.3.2",
     "bunyan": "1.8.12",
     "codecov": "3.6.1",
@@ -73,10 +73,10 @@
     "sinon": "7.5.0"
   },
   "dependencies": {
-    "@adobe/fastly-native-promises": "1.14.0",
+    "@adobe/fastly-native-promises": "1.14.1",
     "@adobe/helix-shared": "3.1.0",
     "@adobe/helix-status": "5.2.0",
-    "@adobe/openwhisk-action-utils": "2.3.5",
+    "@adobe/openwhisk-action-utils": "2.3.7",
     "epsagon": "1.39.0",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
