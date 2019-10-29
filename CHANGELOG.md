@@ -1,10 +1,3 @@
-## [2.7.14](https://github.com/adobe/helix-publish/compare/v2.7.13...v2.7.14) (2019-10-22)
-
-
-### Bug Fixes
-
-* **deps:** update dependency @adobe/helix-status to v5.2.0 ([#217](https://github.com/adobe/helix-publish/issues/217)) ([99783be](https://github.com/adobe/helix-publish/commit/99783be))
-
 ## [2.7.13](https://github.com/adobe/helix-publish/compare/v2.7.12...v2.7.13) (2019-10-21)
 
 
