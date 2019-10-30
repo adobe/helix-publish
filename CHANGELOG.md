@@ -1,3 +1,10 @@
+## [2.7.15](https://github.com/adobe/helix-publish/compare/v2.7.14...v2.7.15) (2019-10-30)
+
+
+### Bug Fixes
+
+* **deps:** update any ([4e43328](https://github.com/adobe/helix-publish/commit/4e43328f38d30a74de975ea2ec93c45ceeef12df))
+
 ## [2.7.14](https://github.com/adobe/helix-publish/compare/v2.7.13...v2.7.14) (2019-10-22)
 
 
