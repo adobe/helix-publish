@@ -433,7 +433,6 @@ sub hlx_type_static_url {
   # Only declare local variables for things we mean to change before putting
   # them into the URL
   declare local var.path STRING; # resource path
-  declare local var.entry STRING; # bundler entry point
 
   # Load important information from edge dicts
   call hlx_github_static_owner;
@@ -443,7 +442,6 @@ sub hlx_type_static_url {
 
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
-  set var.entry = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
   set req.http.X-Backend-URL = req.http.X-Action-Root
@@ -451,7 +449,6 @@ sub hlx_type_static_url {
     + "&repo=" + req.http.X-Github-Static-Repo
     + "&strain=" + req.http.X-Strain
     + "&ref=" + req.http.X-Github-Static-Ref
-    + "&entry=" + var.entry
     + "&path=" + var.path
     # TODO: load magic flag
     + "&plain=true"
@@ -478,7 +475,6 @@ sub hlx_type_static {
   # Only declare local variables for things we mean to change before putting
   # them into the URL
   declare local var.path STRING; # resource path
-  declare local var.entry STRING; # bundler entry point
   declare local var.esi STRING;
 
   # Load important information from edge dicts
@@ -493,17 +489,14 @@ sub hlx_type_static {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     # and keep only the non-hashed part, i.e. everything before .hlx_
     set var.path = re.group.1;
-    set var.entry = re.group.1;
     set var.esi = "&esi=true";
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(normal)";
     # TODO: check for URL ending with `/` and look up index file
     set var.path = req.url;
-    set var.entry = req.url;
     set var.esi = "";
   }
   set var.path = regsuball(var.path, "/+", "/");
-  set var.entry = regsuball(var.entry, "/+", "/");
 
   set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
   set req.http.X-Backend-URL = req.http.X-Action-Root
@@ -511,7 +504,6 @@ sub hlx_type_static {
     + "&repo=" + req.http.X-Github-Static-Repo
     + "&strain=" + req.http.X-Strain
     + "&ref=" + req.http.X-Github-Static-Ref
-    + "&entry=" + var.entry
     + "&path=" + var.path
     + var.esi
     # TODO: load magic flag
@@ -808,7 +800,7 @@ sub hlx_check_debug_key {
   } else {
     set var.level = "debug";
   }
-  
+
   //X-Debug must be protected
   if (var.debugSecret && var.key == var.debugSecret) {
     set req.http.X-Debug = var.level;
@@ -834,7 +826,7 @@ sub vcl_recv {
 
   call hlx_check_debug_key;
   call hlx_recv_init;
-  
+
   # run generated vcl
   include "dynamic.vcl";
 
