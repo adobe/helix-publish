@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/adobe/helix-publish/compare/v2.7.15...v2.8.0) (2019-10-31)
+
+
+### Features
+
+* **vcl:** remove `req.entry` for static requests ([#219](https://github.com/adobe/helix-publish/issues/219)) ([2545afd](https://github.com/adobe/helix-publish/commit/2545afdadca61e77a913cca5de5474ae534c4642))
+
 ## [2.7.15](https://github.com/adobe/helix-publish/compare/v2.7.14...v2.7.15) (2019-10-30)
 
 
