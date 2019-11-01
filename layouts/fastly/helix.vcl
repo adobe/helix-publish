@@ -759,6 +759,9 @@ sub hlx_type_dispatch {
     + "&strain=" + req.http.X-Strain
     + "&rootPath=" + req.http.X-Root-Path;
 
+  # TODO find way to compute protocol (no avaible as is somewhere)
+  set req.http.X-Referrer = urlencode("https://" + req.http.host + req.url);
+
   # only append the encoded params if there are encoded params
   if (req.http.X-Encoded-Params) {
     set req.http.X-Backend-URL = req.http.X-Backend-URL
