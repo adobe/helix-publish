@@ -46,7 +46,7 @@
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.0",
     "@adobe/helix-testutils": "0.2.0",
-    "@adobe/openwhisk-action-builder": "2.1.1",
+    "@adobe/openwhisk-action-builder": "2.2.1",
     "@pollyjs/adapter-fetch": "2.6.3",
     "@pollyjs/adapter-node-http": "2.6.3",
     "@pollyjs/core": "2.6.3",
@@ -54,7 +54,7 @@
     "@semantic-release/changelog": "3.0.5",
     "@semantic-release/commit-analyzer": "6.3.2",
     "@semantic-release/exec": "3.3.8",
-    "@semantic-release/git": "7.0.17",
+    "@semantic-release/git": "7.0.18",
     "@semantic-release/github": "5.5.5",
     "@semantic-release/npm": "5.3.4",
     "@semantic-release/release-notes-generator": "7.3.2",
@@ -77,7 +77,7 @@
     "@adobe/helix-shared": "3.1.0",
     "@adobe/helix-status": "5.3.0",
     "@adobe/openwhisk-action-utils": "2.3.7",
-    "epsagon": "1.40.3",
+    "epsagon": "1.40.4",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
