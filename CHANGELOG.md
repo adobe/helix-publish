@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/adobe/helix-publish/compare/v2.8.0...v2.8.1) (2019-11-06)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v3.1.2 ([#225](https://github.com/adobe/helix-publish/issues/225)) ([87cc220](https://github.com/adobe/helix-publish/commit/87cc220016e4a5d0db909efb43f7389cd9ce40d8))
+
 # [2.8.0](https://github.com/adobe/helix-publish/compare/v2.7.15...v2.8.0) (2019-10-31)
 
 
