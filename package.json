@@ -52,7 +52,7 @@
     "@pollyjs/core": "2.6.3",
     "@pollyjs/persister-fs": "2.6.3",
     "@semantic-release/changelog": "3.0.5",
-    "@semantic-release/commit-analyzer": "6.3.2",
+    "@semantic-release/commit-analyzer": "6.3.3",
     "@semantic-release/exec": "3.3.8",
     "@semantic-release/git": "7.0.18",
     "@semantic-release/github": "5.5.5",
@@ -77,7 +77,7 @@
     "@adobe/helix-shared": "3.1.2",
     "@adobe/helix-status": "5.3.0",
     "@adobe/openwhisk-action-utils": "2.3.7",
-    "epsagon": "1.40.4",
+    "epsagon": "1.41.0",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
