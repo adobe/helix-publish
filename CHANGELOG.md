@@ -1,3 +1,10 @@
+## [2.8.3](https://github.com/adobe/helix-publish/compare/v2.8.2...v2.8.3) (2019-11-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v2.5.0 ([dc84361](https://github.com/adobe/helix-publish/commit/dc8436142b95df9f91fa5103b73f581a961fbca3))
+
 ## [2.8.2](https://github.com/adobe/helix-publish/compare/v2.8.1...v2.8.2) (2019-11-12)
 
 
