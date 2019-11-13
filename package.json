@@ -76,7 +76,7 @@
     "@adobe/fastly-native-promises": "1.14.1",
     "@adobe/helix-shared": "3.1.2",
     "@adobe/helix-status": "5.3.0",
-    "@adobe/openwhisk-action-utils": "2.5.0",
+    "@adobe/openwhisk-action-utils": "git+https://github.com/adobe/openwhisk-action-utils.git#92a74787df1195a91bdee59e07016a6bd2732023",
     "epsagon": "1.41.1",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",

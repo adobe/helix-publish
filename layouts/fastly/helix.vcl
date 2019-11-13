@@ -443,7 +443,7 @@ sub hlx_type_static_url {
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
+  set req.http.X-Action-Root = "/api/v1/web/helix/helix-services-private/static@ci850";
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -498,7 +498,7 @@ sub hlx_type_static {
   }
   set var.path = regsuball(var.path, "/+", "/");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
+  set req.http.X-Action-Root = "/api/v1/web/helix/helix-services-private/static@ci850";
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -740,9 +740,7 @@ sub hlx_type_dispatch {
   # get (strain-specific) parameter whitelist
   include "params.vcl";
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/dispatch@" + req.http.X-Dispatch-Version
+  set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services-private/dispatch@ci925"
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
     + "&static.repo=" + req.http.X-Github-Static-Repo
