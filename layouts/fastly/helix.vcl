@@ -740,7 +740,7 @@ sub hlx_type_dispatch {
   # get (strain-specific) parameter whitelist
   include "params.vcl";
 
-  set req.http.X-Backend-URL = "/api/v1/web/acapt/dispatch@ci925"
+  set req.http.X-Backend-URL = "/api/v1/web/acapt/test/mydispatch"
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
     + "&static.repo=" + req.http.X-Github-Static-Repo
