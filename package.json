@@ -81,12 +81,5 @@
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
-  },
-  "statuspage": {
-    "name": "Helix Publish",
-    "group": "Development"
-  },
-  "newrelic": {
-    "group_policy": "Development Repeated Failure"
   }
 }
