@@ -1,3 +1,10 @@
+## [2.8.5](https://github.com/adobe/helix-publish/compare/v2.8.4...v2.8.5) (2019-11-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v6 ([c07ade4](https://github.com/adobe/helix-publish/commit/c07ade4477b8cf7bd6787551e6872bdea6613175))
+
 ## [2.8.4](https://github.com/adobe/helix-publish/compare/v2.8.3...v2.8.4) (2019-11-14)
 
 
