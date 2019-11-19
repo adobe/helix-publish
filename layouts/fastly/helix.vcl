@@ -135,6 +135,7 @@ sub hlx_recv_init {
   if (!req.http.X-CDN-Request-ID) {
     set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-4" + randomstr(3, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
   }
+  set req.http.X-Referrer = urlencode("https://" + req.http.host + req.url);
 
   # set X-Version initial value
   set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
