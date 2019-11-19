@@ -135,7 +135,6 @@ sub hlx_recv_init {
   if (!req.http.X-CDN-Request-ID) {
     set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-4" + randomstr(3, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
   }
-  set req.http.X-Referrer = urlencode("https://" + req.http.host + req.url);
 
   # set X-Version initial value
   set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
@@ -374,6 +373,8 @@ sub hlx_headers_deliver {
 
     set resp.http.X-Embed = req.http.X-Embed;
 
+    set resp.http.X-Referrer = req.http.X-Referrer;
+    
     set resp.http.X-Trace = req.http.X-Trace;
  }
 
@@ -864,6 +865,8 @@ sub vcl_recv {
   }
   // remove potential double slashes
   set req.http.X-FullDirname = regsuball(req.http.X-FullDirname, "/+", "/");
+
+  set req.http.X-Referrer = urlencode("https://" + req.http.host + req.url);
 
   # Determine the current strain and execute strain-specific code
   call hlx_strain;
