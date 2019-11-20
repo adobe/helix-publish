@@ -353,6 +353,7 @@ sub hlx_headers_deliver {
   set resp.http.Strict-Transport-Security = "max-age=31536000";
 
   set resp.http.X-Version = req.http.X-Version;
+  set resp.http.X-Referrer = req.http.X-Referrer;
 
   if( req.http.X-Debug ) {
     set resp.http.X-URL = req.url;
@@ -373,8 +374,6 @@ sub hlx_headers_deliver {
 
     set resp.http.X-Embed = req.http.X-Embed;
 
-    set resp.http.X-Referrer = req.http.X-Referrer;
-    
     set resp.http.X-Trace = req.http.X-Trace;
  }
 
@@ -866,7 +865,7 @@ sub vcl_recv {
   // remove potential double slashes
   set req.http.X-FullDirname = regsuball(req.http.X-FullDirname, "/+", "/");
 
-  set req.http.X-Referrer = urlencode("https://" + req.http.host + req.url);
+  set req.http.X-Referrer = "https://" + req.http.host + req.url;
 
   # Determine the current strain and execute strain-specific code
   call hlx_strain;
