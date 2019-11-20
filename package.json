@@ -17,7 +17,7 @@
     "build": "wsk-builder -v",
     "deploy": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --entryFile index.js",
     "deploy-sequences": "wsk-builder --no-build -no-hints -l latest -l major -l minor",
-    "deploy-ci": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci --entryFile index.js"
+    "deploy-ci": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci -l b_${CIRCLE_BRANCH} --entryFile index.js"
   },
   "wsk": {
     "name": "helix-services-private/publish@${version}",
@@ -46,7 +46,7 @@
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.0",
     "@adobe/helix-testutils": "0.2.0",
-    "@adobe/openwhisk-action-builder": "2.2.1",
+    "@adobe/openwhisk-action-builder": "2.3.1",
     "@pollyjs/adapter-fetch": "2.6.3",
     "@pollyjs/adapter-node-http": "2.6.3",
     "@pollyjs/core": "2.6.3",
