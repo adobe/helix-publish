@@ -1184,17 +1184,14 @@ sub vcl_deliver {
   } else {
     if (resp.http.X-PreFetch-Pass) {
       set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Pass;
-      unset resp.http.X-PreFetch-Pass;
     }
 
     if (resp.http.X-PreFetch-Miss) {
       set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Miss;
-      unset resp.http.X-PreFetch-Miss;
     }
 
     if (resp.http.X-PostFetch) {
       set req.http.X-Trace = req.http.X-Trace resp.http.X-PostFetch;
-      unset resp.http.X-PostFetch;
     }
   }
 
@@ -1246,6 +1243,9 @@ sub vcl_deliver {
     unset resp.http.X-Timer;
     unset resp.http.X-Trace;
     unset resp.http.X-URL;
+    unset resp.http.X-PreFetch-Miss;
+    unset resp.http.X-PreFetch-Pass;
+    unset resp.http.X-PostFetch;
     unset resp.http.x-xss-protection;
   } else {
     set resp.http.X-Trace = req.http.X-Trace;
