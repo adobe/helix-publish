@@ -1184,17 +1184,14 @@ sub vcl_deliver {
   } else {
     if (resp.http.X-PreFetch-Pass) {
       set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Pass;
-      unset resp.http.X-PreFetch-Pass;
     }
 
     if (resp.http.X-PreFetch-Miss) {
       set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Miss;
-      unset resp.http.X-PreFetch-Miss;
     }
 
     if (resp.http.X-PostFetch) {
       set req.http.X-Trace = req.http.X-Trace resp.http.X-PostFetch;
-      unset resp.http.X-PostFetch;
     }
   }
 
@@ -1213,6 +1210,11 @@ sub vcl_deliver {
       && req.backend == F_AdobeRuntime && req.http.X-Request-Type != "Proxy") {
     set resp.http.Set-Cookie = "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
   }
+
+  # remove temporary headers used to reconstruct trace information
+  unset resp.http.X-PreFetch-Miss;
+  unset resp.http.X-PreFetch-Pass;
+  unset resp.http.X-PostFetch;
 
   if (!req.http.X-Debug) {
     # Unless we are debugging, shut up chatty headers
