@@ -1211,6 +1211,11 @@ sub vcl_deliver {
     set resp.http.Set-Cookie = "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
   }
 
+  # remove temporary headers used to reconstruct trace information
+  unset resp.http.X-PreFetch-Miss;
+  unset resp.http.X-PreFetch-Pass;
+  unset resp.http.X-PostFetch;
+
   if (!req.http.X-Debug) {
     # Unless we are debugging, shut up chatty headers
     unset resp.http.Access-Control-Allow-Headers;
@@ -1243,9 +1248,6 @@ sub vcl_deliver {
     unset resp.http.X-Timer;
     unset resp.http.X-Trace;
     unset resp.http.X-URL;
-    unset resp.http.X-PreFetch-Miss;
-    unset resp.http.X-PreFetch-Pass;
-    unset resp.http.X-PostFetch;
     unset resp.http.x-xss-protection;
   } else {
     set resp.http.X-Trace = req.http.X-Trace;
