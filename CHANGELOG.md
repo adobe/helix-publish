@@ -1,3 +1,11 @@
+# [2.9.0](https://github.com/adobe/helix-publish/compare/v2.8.8...v2.9.0) (2019-11-22)
+
+
+### Features
+
+* **helix.vcl:** avoid leaking of debug headers ([9ef9966](https://github.com/adobe/helix-publish/commit/9ef996642c43951b4974adcd67feb2b5331213ba))
+* **helix.vcl:** avoid leaking of debug headers ([c5f322e](https://github.com/adobe/helix-publish/commit/c5f322e6a57906754b5976db5136b247ee18a358))
+
 ## [2.8.8](https://github.com/adobe/helix-publish/compare/v2.8.7...v2.8.8) (2019-11-21)
 
 
