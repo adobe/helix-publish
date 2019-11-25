@@ -1,3 +1,10 @@
+## [2.9.3](https://github.com/adobe/helix-publish/compare/v2.9.2...v2.9.3) (2019-11-25)
+
+
+### Bug Fixes
+
+* **deps:** pin dependency @adobe/helix-log to 4.1.0 ([1c2d6e5](https://github.com/adobe/helix-publish/commit/1c2d6e5af8e97a068a47c549cd9a465b38b1676b))
+
 ## [2.9.2](https://github.com/adobe/helix-publish/compare/v2.9.1...v2.9.2) (2019-11-25)
 
 
