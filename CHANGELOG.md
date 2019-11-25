@@ -1,3 +1,10 @@
+## [2.9.2](https://github.com/adobe/helix-publish/compare/v2.9.1...v2.9.2) (2019-11-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v3 ([#246](https://github.com/adobe/helix-publish/issues/246)) ([c78f9b3](https://github.com/adobe/helix-publish/commit/c78f9b362cb39dfe3b047dc328a010f286850f4f))
+
 ## [2.9.1](https://github.com/adobe/helix-publish/compare/v2.9.0...v2.9.1) (2019-11-22)
 
 
