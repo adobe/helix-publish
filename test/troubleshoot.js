@@ -12,7 +12,7 @@
 const assert = require('assert');
 const fs = require('fs-extra');
 const path = require('path');
-const { main } = require('../index');
+const { main } = require('../src/index');
 /* eslint-env mocha */
 
 describe('Troubleshooting Tests', () => {
