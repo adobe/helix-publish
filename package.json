@@ -45,7 +45,7 @@
   "homepage": "https://github.com/adobe/helix-publish#readme",
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.0",
-    "@adobe/helix-ops": "1.0.2",
+    "@adobe/helix-ops": "1.1.0",
     "@adobe/helix-testutils": "0.2.0",
     "@adobe/openwhisk-action-builder": "2.3.2",
     "@pollyjs/adapter-fetch": "2.6.3",
