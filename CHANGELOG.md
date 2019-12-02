@@ -1,3 +1,10 @@
+## [2.9.4](https://github.com/adobe/helix-publish/compare/v2.9.3...v2.9.4) (2019-12-02)
+
+
+### Bug Fixes
+
+* **release:** triggering release ([d029f10](https://github.com/adobe/helix-publish/commit/d029f10b9357bab4d22a44935ab9ba6d4dba2253))
+
 ## [2.9.3](https://github.com/adobe/helix-publish/compare/v2.9.2...v2.9.3) (2019-11-25)
 
 
