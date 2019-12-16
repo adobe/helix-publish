@@ -73,7 +73,7 @@
     "@adobe/helix-log": "4.4.0",
     "@adobe/helix-shared": "3.1.2",
     "@adobe/helix-status": "7.0.2",
-    "@adobe/openwhisk-action-logger": "2.0.0",
+    "@adobe/openwhisk-action-logger": "2.0.1",
     "@adobe/openwhisk-action-utils": "3.0.0",
     "epsagon": "1.42.4",
     "fs-extra": "8.1.0",
