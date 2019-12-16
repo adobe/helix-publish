@@ -1,3 +1,10 @@
+## [2.9.8](https://github.com/adobe/helix-publish/compare/v2.9.7...v2.9.8) (2019-12-16)
+
+
+### Bug Fixes
+
+* **deps:** update external ([#258](https://github.com/adobe/helix-publish/issues/258)) ([77a53d0](https://github.com/adobe/helix-publish/commit/77a53d0e4e3c41d7d7419f476c36860b657b6d1e))
+
 ## [2.9.7](https://github.com/adobe/helix-publish/compare/v2.9.6...v2.9.7) (2019-12-05)
 
 
