@@ -1,3 +1,10 @@
+## [2.9.9](https://github.com/adobe/helix-publish/compare/v2.9.8...v2.9.9) (2019-12-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.15.0 ([f360ab2](https://github.com/adobe/helix-publish/commit/f360ab2f3d163a0fece8958db5144178bafb060c))
+
 ## [2.9.8](https://github.com/adobe/helix-publish/compare/v2.9.7...v2.9.8) (2019-12-16)
 
 
