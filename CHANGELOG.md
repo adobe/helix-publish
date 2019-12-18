@@ -1,3 +1,10 @@
+## [2.9.10](https://github.com/adobe/helix-publish/compare/v2.9.9...v2.9.10) (2019-12-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-log to v4.4.1 ([fd03bbb](https://github.com/adobe/helix-publish/commit/fd03bbb0397bacbb4c3092088555810fc6bccac4))
+
 ## [2.9.9](https://github.com/adobe/helix-publish/compare/v2.9.8...v2.9.9) (2019-12-17)
 
 
