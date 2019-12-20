@@ -1,3 +1,10 @@
+## [2.9.13](https://github.com/adobe/helix-publish/compare/v2.9.12...v2.9.13) (2019-12-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v3.3.0 ([4295cb4](https://github.com/adobe/helix-publish/commit/4295cb43ddfa94218746e1cfafff587d88ee26e2))
+
 ## [2.9.12](https://github.com/adobe/helix-publish/compare/v2.9.11...v2.9.12) (2019-12-20)
 
 
