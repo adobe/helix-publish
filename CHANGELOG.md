@@ -1,3 +1,17 @@
+# [3.0.0](https://github.com/adobe/helix-publish/compare/v2.9.13...v3.0.0) (2020-01-06)
+
+
+### Features
+
+* **dispatch:** update to dispatch@v3 with dynamic defaults ([796cbd6](https://github.com/adobe/helix-publish/commit/796cbd6fec735c5db0f14d673d0c352a7fbdab51))
+
+
+### BREAKING CHANGES
+
+* **dispatch:** This changes the default dispatch version from v2 to v3. v3 introduces dynamic defaults (fallback to `default.htnl` in the same folder if file can't be found), which is a breaking change
+
+enables dynamic defaults, see https://github.com/adobe/helix-dispatch/issues/138
+
 ## [2.9.13](https://github.com/adobe/helix-publish/compare/v2.9.12...v2.9.13) (2019-12-20)
 
 
