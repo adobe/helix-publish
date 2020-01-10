@@ -1120,7 +1120,7 @@ sub hlx_bereq {
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
     # pass Github Token via X-Github-Token header
     set bereq.http.X-Github-Token = table.lookup(secrets, "GITHUB_TOKEN");
-  } elsif (req.backend == F_GitHub) {
+  } elsif (req.backend == F_GitHub && table.lookup(secrets, "GITHUB_TOKEN")) {
     # set Github backend authentication
     set bereq.http.Authorization = "token " + table.lookup(secrets, "GITHUB_TOKEN");
   }
