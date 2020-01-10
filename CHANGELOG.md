@@ -1,3 +1,10 @@
+## [3.0.4](https://github.com/adobe/helix-publish/compare/v3.0.3...v3.0.4) (2020-01-10)
+
+
+### Bug Fixes
+
+* **vcl:** do not set token auth for github when no token has been provided ([8c098fd](https://github.com/adobe/helix-publish/commit/8c098fd613835e6d311de9c068c56dea0f49a179)), closes [#274](https://github.com/adobe/helix-publish/issues/274)
+
 ## [3.0.3](https://github.com/adobe/helix-publish/compare/v3.0.2...v3.0.3) (2020-01-09)
 
 
