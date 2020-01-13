@@ -401,6 +401,14 @@ sub hlx_determine_request_type {
     return;
   }
 
+  // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
+  if (req.url ~ "^(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$)") {
+    set req.http.X-Trace = req.http.X-Trace + "(blob)";
+    set req.http.X-Request-Type = "Blob";
+    unset req.http.Accept-Encoding;
+    return;
+  }
+
   if (req.url.ext ~ "^(hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     set req.http.X-Request-Type = "Static";
@@ -511,7 +519,27 @@ sub hlx_type_static {
     + "&allow=" urlencode(req.http.X-Allow)
     + "&deny=" urlencode(req.http.X-Deny)
     + "&root=" + req.http.X-Github-Static-Root;
+}
 
+sub hlx_type_blob {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_blob";
+  # This is a blob request.
+
+  # get it from Azure Blob Storage
+  set req.backend = F_AzureBlobs;
+
+  declare local var.sha STRING;
+  declare local var.ext STRING;
+
+  if (req.url ~ "^hlx_(([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
+    set var.sha = re.group.1;
+    set var.ext = req.url.ext;
+
+    # TODO verify
+    set req.http.X-Fastly-Imageopto-Api = "fastly"
+  }
+
+  set req.http.X-Backend-URL = "/external/" + var.sha;
 }
 
 
@@ -531,6 +559,22 @@ sub hlx_type_redirect {
   set req.backend = F_GitHub;
   # Replace what we have in the cache already (which is the cached redirect)
   set req.hash_always_miss = true;
+}
+
+sub hlx_fetch_blob {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_blob";
+  if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
+    # The URLs are a hash of the content, so we can cache stuff for a year
+    # both on the edge and in the browser
+    set beresp.http.Cache-Control = "max-age=31622400,immutable";
+    set beresp.http.Surrogate-Control = "max-age=31622400,immutable";
+    set beresp.cacheable = true;
+    set beresp.ttl = 31622400s;
+
+    # TODO: should we set req.http.X-Fastly-Imageopto-Api ?
+
+    return(deliver);
+  }
 }
 
 sub hlx_fetch_static {
@@ -885,6 +929,8 @@ sub vcl_recv {
     call hlx_type_proxy;
   } elsif (req.http.X-Request-Type == "Static") {
     call hlx_type_static;
+  } elsif (req.http.X-Request-Type == "Blob") {
+    call hlx_type_blob;
   } elsif (req.http.X-Request-Type == "Redirect") {
     call hlx_type_redirect;
   } elsif (req.http.X-Request-Type == "Embed") {
@@ -1058,6 +1104,9 @@ sub vcl_fetch {
   # checks if the request is a redirect or .hlx_xxxx request and then call helix-static respectively.
   call hlx_fetch_static;
 
+  # checks if the request is an Azure Blob
+  call hlx_fetch_blob;
+
   # check if an error response has an empty body, in this case, the dispatcher didn't deliver
   # a valid error page and we use the synthentic one.
   # todo: this logic needs to be improved. maybe with a specific response header from the action
@@ -1146,7 +1195,6 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Owner;
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
-
 }
 
 sub vcl_miss {
