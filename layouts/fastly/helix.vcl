@@ -571,6 +571,16 @@ sub hlx_fetch_blob {
     set beresp.cacheable = true;
     set beresp.ttl = 31622400s;
 
+    if (!req.http.X-Debug) {
+      # shut up chatty headers
+      unset beresp.http.x-ms-blob-type;
+      unset beresp.http.x-ms-lease-state;
+      unset beresp.http.x-ms-lease-status;
+      unset beresp.http.x-ms-request-id;
+      unset beresp.http.x-ms-version;
+      unset beresp.http.Server;
+    }
+
     # TODO: should we set req.http.X-Fastly-Imageopto-Api ?
 
     return(deliver);
