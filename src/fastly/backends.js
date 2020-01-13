@@ -43,6 +43,21 @@ const backends = {
     max_conn: 200,
     use_ssl: true,
   },
+  AzureBlobs: {
+    hostname: 'hlx.blob.core.windows.net',
+    error_threshold: 0,
+    first_byte_timeout: 60000,
+    weight: 100,
+    address: 'hlx.blob.core.windows.net',
+    connect_timeout: 1000,
+    name: 'AzureBlobs',
+    port: 443,
+    between_bytes_timeout: 10000,
+    shield: 'iad-va-us',
+    ssl_cert_hostname: 'hlx.blob.core.windows.net',
+    max_conn: 200,
+    use_ssl: true,
+  },
 };
 async function init(fastly, version) {
   // go over all defined backends and create a new one
