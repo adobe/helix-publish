@@ -402,7 +402,7 @@ sub hlx_determine_request_type {
   }
 
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
-  if (req.url ~ "^(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$)") {
+  if (req.url ~ "^(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
     set req.http.X-Trace = req.http.X-Trace + "(blob)";
     set req.http.X-Request-Type = "Blob";
     unset req.http.Accept-Encoding;
@@ -536,7 +536,7 @@ sub hlx_type_blob {
     set var.ext = req.url.ext;
 
     # TODO verify
-    set req.http.X-Fastly-Imageopto-Api = "fastly"
+    set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
 
   set req.http.X-Backend-URL = "/external/" + var.sha;
