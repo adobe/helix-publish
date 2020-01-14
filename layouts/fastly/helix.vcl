@@ -402,7 +402,7 @@ sub hlx_determine_request_type {
   }
 
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
-  if (req.url ~ "^(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
+  if (req.url ~ "^/(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
     set req.http.X-Trace = req.http.X-Trace + "(blob)";
     set req.http.X-Request-Type = "Blob";
     unset req.http.Accept-Encoding;
@@ -531,7 +531,7 @@ sub hlx_type_blob {
   declare local var.sha STRING;
   declare local var.ext STRING;
 
-  if (req.url ~ "^hlx_(([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
+  if (req.url ~ "^/hlx_(([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
     set var.sha = re.group.1;
     set var.ext = req.url.ext;
 
@@ -1171,6 +1171,8 @@ sub hlx_bereq {
       set bereq.http.Host = "adobeioruntime.net";
     } elsif (req.backend == F_GitHub) {
       set bereq.http.Host = "raw.githubusercontent.com";
+    } elseif (req.backend == F_AzureBlobs) {
+      set bereq.http.Host = "hlx.blob.core.windows.net";
     }
   }
 
