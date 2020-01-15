@@ -12,9 +12,9 @@
 const assert = require('assert');
 const sinon = require('sinon');
 const path = require('path');
-const { HelixConfig } = require('@adobe/helix-shared');
+const { HelixConfig, IndexConfig } = require('@adobe/helix-shared');
 const {
-  init, updatestrains, extensions, dynamic,
+  init, updatestrains, extensions, dynamic, queries,
 } = require('../src/fastly/vcl');
 
 /* eslint-env mocha */
@@ -94,5 +94,40 @@ describe('Testing vcl.js', () => {
 
     assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'dynamic.vcl'));
+  });
+
+  it('#queries/example', async () => {
+    const fastly = {
+      writeVCL: sinon.fake.returns({}),
+    };
+
+    const indexconfig = await new IndexConfig()
+      .withConfigPath(path.resolve(__dirname, 'fixtures/example-queries.yaml'))
+      .init();
+
+    assert.ok(await queries(fastly, 1, indexconfig));
+
+    assert.ok(fastly.writeVCL.calledOnce);
+    assert.ok(fastly.writeVCL.calledWith(1, 'queries.vcl'));
+  });
+
+  it('#queries/empty', async () => {
+    let called = false;
+
+    const fastly = {
+      writeVCL: (_0, _1, obj) => {
+        assert.equal(obj.content, '');
+        called = true;
+        return true;
+      },
+    };
+
+    const indexconfig = await new IndexConfig()
+      .withConfigPath(path.resolve(__dirname, 'fixtures/empty-queries.yaml'))
+      .init();
+
+    assert.ok(await queries(fastly, 1, indexconfig));
+
+    assert.ok(called);
   });
 });

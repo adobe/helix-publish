@@ -62,9 +62,17 @@ function dynamic(fastly, version, dispatchVersion) {
   ]);
 }
 
+function queries(fastly, version, indexconfig) {
+  const content = '';
+  console.log(indexconfig.indices.length);
+
+  return writevcl(fastly, version, content, 'queries.vcl');
+}
+
 module.exports = {
   init,
   updatestrains,
   extensions,
   dynamic,
+  queries,
 };
