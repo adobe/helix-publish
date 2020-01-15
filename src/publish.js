@@ -17,6 +17,16 @@ const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 
+/**
+ * 
+ * @param {object} configuration the Helix Strains configuration
+ * @param {string} service the Fastly Service ID
+ * @param {string} token the Fastly Auth token
+ * @param {string} version the Helix CLI version
+ * @param {object} vclOverrides the VCL overrides (extension points)
+ * @param {string} dispatchVersion the helix-dispatch microservice version to use
+ * @param {object} log a logger
+ */
 async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console) {
   if (!(!!token && !!service)) {
     log.error('No token or service.');
