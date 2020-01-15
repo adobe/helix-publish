@@ -1,3 +1,19 @@
+# [3.1.0](https://github.com/adobe/helix-publish/compare/v3.0.5...v3.1.0) (2020-01-15)
+
+
+### Bug Fixes
+
+* **vcl:** fix vcl syntax ([1e62dd5](https://github.com/adobe/helix-publish/commit/1e62dd59552f3b6c79a1aaa541c2a25b71f94d05))
+* **vcl:** set correct host header for azure blobs and fix regex ([ae926b8](https://github.com/adobe/helix-publish/commit/ae926b83d1f8a4cd43e7d7261562a11369ee50d4))
+* **vcl:** surpress chatty headers from Azure ([78000fa](https://github.com/adobe/helix-publish/commit/78000fa438e6f8cb3aa26a87fb0bd5050b0228f5))
+* **vcl:** use only path for blob serving, to enable image optimization ([6f2703f](https://github.com/adobe/helix-publish/commit/6f2703f207e9ff2e0398f078d0cbefd617055d2e))
+
+
+### Features
+
+* **vcl:** add backend for proxying Azure Blob storage ([ff1c8ca](https://github.com/adobe/helix-publish/commit/ff1c8ca892c7a5b5019ac48b7ad4fecb56690539))
+* **vcl:** add new request type for blobs ([6eec876](https://github.com/adobe/helix-publish/commit/6eec876788f5e0331c8bfbf681349acf503eab98))
+
 ## [3.0.5](https://github.com/adobe/helix-publish/compare/v3.0.4...v3.0.5) (2020-01-14)
 
 
