@@ -74,7 +74,7 @@
     "@adobe/helix-shared": "4.0.1",
     "@adobe/helix-status": "7.0.3",
     "@adobe/openwhisk-action-logger": "2.0.3",
-    "@adobe/openwhisk-action-utils": "3.0.0",
+    "@adobe/openwhisk-action-utils": "4.0.0",
     "epsagon": "1.46.2",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
