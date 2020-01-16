@@ -409,6 +409,14 @@ sub hlx_determine_request_type {
     return;
   }
 
+  // something like /_query/index/name
+  if (req.url.path ~ "^/_query/.+/.+$") {
+    set req.http.X-Trace = req.http.X-Trace + "(query)";
+    set req.http.X-Request-Type = "Query";
+    unset req.http.Accept-Encoding;
+    return;
+  }
+
   if (req.url.ext ~ "^(hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     set req.http.X-Request-Type = "Static";
@@ -542,6 +550,17 @@ sub hlx_type_blob {
   set req.http.X-Backend-URL = "/external/" + var.sha;
 }
 
+sub hlx_type_query {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query";
+  # yes, it's a query request
+
+  # get it from Algolia
+  set req.backend = F_Algolia;
+
+  # run map queries
+  include "queries.vcl";
+}
+
 
 /**
  * Handle redirect-serving for static files
@@ -584,6 +603,15 @@ sub hlx_fetch_blob {
     # TODO: should we set req.http.X-Fastly-Imageopto-Api ?
 
     return(deliver);
+  }
+}
+
+sub hlx_fetch_query {
+  if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query";
+
+    # use the cache settings configured for the query
+    set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
   }
 }
 
@@ -941,6 +969,8 @@ sub vcl_recv {
     call hlx_type_static;
   } elsif (req.http.X-Request-Type == "Blob") {
     call hlx_type_blob;
+  } elsif (req.http.X-Request-Type == "Query") {
+    call hlx_type_query;
   } elsif (req.http.X-Request-Type == "Redirect") {
     call hlx_type_redirect;
   } elsif (req.http.X-Request-Type == "Embed") {
@@ -1117,6 +1147,9 @@ sub vcl_fetch {
   # checks if the request is an Azure Blob
   call hlx_fetch_blob;
 
+  # checks if the request is an Algolia Query
+  call hlx_fetch_query;
+
   # check if an error response has an empty body, in this case, the dispatcher didn't deliver
   # a valid error page and we use the synthentic one.
   # todo: this logic needs to be improved. maybe with a specific response header from the action
@@ -1173,6 +1206,9 @@ sub hlx_bereq {
       set bereq.http.Host = "raw.githubusercontent.com";
     } elseif (req.backend == F_AzureBlobs) {
       set bereq.http.Host = "hlx.blob.core.windows.net";
+    } elseiif (req.backend == F_Algolia) {
+      # we are passing the APP ID through the secrets table
+      set bereq.http.Host = table.lookup(secrets, "ALGOLIA_APP_ID") + "-dsn.algolia.net";
     }
   }
 
@@ -1184,6 +1220,10 @@ sub hlx_bereq {
   } elsif (req.backend == F_GitHub && table.lookup(secrets, "GITHUB_TOKEN")) {
     # set Github backend authentication
     set bereq.http.Authorization = "token " + table.lookup(secrets, "GITHUB_TOKEN");
+  } elseif (req.backend == F_Algolia) {
+    # set Algolia Backend authentication
+    set bereq.http.X-Algolia-Application-Id = table.lookup(secrets, "ALGOLIA_APP_ID");
+    set bereq.http.X-Algolia-API-Key = table.lookup(secrets, "ALGOLIA_API_KEY")
   }
 
   # making sure to get an uncompressed object for ESI
