@@ -123,7 +123,7 @@ describe('Testing vcl.js', () => {
     };
 
     const indexconfig = await new IndexConfig()
-      .withConfigPath(path.resolve(__dirname, 'fixtures/empty-queries.yaml'))
+      .withConfigPath(path.resolve(__dirname, 'fixtures/no-queries.yaml'))
       .init();
 
     assert.ok(await queries(fastly, 1, indexconfig));

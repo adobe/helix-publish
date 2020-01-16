@@ -21,6 +21,9 @@ const {
   writevcl,
   reqHeader,
 } = require('./vcl-utils');
+
+const { queryvcl } = require('./algolia');
+
 const package = require('../../package.json');
 
 function basedir() {
@@ -63,9 +66,7 @@ function dynamic(fastly, version, dispatchVersion) {
 }
 
 function queries(fastly, version, indexconfig) {
-  const content = '';
-  console.log(indexconfig.indices.length);
-
+  const content = queryvcl(indexconfig.indices || []);
   return writevcl(fastly, version, content, 'queries.vcl');
 }
 

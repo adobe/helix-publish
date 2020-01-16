@@ -27,6 +27,9 @@ indices:
         value: |
           ${attribute('src')}
     queries:
+      fresh:
+        query: "*"
+        hitsPerPage: 25
       all:
         query: "*"
         hitsPerPage: 25
