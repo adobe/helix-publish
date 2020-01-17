@@ -31,7 +31,7 @@ function queryvclsnippet(index, query) {
    + "?query=" + ${encode(query.query, query.parameters)}
    + "&filters=" + ${encode(query.filters, query.parameters)}
    + "&facets=" + ${encode(query.facets, query.parameters)}
-   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "");
+   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "")
    + "&hitsPerPage=${query.hitsPerPage}";
 }`;
 }
