@@ -19,7 +19,6 @@ function encode(expression, parameters) {
 }
 
 function queryvclsnippet(index, query) {
-  console.log('making vcl for', index, query.name);
   return `if (req.url.path == "/_query/${index}/${query.name}") {
   set req.http.X-Surrogate-Control = "max-age=${query.cache}";
   set req.http.X-Backend-URL = "/1/indexes/"
@@ -28,7 +27,9 @@ function queryvclsnippet(index, query) {
    + "${index}" # from the index name
    + "?query=" + ${encode(query.query, query.parameters)}
    + "&filters=" + ${encode(query.filters, query.parameters)}
-   + "&facets=" + ${encode(query.facets, query.parameters)};
+   + "&facets=" + ${encode(query.facets, query.parameters)}
+   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "")";
+   + "&hitsPerPage=${query.hitsPerPage}";
 }`;
 }
 
