@@ -13,6 +13,9 @@ function encode(expression, parameters) {
   if (!expression) {
     return '""';
   }
+  if (!parameters || parameters.length===0) {
+    return `"${encodeURIComponent(expression)}"`;
+  }
   return parameters.reduce((expr, param) => {
     return '"' + expr.replace('%24%7B' + param + '%7D', `" + regsub(querystring.filter_except(req.url, "${param}"), "^.*=", "") + "`);
   }, encodeURIComponent(expression)) + '"';
@@ -28,7 +31,7 @@ function queryvclsnippet(index, query) {
    + "?query=" + ${encode(query.query, query.parameters)}
    + "&filters=" + ${encode(query.filters, query.parameters)}
    + "&facets=" + ${encode(query.facets, query.parameters)}
-   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "")";
+   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "");
    + "&hitsPerPage=${query.hitsPerPage}";
 }`;
 }
