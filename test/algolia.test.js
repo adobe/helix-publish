@@ -39,8 +39,8 @@ describe('Test Query VCL generation', () => {
 
 describe('Test expression parser', () => {
   it('Parses expressions', () => {
-    assert.equal(encode('author:${author}', ['author']), `"author%3A" + regsub(querystring.filter_except(req.url, "author"), "^.*=", "") + ""`);
-    assert.equal(encode('author:${foobar}', ['foobar']), `"author%3A" + regsub(querystring.filter_except(req.url, "foobar"), "^.*=", "") + ""`);
+    assert.equal(encode('author:${author}', ['author']), `"author%3A" + regsub(querystring.filter_except(req.url, "author"), "^[^=]*=?", "") + ""`);
+    assert.equal(encode('author:${foobar}', ['foobar']), `"author%3A" + regsub(querystring.filter_except(req.url, "foobar"), "^[^=]*=?", "") + ""`);
     assert.equal(encode('author:${foobar}', ['author']), `"author%3A%24%7Bfoobar%7D"`);
   });
 });

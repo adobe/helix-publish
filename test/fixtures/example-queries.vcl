@@ -7,7 +7,7 @@ if (req.url.path == "/_query/blog-posts/fresh") {
    + "?query=" + "*"
    + "&filters=" + ""
    + "&facets=" + ""
-   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "")
+   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^[^=]*=?", "")
    + "&hitsPerPage=25";
 }
 if (req.url.path == "/_query/blog-posts/all") {
@@ -19,7 +19,7 @@ if (req.url.path == "/_query/blog-posts/all") {
    + "?query=" + "*"
    + "&filters=" + ""
    + "&facets=" + ""
-   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "")
+   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^[^=]*=?", "")
    + "&hitsPerPage=25";
 }
 if (req.url.path == "/_query/blog-posts/by-author") {
@@ -29,8 +29,8 @@ if (req.url.path == "/_query/blog-posts/by-author") {
    + req.http.X-Repo + "--"
    + "blog-posts" # from the index name
    + "?query=" + "*"
-   + "&filters=" + "author%3A" + regsub(querystring.filter_except(req.url, "author"), "^.*=", "") + "%0A"
+   + "&filters=" + "author%3A" + regsub(querystring.filter_except(req.url, "author"), "^[^=]*=?", "") + ""
    + "&facets=" + ""
-   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^.*=", "")
+   + "&page=" + regsub(querystring.filter_except(req.url, "page"), "^[^=]*=?", "")
    + "&hitsPerPage=25";
 }
