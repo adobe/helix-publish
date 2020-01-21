@@ -1,3 +1,31 @@
+## [3.1.4](https://github.com/adobe/helix-publish/compare/v3.1.3...v3.1.4) (2020-01-20)
+
+
+### Bug Fixes
+
+* **deps:** update external ([#285](https://github.com/adobe/helix-publish/issues/285)) ([16c8bf6](https://github.com/adobe/helix-publish/commit/16c8bf67c5895e776196db327dadc691d3ecfd84))
+
+## [3.1.3](https://github.com/adobe/helix-publish/compare/v3.1.2...v3.1.3) (2020-01-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v5 ([#283](https://github.com/adobe/helix-publish/issues/283)) ([40b0db1](https://github.com/adobe/helix-publish/commit/40b0db1fdfe5ed487f760cca6df46bc8ac4e158d))
+
+## [3.1.2](https://github.com/adobe/helix-publish/compare/v3.1.1...v3.1.2) (2020-01-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v4 ([#282](https://github.com/adobe/helix-publish/issues/282)) ([2afb5a2](https://github.com/adobe/helix-publish/commit/2afb5a23a01a6fa8e400b1a0d51fe6b36df9468a))
+
+## [3.1.1](https://github.com/adobe/helix-publish/compare/v3.1.0...v3.1.1) (2020-01-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v4.0.1 ([10ad1d1](https://github.com/adobe/helix-publish/commit/10ad1d1811a6caad0ea6a411077df9385b45a8d1))
+
 # [3.1.0](https://github.com/adobe/helix-publish/compare/v3.0.5...v3.1.0) (2020-01-15)
 
 
