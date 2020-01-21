@@ -1206,7 +1206,7 @@ sub hlx_bereq {
       set bereq.http.Host = "raw.githubusercontent.com";
     } elseif (req.backend == F_AzureBlobs) {
       set bereq.http.Host = "hlx.blob.core.windows.net";
-    } elseiif (req.backend == F_Algolia) {
+    } elseif (req.backend == F_Algolia) {
       # we are passing the APP ID through the secrets table
       set bereq.http.Host = table.lookup(secrets, "ALGOLIA_APP_ID") + "-dsn.algolia.net";
     }
