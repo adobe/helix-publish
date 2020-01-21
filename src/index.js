@@ -24,6 +24,8 @@ async function publishConfig(params) {
     params.dispatchVersion,
     // eslint-disable-next-line no-underscore-dangle
     params.__ow_logger,
+    params.indexconfig,
+    params.algoliaappid,
   );
 }
 
