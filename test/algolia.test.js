@@ -16,6 +16,7 @@ const { IndexConfig } = require('@adobe/helix-shared');
 const { queryvcl, encode } = require('../src/fastly/algolia');
 
 /* eslint-env mocha */
+/* eslint-disable no-template-curly-in-string */
 
 describe('Test Query VCL generation', () => {
   it('Generates empty VCL for empty config', async () => {
@@ -39,8 +40,8 @@ describe('Test Query VCL generation', () => {
 
 describe('Test expression parser', () => {
   it('Parses expressions', () => {
-    assert.equal(encode('author:${author}', ['author']), `"author%3A" + regsub(querystring.filter_except(req.url, "author"), "^[^=]*=?", "") + ""`);
-    assert.equal(encode('author:${foobar}', ['foobar']), `"author%3A" + regsub(querystring.filter_except(req.url, "foobar"), "^[^=]*=?", "") + ""`);
-    assert.equal(encode('author:${foobar}', ['author']), `"author%3A%24%7Bfoobar%7D"`);
+    assert.equal(encode('author:${author}', ['author']), '"author%3A" + regsub(querystring.filter_except(req.url, "author"), "^[^=]*=?", "") + ""');
+    assert.equal(encode('author:${foobar}', ['foobar']), '"author%3A" + regsub(querystring.filter_except(req.url, "foobar"), "^[^=]*=?", "") + ""');
+    assert.equal(encode('author:${foobar}', ['author']), '"author%3A%24%7Bfoobar%7D"');
   });
 });

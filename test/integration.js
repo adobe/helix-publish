@@ -85,12 +85,67 @@ const config = {
     },
   },
 };
+/* eslint-disable no-template-curly-in-string */
+const indexconfig = {
+  indices: {
+    'blog-posts': {
+      fetch: 'https://${repo}-${owner}.project-helix.page/${path}',
+      properties: {
+        author: {
+          faceted: true,
+          select: 'main > div:nth-of-type(3) > p:nth-of-type(1)',
+          value: "${match('by (.*)')}\n",
+        },
+        date: {
+          select: 'main > div:nth-of-type(3) > p:nth-of-type(2)',
+          value: "${parseTimestamp('[POSTED ON] MM-DD-YYYY')}\n",
+        },
+        hero: {
+          select: 'main > div > img:first-of-type',
+          value: "${attribute('src')}\n",
+        },
+        title: {
+          select: 'h1:first-of-type',
+          value: '${textContent()}\n',
+        },
+        topics: {
+          faceted: true,
+          select: 'main > div:last-of-type > p:first-of-type',
+          values: "${match('(Topics: )? ([^,]+)')}\n",
+        },
+      },
+      queries: {
+        all: {
+          cache: 600,
+          hitsPerPage: 25,
+          query: '*',
+          parameters: [],
+          select: '*',
+        },
+        'by-author': {
+          cache: 300,
+          filters: 'author:${author}\n',
+          hitsPerPage: 25,
+          parameters: [
+            'author',
+          ],
+          query: '*',
+          select: '*',
+        },
+      },
+      source: 'html',
+    },
+  },
+  version: 1,
+};
+/* eslint-enable no-template-curly-in-string */
 
 // give process.env values preference, so that we can test this on circleci w/o polly
 const usePolly = !process.env.HLX_FASTLY_NAMESPACE;
 const HLX_FASTLY_NAMESPACE = process.env.HLX_FASTLY_NAMESPACE || '54nWWFJicKgbdVHou26Y6a';
 const HLX_FASTLY_AUTH = process.env.HLX_FASTLY_AUTH || 'secret';
 const VERSION_NUM = process.env.VERSION_NUM || 247;
+const ALGOLIA_APP_ID = process.env.ALGOLIA_APP_ID || 'A8PL9E4TZT';
 
 describe('Integration Test', () => {
   setupPolly({
@@ -155,13 +210,15 @@ describe('Integration Test', () => {
       token: HLX_FASTLY_AUTH,
       version: VERSION_NUM,
       ...config,
+      indexconfig,
+      algoliaappid: ALGOLIA_APP_ID,
     };
 
     const res = await main(params);
     assert.deepStrictEqual(res, {
       body: {
         status: 'published',
-        completed: 8,
+        completed: 9,
       },
       statusCode: 200,
     });
