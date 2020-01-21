@@ -14,12 +14,10 @@ function encode(expression, parameters) {
     return '""';
   }
   const cleanexpression = expression.replace(/\n/g, '');
-  if (!parameters || parameters.length===0) {
+  if (!parameters || parameters.length === 0) {
     return `"${encodeURIComponent(cleanexpression)}"`;
   }
-  return parameters.reduce((expr, param) => {
-    return '"' + expr.replace('%24%7B' + param + '%7D', `" + regsub(querystring.filter_except(req.url, "${param}"), "^[^=]*=?", "") + "`);
-  }, encodeURIComponent(cleanexpression)) + '"';
+  return `${parameters.reduce((expr, param) => `"${expr.replace(`%24%7B${param}%7D`, `" + regsub(querystring.filter_except(req.url, "${param}"), "^[^=]*=?", "") + "`)}`, encodeURIComponent(cleanexpression))}"`;
 }
 
 function queryvclsnippet(index, query) {
@@ -38,9 +36,9 @@ function queryvclsnippet(index, query) {
 }
 
 function queryvcl(indices) {
-  function * snippets() {
-    for (let i = 0;i < indices.length; ++i) {
-      for (let j = 0;j< indices[i].queries.length;++j) {
+  function* snippets() {
+    for (let i = 0; i < indices.length; i += 1) {
+      for (let j = 0; j < indices[i].queries.length; j += 1) {
         yield queryvclsnippet(indices[i].name, indices[i].queries[j]);
       }
     }
