@@ -1223,7 +1223,7 @@ sub hlx_bereq {
   } elseif (req.backend == F_Algolia) {
     # set Algolia Backend authentication
     set bereq.http.X-Algolia-Application-Id = table.lookup(secrets, "ALGOLIA_APP_ID");
-    set bereq.http.X-Algolia-API-Key = table.lookup(secrets, "ALGOLIA_API_KEY")
+    set bereq.http.X-Algolia-API-Key = table.lookup(secrets, "ALGOLIA_API_KEY");
   }
 
   # making sure to get an uncompressed object for ESI
