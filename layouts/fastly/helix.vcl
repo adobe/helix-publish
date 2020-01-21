@@ -557,6 +557,10 @@ sub hlx_type_query {
   # get it from Algolia
   set req.backend = F_Algolia;
 
+  # Load important information for content repo from edge dicts
+  call hlx_owner;
+  call hlx_repo;
+
   # run map queries
   include "queries.vcl";
 }
