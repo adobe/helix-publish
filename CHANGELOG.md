@@ -1,3 +1,10 @@
+## [3.1.6](https://github.com/adobe/helix-publish/compare/v3.1.5...v3.1.6) (2020-01-22)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) ([053d07b](https://github.com/adobe/helix-publish/commit/053d07be2a79591800160887ec9faad547b7b58b))
+
 ## [3.1.5](https://github.com/adobe/helix-publish/compare/v3.1.4...v3.1.5) (2020-01-22)
 
 
