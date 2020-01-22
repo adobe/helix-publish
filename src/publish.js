@@ -10,14 +10,26 @@
  * governing permissions and limitations under the License.
  */
 
-const { HelixConfig } = require('@adobe/helix-shared');
+const { HelixConfig, IndexConfig } = require('@adobe/helix-shared');
 const initfastly = require('@adobe/fastly-native-promises');
 const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console) {
+/**
+ *
+ * @param {object} configuration the Helix Strains configuration
+ * @param {string} service the Fastly Service ID
+ * @param {string} token the Fastly Auth token
+ * @param {string} version the Helix CLI version
+ * @param {object} vclOverrides the VCL overrides (extension points)
+ * @param {string} dispatchVersion the helix-dispatch microservice version to use
+ * @param {object} log a logger
+ * @param {object} iconfig the IndexConfig from helix-shared
+ * @param {string} algoliaappid Algolia App ID (not secret)
+ */
+async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid) {
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
@@ -33,15 +45,22 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       .withLogger(log)
       .withJSON(configuration)
       .init();
+
+    const indexconfig = await new IndexConfig()
+      .withLogger(log)
+      .withJSON(iconfig)
+      .init();
+
     const fastly = await initfastly(token, service);
     log.info('running publishing tasks...');
     return Promise.all([
-      backends.init(fastly, version),
+      backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version),
       vcl.dynamic(fastly, version, dispatchVersion),
       vcl.extensions(fastly, version, vclOverrides),
       vcl.updatestrains(fastly, version, config.strains),
+      vcl.queries(fastly, version, indexconfig),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
         fastly,

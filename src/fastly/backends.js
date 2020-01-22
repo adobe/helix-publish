@@ -59,9 +59,24 @@ const backends = {
     use_ssl: true,
   },
 };
-async function init(fastly, version) {
+async function init(fastly, version, algoliaappid) {
   // go over all defined backends and create a new one
-  return Promise.all(Object.values(backends).map((backend) => fastly.writeBackend(
+  const mybackends = algoliaappid ? [...Object.values(backends), {
+    hostname: `${algoliaappid}-dsn.algolia.net`,
+    error_threshold: 0,
+    first_byte_timeout: 60000,
+    weight: 100,
+    address: `${algoliaappid}-dsn.algolia.net`,
+    connect_timeout: 1000,
+    name: 'Algolia',
+    port: 443,
+    between_bytes_timeout: 10000,
+    shield: 'iad-va-us',
+    ssl_cert_hostname: `${algoliaappid}-dsn.algolia.net`,
+    max_conn: 200,
+    use_ssl: true,
+  }] : Object.values(backends);
+  return Promise.all(mybackends.map((backend) => fastly.writeBackend(
     version,
     backend.name,
     backend,
