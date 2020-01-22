@@ -1,3 +1,24 @@
+# [3.2.0](https://github.com/adobe/helix-publish/compare/v3.1.6...v3.2.0) (2020-01-22)
+
+
+### Bug Fixes
+
+* **dependencies:** npm audit fix ([db6ff0f](https://github.com/adobe/helix-publish/commit/db6ff0f806b9b2de68ad2c162dfc3c6a0232c810))
+* **query:** load owner and repo from strain ([67e50c6](https://github.com/adobe/helix-publish/commit/67e50c6d26d521a072f2df6337fb6831536e8746))
+* **vcl:** add missing semicolon ([cab0e3a](https://github.com/adobe/helix-publish/commit/cab0e3aa874b2b619c650e23d30a0f9a7a0c62c7))
+* **vcl:** correctly escape expressions in queries ([de2a447](https://github.com/adobe/helix-publish/commit/de2a447ef52e3cbf865e9b86add6385cda2a863d))
+* **vcl:** fix regex for query string parsing ([15ba6e2](https://github.com/adobe/helix-publish/commit/15ba6e2da5ba77cd6b957920de81e5e54f031d94))
+* **vcl:** fix typo in query handling ([dbce851](https://github.com/adobe/helix-publish/commit/dbce851112a40842461ae109729e0f5477a8a4ff))
+* **vcl:** remove extranous semicolon in generated vcl ([125eaf5](https://github.com/adobe/helix-publish/commit/125eaf546a3f51f5af65ce69dbc579f58ea62439))
+
+
+### Features
+
+* **query:** pass algolia options to publish function ([b290650](https://github.com/adobe/helix-publish/commit/b2906501054a3296b8914e6d848060baaab7307b))
+* **vcl:** add new request type query ([c03aa7e](https://github.com/adobe/helix-publish/commit/c03aa7ecb0d7b56f00aae8500655171043884701))
+* **vcl:** generate vcl to wrap query ([bb8a6b0](https://github.com/adobe/helix-publish/commit/bb8a6b08913a7c8d91f85434d93f47e3ba0ba1ae))
+* **vcl:** support page and hitsPerPage parameters ([0b39324](https://github.com/adobe/helix-publish/commit/0b393247f1ab260abb919184a92ab4957cd11808))
+
 ## [3.1.6](https://github.com/adobe/helix-publish/compare/v3.1.5...v3.1.6) (2020-01-22)
 
 
