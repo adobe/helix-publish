@@ -1,3 +1,10 @@
+## [3.2.4](https://github.com/adobe/helix-publish/compare/v3.2.3...v3.2.4) (2020-01-24)
+
+
+### Bug Fixes
+
+* **package:** include required schemas in deployment ([342d8d2](https://github.com/adobe/helix-publish/commit/342d8d2a44ba73910b84b830ad19c9e6939e9155))
+
 ## [3.2.3](https://github.com/adobe/helix-publish/compare/v3.2.2...v3.2.3) (2020-01-24)
 
 
