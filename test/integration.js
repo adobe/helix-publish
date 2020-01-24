@@ -15,20 +15,9 @@ const request = require('request-promise-native');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
-const { MemLogger, SimpleInterface } = require('@adobe/helix-log');
 const { main } = require('../src/index');
-/* eslint-env mocha */
 
-function createLogger(level = 'info') {
-  const logger = new MemLogger({
-    level,
-    filter: (fields) => ({
-      ...fields,
-      timestamp: '1970-01-01T00:00:00.000Z',
-    }),
-  });
-  return new SimpleInterface({ logger });
-}
+/* eslint-env mocha */
 
 const config = {
   configuration: {
@@ -260,15 +249,5 @@ describe('Integration Test', () => {
 
     assert.equal(res.statusCode, 200);
     assert.ok(res.body.match(/<status>OK<\/status>/));
-  });
-
-  it('index function instruments epsagon', async () => {
-    const logger = createLogger();
-    await main({
-      EPSAGON_TOKEN: 'foobar',
-      __ow_logger: logger,
-    });
-    const output = JSON.stringify(logger.logger.buf);
-    assert.ok(output.indexOf('instrumenting epsagon.') >= 0);
   });
 });
