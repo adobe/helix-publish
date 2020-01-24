@@ -409,6 +409,12 @@ sub hlx_determine_request_type {
     return;
   }
 
+  // something like /cgi-bin/foo.js or /cgi-bin/bar.cgi
+  if (req.url.dirname ~ "^/cgi-bin?") {
+    set req.http.X-Request-Type = "CGI-Action";
+    return;
+  }
+
   // something like /_query/index/name
   if (req.url.path ~ "^/_query/.+/.+$") {
     set req.http.X-Trace = req.http.X-Trace + "(query)";
@@ -527,6 +533,36 @@ sub hlx_type_static {
     + "&allow=" urlencode(req.http.X-Allow)
     + "&deny=" urlencode(req.http.X-Deny)
     + "&root=" + req.http.X-Github-Static-Root;
+}
+
+sub hlx_type_cgi {
+  declare local var.namespace STRING;
+  declare local var.package STRING;
+  declare local var.script STRING;
+
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_cgi";
+  # This is a CGI request.
+
+  set req.backend = F_AdobeRuntime;
+
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  call hlx_action_root;
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
+
+
+  set var.script = regsuball(req.url.basename, "\..*$", "");
+
+  # get (strain-specific) parameter whitelist
+  include "params.vcl";
+
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace // i.e. /trieloff
+    + "/" + var.package
+    // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
+    + "/cgi-bin-" + var.script
+    // we keep the complete query string
+    + "?" + req.url.qs;
 }
 
 sub hlx_type_blob {
@@ -973,6 +1009,12 @@ sub vcl_recv {
     call hlx_type_static;
   } elsif (req.http.X-Request-Type == "Blob") {
     call hlx_type_blob;
+  } elsif (req.http.X-Request-Type == "CGI-Action") {
+    call hlx_type_cgi;
+    // we return here, so that we can skip the HTTP method check below
+    // all other request types are for GET only, but cgi-bin allows all
+    // HTTP methods
+    return(lookup);
   } elsif (req.http.X-Request-Type == "Query") {
     call hlx_type_query;
   } elsif (req.http.X-Request-Type == "Redirect") {
