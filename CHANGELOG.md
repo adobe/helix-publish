@@ -1,3 +1,10 @@
+## [3.2.2](https://github.com/adobe/helix-publish/compare/v3.2.1...v3.2.2) (2020-01-24)
+
+
+### Bug Fixes
+
+* **epsagon:** use helix-epsagon wrapper ([#291](https://github.com/adobe/helix-publish/issues/291)) ([c90a0a3](https://github.com/adobe/helix-publish/commit/c90a0a39bc89fa2ec1a435f0cf4cebcd2e2d3db2))
+
 ## [3.2.1](https://github.com/adobe/helix-publish/compare/v3.2.0...v3.2.1) (2020-01-23)
 
 
