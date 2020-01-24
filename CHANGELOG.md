@@ -1,3 +1,11 @@
+# [3.3.0](https://github.com/adobe/helix-publish/compare/v3.2.4...v3.3.0) (2020-01-24)
+
+
+### Features
+
+* **vcl:** adds cgi-bin request type ([c96b405](https://github.com/adobe/helix-publish/commit/c96b405c9b828a53a170d739ec4a3142c1e96165)), closes [#88](https://github.com/adobe/helix-publish/issues/88)
+* **vcl:** adds cgi-bin request type ([4d1aa25](https://github.com/adobe/helix-publish/commit/4d1aa25b8c7a845d53a7c37a147a511b08c2b79c)), closes [#88](https://github.com/adobe/helix-publish/issues/88)
+
 ## [3.2.4](https://github.com/adobe/helix-publish/compare/v3.2.3...v3.2.4) (2020-01-24)
 
 
