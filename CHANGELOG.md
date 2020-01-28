@@ -1,3 +1,10 @@
+## [3.3.2](https://github.com/adobe/helix-publish/compare/v3.3.1...v3.3.2) (2020-01-28)
+
+
+### Bug Fixes
+
+* **query:** guard against missing algolia app id parameter ([28a2994](https://github.com/adobe/helix-publish/commit/28a2994f799b9561d135cd8589eeef9b9db4fa50)), closes [#298](https://github.com/adobe/helix-publish/issues/298)
+
 ## [3.3.1](https://github.com/adobe/helix-publish/compare/v3.3.0...v3.3.1) (2020-01-26)
 
 
