@@ -24,9 +24,10 @@ describe('Testing backends.js', () => {
     };
 
     assert.ok(await init(fastly, 1));
-    assert.ok(fastly.writeBackend.calledThrice);
+    assert.equal(fastly.writeBackend.callCount, 4);
     assert.ok(fastly.writeBackend.calledWith(1, 'AdobeRuntime'));
     assert.ok(fastly.writeBackend.calledWith(1, 'GitHub'));
+    assert.ok(fastly.writeBackend.calledWith(1, 'Algolia'));
   });
 
   it('#updatestrains/full', async () => {
