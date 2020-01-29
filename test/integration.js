@@ -193,7 +193,13 @@ describe('Integration Test', () => {
     assert.equal(res.statusCode, 500);
   }).timeout(60000);
 
-  it('Test publish function locally', async () => {
+  it('Test publish function locally', async function test() {
+    if (usePolly) {
+      this.polly.server.any('https://api.fastly.com/service/54nWWFJicKgbdVHou26Y6a/version/247/backend/AdobeFonts').intercept((req, res) => {
+        res.sendStatus(200);
+      });
+    }
+
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
