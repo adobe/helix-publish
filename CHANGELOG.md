@@ -1,3 +1,11 @@
+# [3.4.0](https://github.com/adobe/helix-publish/compare/v3.3.4...v3.4.0) (2020-01-30)
+
+
+### Features
+
+* **fonts:** add new backend for font serving (Adobe Fonts) ([964b103](https://github.com/adobe/helix-publish/commit/964b103ed8122283ff308224097c88b4f3faf0ee))
+* **fonts:** add new request type for fonts ([0a7b6a1](https://github.com/adobe/helix-publish/commit/0a7b6a1314e5e99f836feace051e28d03c4e4ff1))
+
 ## [3.3.4](https://github.com/adobe/helix-publish/compare/v3.3.3...v3.3.4) (2020-01-29)
 
 
