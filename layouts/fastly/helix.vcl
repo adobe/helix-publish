@@ -423,6 +423,13 @@ sub hlx_determine_request_type {
     return;
   }
 
+  // something like /hlx_fonts/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
+  // but not like /hlx_fonts/eic8tkf.css
+  if (req.url.path ~ "^/hlx_fonts/.+" && req.url.ext != "css") {
+    set req.http.X-Trace = req.http.X-Trace + "(fonts)";
+    set req.http.X-Request-Type = "Fonts";
+  }
+
   if (req.url.ext ~ "^(hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
     set req.http.X-Request-Type = "Static";
@@ -599,6 +606,17 @@ sub hlx_type_query {
 
   # run map queries
   include "queries.vcl";
+}
+
+sub hlx_type_fonts {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_fonts";
+  # yes, it's a fonts request
+
+  # get it from Adobe Fonts
+  set req.backend = F_AdobeFonts;
+
+  # remove the /hlx_fonts/ prefix again
+  set req.http.X-Backend-URL = regsub(req.url, "^/hlx_fonts/", "/");
 }
 
 
@@ -1009,6 +1027,8 @@ sub vcl_recv {
     call hlx_type_static;
   } elsif (req.http.X-Request-Type == "Blob") {
     call hlx_type_blob;
+  } elsif (req.http.X-Request-Type == "Fonts") {
+    call hlx_type_fonts;
   } elsif (req.http.X-Request-Type == "CGI-Action") {
     call hlx_type_cgi;
     // we return here, so that we can skip the HTTP method check below
@@ -1255,6 +1275,8 @@ sub hlx_bereq {
     } elseif (req.backend == F_Algolia) {
       # we are passing the APP ID through the secrets table
       set bereq.http.Host = table.lookup(secrets, "ALGOLIA_APP_ID") + "-dsn.algolia.net";
+    } elseif (req.backend == F_AdobeFonts) {
+      set bereq.http.Host = "use.typekit.net";
     }
   }
 
