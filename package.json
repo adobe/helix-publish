@@ -79,7 +79,7 @@
     "@adobe/helix-log": "4.5.0",
     "@adobe/helix-shared": "5.1.0",
     "@adobe/helix-status": "7.1.1",
-    "@adobe/openwhisk-action-logger": "2.0.4",
+    "@adobe/openwhisk-action-logger": "2.1.0",
     "@adobe/openwhisk-action-utils": "4.1.0",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
