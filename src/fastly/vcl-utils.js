@@ -33,22 +33,15 @@ function vclbody(arr = []) {
 }
 
 function conditions([strain, vcl]) {
-  if (strain.url) {
-    const uri = URI.parse(strain.url);
-    if (uri.path && uri.path !== '/') {
-      const pathname = uri.path.replace(/\/$/, '');
-      const body = vclbody(vcl.body);
-      body.push(`set req.http.X-Dirname = regsub(req.http.X-FullDirname, "^${pathname}", "");`);
-      body.push(`set req.http.X-Root-Path = "${pathname}";`);
-      return [strain, {
-        sticky: false,
-        condition: `req.http.Host == "${uri.host}" && (req.http.X-FullDirname ~ "^${pathname}$" || req.http.X-FullDirname ~ "^${pathname}/")`,
-        body,
-      }];
-    }
+  if (strain.condition) {
     return [strain, {
-      condition: `req.http.Host == "${uri.host}"`,
-    }, strain];
+      sticky: strain.sticky,
+      condition: strain.condition.toVCL(),
+      body: [...vclbody(vcl.body),
+        strain.condition.toVCLPath('X-Dirname'),
+        strain.condition.toVCLPath('X-Root-Path'),
+      ],
+    }];
   }
   return [strain, vcl];
 }
