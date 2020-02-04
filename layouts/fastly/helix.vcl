@@ -557,6 +557,10 @@ sub hlx_type_cgi {
   set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
   set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
 
+  # Load important information from edge dicts
+  call hlx_github_static_owner;
+  call hlx_github_static_repo;
+  call hlx_github_static_ref;
 
   set var.script = regsuball(req.url.basename, "\..*$", "");
 
@@ -564,12 +568,15 @@ sub hlx_type_cgi {
   include "params.vcl";
 
   set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace // i.e. /trieloff
+    + "/" + var.namespace
     + "/" + var.package
     // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
     + "/cgi-bin-" + var.script
-    // we keep the complete query string
-    + "?" + req.url.qs;
+    + "?__hlx_owner=" + req.http.X-Github-Static-Owner
+    + "&__hlx_repo=" + req.http.X-Github-Static-Repo
+    + "&__hlx_ref=" + req.http.X-Github-Static-Ref
+    // we append the complete query string
+    + "&" + req.url.qs;
 }
 
 sub hlx_type_blob {
@@ -726,8 +733,8 @@ sub hlx_fetch_static {
       # Keep the redirect around for a short bit, to prevent thundering herd
       set beresp.cacheable = true;
       set beresp.ttl = 5s;
+      return(deliver);
     }
-    return(deliver);
   } elsif (req.http.X-Request-Type == "Redirect" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(redirect)";
     // and this is where we fix the headers of the GitHub static response
@@ -986,7 +993,7 @@ sub vcl_recv {
   if (req.http.X-From-Edge) {
     # Request came from a Fastly POP, send the raw response without ESI processing
     set req.esi = false;
-  } elseif ( req.url.ext == "html" ) {
+  } elseif ( req.url.ext == "html" || req.url.ext == "xml") {
     set req.http.x-esi = "1";
   }
 
