@@ -558,9 +558,9 @@ sub hlx_type_cgi {
   set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
 
   # Load important information from edge dicts
-  call hlx_github_static_owner;
-  call hlx_github_static_repo;
-  call hlx_github_static_ref;
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
 
   set var.script = regsuball(req.url.basename, "\..*$", "");
 
@@ -572,9 +572,9 @@ sub hlx_type_cgi {
     + "/" + var.package
     // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
     + "/cgi-bin-" + var.script
-    + "?__hlx_owner=" + req.http.X-Github-Static-Owner
-    + "&__hlx_repo=" + req.http.X-Github-Static-Repo
-    + "&__hlx_ref=" + req.http.X-Github-Static-Ref
+    + "?__hlx_owner=" + req.http.X-Owner
+    + "&__hlx_repo=" + req.http.X-Repo
+    + "&__hlx_ref=" + req.http.X-Ref
     // we append the complete query string
     + "&" + req.url.qs;
 }
