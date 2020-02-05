@@ -1,3 +1,10 @@
+# [3.5.0](https://github.com/adobe/helix-publish/compare/v3.4.2...v3.5.0) (2020-02-05)
+
+
+### Features
+
+* **sitemap:** allow ESI in XML, pass (owner,repo,ref) to cgi-bin ([#313](https://github.com/adobe/helix-publish/issues/313)) ([7c7debc](https://github.com/adobe/helix-publish/commit/7c7debc274eb9a23065b54f6d96531466afd6984))
+
 ## [3.4.2](https://github.com/adobe/helix-publish/compare/v3.4.1...v3.4.2) (2020-01-31)
 
 
