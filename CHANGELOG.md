@@ -1,3 +1,10 @@
+## [3.5.1](https://github.com/adobe/helix-publish/compare/v3.5.0...v3.5.1) (2020-02-11)
+
+
+### Bug Fixes
+
+* **vcl:** remove x-forwarded-host header when talking to Adobe Fonts ([98fd530](https://github.com/adobe/helix-publish/commit/98fd53095621992a351921b99cc64fd87e433299))
+
 # [3.5.0](https://github.com/adobe/helix-publish/compare/v3.4.2...v3.5.0) (2020-02-05)
 
 
