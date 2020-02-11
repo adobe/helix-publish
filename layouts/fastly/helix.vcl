@@ -624,6 +624,8 @@ sub hlx_type_fonts {
 
   # remove the /hlx_fonts/ prefix again
   set req.http.X-Backend-URL = regsub(req.url, "^/hlx_fonts/", "/");
+
+  unset req.http.x-forwarded-host;
 }
 
 
