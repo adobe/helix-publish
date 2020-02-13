@@ -611,8 +611,25 @@ sub hlx_type_query {
   call hlx_owner;
   call hlx_repo;
 
+
+  if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
+    # establish the fallback first
+    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@v1/" + re.group.1 + "/" + re.group.2
+    + "?__hlx_owner=" + req.http.X-Owner
+    + "&__hlx_repo=" + req.http.X-Repo
+    + "&__hlx_ref=" + req.http.X-Ref
+    // we append the complete query string
+    + "&" + req.url.qs;
+  }
+
   # run map queries
   include "queries.vcl";
+
+  # check if we are still using the fallback
+  if (req.http.X-Backend-URL ~ "^/api/v1/web/helix/helix-services/query-index@") {
+    # this is a Runtime URL
+    set req.backend = F_AdobeRuntime;
+  }
 }
 
 sub hlx_type_fonts {
@@ -768,6 +785,9 @@ sub hlx_deliver_type {
   if (req.http.X-Request-Type == "Dispatch") {
     call hlx_deliver_static;
   }
+  if (req.http.X-Request-Type == "Query") {
+    call hlx_deliver_query;
+  }
 }
 
 /**
@@ -823,6 +843,28 @@ sub hlx_deliver_static {
     #set req.http.X-Request-Type = "Error";
     #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     #restart;
+  }
+}
+
+sub hlx_deliver_query {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_query";
+  if (resp.status == 200) {
+    # just pass it through
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    return;
+  } elseif (resp.status == 307) {
+    # perform some additional validation
+    if (resp.http.Location ~ "^/1/indexes/") {
+      set req.http.X-Request-Type = "Query/Redirect";
+      set req.http.X-Backend-URL = resp.http.Location;
+      # save the cache control header for later
+      set req.http.X-Cache-Control = resp.http.Cache-Control;
+      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      restart;
+    }
+  } else {
+    # any other error, ignore
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
   }
 }
 
