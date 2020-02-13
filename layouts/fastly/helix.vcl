@@ -664,6 +664,13 @@ sub hlx_type_redirect {
   set req.hash_always_miss = true;
 }
 
+sub hlx_type_query_redirect {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query_redirect";
+  set req.backend = F_Algolia;
+  # Replace what we have in the cache already (which is the cached redirect)
+  set req.hash_always_miss = true;
+}
+
 sub hlx_fetch_blob {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_blob";
   if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
@@ -691,8 +698,13 @@ sub hlx_fetch_blob {
 }
 
 sub hlx_fetch_query {
-  if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query";
+  if (req.http.X-Request-Type == "Query/Redirect" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query(redirect)";
+
+    # use the cache settings configured for the query
+    set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
+  } elseif (req.http.X-Request-Type == "Query" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query(regular)";
 
     # use the cache settings configured for the query
     set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
@@ -858,7 +870,7 @@ sub hlx_deliver_query {
       set req.http.X-Request-Type = "Query/Redirect";
       set req.http.X-Backend-URL = resp.http.Location;
       # save the cache control header for later
-      set req.http.X-Cache-Control = resp.http.Cache-Control;
+      set req.http.X-Surrogate-Control = resp.http.Cache-Control;
       set req.http.X-Trace = req.http.X-Trace + "(redirect)";
       restart;
     }
@@ -1090,6 +1102,8 @@ sub vcl_recv {
     call hlx_type_query;
   } elsif (req.http.X-Request-Type == "Redirect") {
     call hlx_type_redirect;
+  } elsif (req.http.X-Request-Type == "Query/Redirect") {
+    call hlx_type_query_redirect;
   } elsif (req.http.X-Request-Type == "Embed") {
     call hlx_type_embed;
   } elseif (req.http.X-Request-Type == "Static-URL") {
