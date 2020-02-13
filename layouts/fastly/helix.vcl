@@ -699,6 +699,13 @@ sub hlx_fetch_blob {
 }
 
 sub hlx_fetch_query {
+  if (beresp.http.X-Static == "Raw/Query" && beresp.status == 307) {
+    set req.http.X-Trace = req.http.X-Trace + "(raw)";
+    # Keep the redirect around for a short bit, to prevent thundering herd
+    set beresp.cacheable = true;
+    set beresp.ttl = 5s; #todo increase to 600s when this works
+    return(deliver);
+  }
   if (req.http.X-Request-Type == "Query/Redirect" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query(redirect)";
 
