@@ -610,6 +610,7 @@ sub hlx_type_query {
   # Load important information for content repo from edge dicts
   call hlx_owner;
   call hlx_repo;
+  call hlx_ref;
 
 
   if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
