@@ -1,3 +1,17 @@
+# [3.6.0](https://github.com/adobe/helix-publish/compare/v3.5.2...v3.6.0) (2020-02-13)
+
+
+### Bug Fixes
+
+* **query:** prevent error 500 when triggering restart ([277bb3d](https://github.com/adobe/helix-publish/commit/277bb3d69e3dd72bb4ba62c655849d9039f10711))
+* **query:** resolve the ref for fallback queries ([7237485](https://github.com/adobe/helix-publish/commit/7237485c5790b0bbce486a07949edc95e8cb0dde))
+
+
+### Features
+
+* **queries:** handle redirects from runtime ([f6697e3](https://github.com/adobe/helix-publish/commit/f6697e3095f7e9a5ed9d567de333f7f4a334eb19))
+* **vcl:** implement fallback queries ([d8b8799](https://github.com/adobe/helix-publish/commit/d8b87998805dacb5d0a0154a645981f4e3e58a80))
+
 ## [3.5.2](https://github.com/adobe/helix-publish/compare/v3.5.1...v3.5.2) (2020-02-12)
 
 
