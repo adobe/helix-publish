@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/adobe/helix-publish/compare/v3.6.0...v3.6.1) (2020-02-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v5.2.1 ([2b067af](https://github.com/adobe/helix-publish/commit/2b067af52656e153bbb468c02d590ed37e78b93c))
+
 # [3.6.0](https://github.com/adobe/helix-publish/compare/v3.5.2...v3.6.0) (2020-02-13)
 
 
