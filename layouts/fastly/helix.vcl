@@ -97,8 +97,9 @@ sub hlx_set_from_edge {
 sub hlx_recv_init {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_init";
 
-  # This is set to true for some cases, but that is not cleared upon a restart
-  set req.hash_always_miss = false;
+  # This is used by the Query and Static restart VCL. For more info see
+  # hlx_fetch_query and hlx_fetch_static.
+  set req.http.X-Restarts = req.restarts;
 
   # Execute the rest only at the very start, not after restarts
   if (req.restarts > 0) {
@@ -651,25 +652,21 @@ sub hlx_type_fonts {
  * Handle redirect-serving for static files
  * If the static file is too large for the hlx--static action to serve,
  * because the payload would exceed 1 MB (OpenWhisk limit), the request
- * is restarted, using the `X-Request-Type: Redirect` header, which means the
- * static content will be fetched directly from GitHub, and the required
+ * is restarted, using the `X-Request-Type: Static/Redirect` header, which means
+ * the static content will be fetched directly from GitHub, and the required
  * response headers like Content-Type will be injected later on.
  */
-sub hlx_type_redirect {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_redirect";
+sub hlx_type_static_redirect {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_redirect";
   # Handle a redirect from static.js by
   # - fetching the resource from GitHub
   # - don't forget to override the Content-Type header
   set req.backend = F_GitHub;
-  # Replace what we have in the cache already (which is the cached redirect)
-  set req.hash_always_miss = true;
 }
 
 sub hlx_type_query_redirect {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query_redirect";
   set req.backend = F_Algolia;
-  # Replace what we have in the cache already (which is the cached redirect)
-  set req.hash_always_miss = true;
 }
 
 sub hlx_fetch_blob {
@@ -701,6 +698,15 @@ sub hlx_fetch_blob {
 sub hlx_fetch_query {
   if (beresp.http.X-Static == "Raw/Query" && beresp.status == 307) {
     set req.http.X-Trace = req.http.X-Trace + "(raw)";
+    # We're adding X-Restarts to the Vary here, so that we don't have to use
+    # req.hash_always_miss, which can cause a thundering herd. Since we only
+    # add to the Vary when we are restarting, and not on the final object, the
+    # final object will supersede the objects with the additional Vary. See
+    # https://vimeo.com/376921144 for the full explanation of how this works.
+    # The : after the header name is the subfield syntax. Basically, if the
+    # Vary header exists, we add `,X-Restarts` to it. If it doesn't exist,
+    # it will only contain `X-Restarts` after this statement.
+    set beresp.http.Vary:X-Restarts = "";
     # Keep the redirect around for a short bit, to prevent thundering herd
     set beresp.cacheable = true;
     set beresp.ttl = 5s; #todo increase to 600s when this works
@@ -769,12 +775,15 @@ sub hlx_fetch_static {
   if (beresp.http.X-Static == "Raw/Static") {
     set req.http.X-Trace = req.http.X-Trace + "(raw)";
     if (beresp.status == 307) {
+      # This negates the need for hash_always_miss, see hlx_fetch_query for
+      # more info.
+      set beresp.http.Vary:X-Restarts = "";
       # Keep the redirect around for a short bit, to prevent thundering herd
       set beresp.cacheable = true;
       set beresp.ttl = 5s;
       return(deliver);
     }
-  } elsif (req.http.X-Request-Type == "Redirect" && beresp.status == 200) {
+  } elsif (req.http.X-Request-Type == "Static/Redirect" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(redirect)";
     // and this is where we fix the headers of the GitHub static response
     // so that they become digestible by a browser.
@@ -847,15 +856,18 @@ sub hlx_deliver_static {
   } elsif (resp.status == 307) {
     # perform some additional validation
     if (resp.http.Location ~ "https://raw.githubusercontent.com(/.*)") {
-      set req.http.X-Request-Type = "Redirect";
+      set req.http.X-Request-Type = "Static/Redirect";
       set req.http.X-Backend-URL = re.group.1;
       set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
       set req.http.X-Trace = req.http.X-Trace + "(redirect)";
       restart;
     } else {
+      # We should only end up here if there was a 307 with an invalid Location
       set resp.status = 500;
       set resp.response = "Redirect to wrong hostname";
       set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      # Remove X-Restarts from the Vary
+      unset resp.http.Vary:X-Restarts;
     }
   } else {
     # any other error, ignore
@@ -881,6 +893,13 @@ sub hlx_deliver_query {
       set req.http.X-Surrogate-Control = resp.http.Cache-Control;
       set req.http.X-Trace = req.http.X-Trace + "(redirect)";
       restart;
+    } else {
+      # We should only end up here if there was a 307 with an invalid Location
+      set resp.status = 500;
+      set resp.response = "Redirect to wrong path";
+      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      # Remove X-Restarts from the Vary
+      unset resp.http.Vary:X-Restarts;
     }
   } else {
     # any other error, ignore
@@ -1108,8 +1127,8 @@ sub vcl_recv {
     return(lookup);
   } elsif (req.http.X-Request-Type == "Query") {
     call hlx_type_query;
-  } elsif (req.http.X-Request-Type == "Redirect") {
-    call hlx_type_redirect;
+  } elsif (req.http.X-Request-Type == "Static/Redirect") {
+    call hlx_type_static_redirect;
   } elsif (req.http.X-Request-Type == "Query/Redirect") {
     call hlx_type_query_redirect;
   } elsif (req.http.X-Request-Type == "Embed") {
@@ -1388,6 +1407,7 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Owner;
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
+  unset bereq.http.X-Restarts;
 }
 
 sub vcl_miss {
