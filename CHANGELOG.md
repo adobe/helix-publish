@@ -1,3 +1,10 @@
+## [3.6.2](https://github.com/adobe/helix-publish/compare/v3.6.1...v3.6.2) (2020-02-18)
+
+
+### Bug Fixes
+
+* **vcl:** use Vary instead of hash_always_miss and cleanup ([86fd016](https://github.com/adobe/helix-publish/commit/86fd0169806c5b79d89ccdd3fcd4e06a6901264e))
+
 ## [3.6.1](https://github.com/adobe/helix-publish/compare/v3.6.0...v3.6.1) (2020-02-14)
 
 
