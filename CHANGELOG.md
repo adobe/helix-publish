@@ -1,3 +1,10 @@
+## [3.6.3](https://github.com/adobe/helix-publish/compare/v3.6.2...v3.6.3) (2020-02-21)
+
+
+### Bug Fixes
+
+* **vcl:** switch from iad to bwi ([#327](https://github.com/adobe/helix-publish/issues/327)) ([5beb808](https://github.com/adobe/helix-publish/commit/5beb808cfa4f017d237a34b2f3f00a1659ebd5c3))
+
 ## [3.6.2](https://github.com/adobe/helix-publish/compare/v3.6.1...v3.6.2) (2020-02-18)
 
 
