@@ -1,3 +1,10 @@
+## [3.6.5](https://github.com/adobe/helix-publish/compare/v3.6.4...v3.6.5) (2020-02-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-log to v4.5.1 ([6900aba](https://github.com/adobe/helix-publish/commit/6900abaa5cdacbc55a9cc5b46f54162eb27dd27a))
+
 ## [3.6.4](https://github.com/adobe/helix-publish/compare/v3.6.3...v3.6.4) (2020-02-24)
 
 
