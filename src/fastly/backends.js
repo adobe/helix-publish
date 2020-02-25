@@ -43,6 +43,21 @@ const backends = {
     max_conn: 200,
     use_ssl: true,
   },
+  AdobeFonts: {
+    hostname: 'use.typekit.net',
+    error_threshold: 0,
+    first_byte_timeout: 60000,
+    weight: 100,
+    address: 'use.typekit.net',
+    connect_timeout: 1000,
+    name: 'AdobeFonts',
+    port: 443,
+    between_bytes_timeout: 10000,
+    shield: 'iad-va-us',
+    ssl_cert_hostname: 'use.typekit.net',
+    max_conn: 200,
+    use_ssl: true,
+  },
   AzureBlobs: {
     hostname: 'hlx.blob.core.windows.net',
     error_threshold: 0,
@@ -61,21 +76,21 @@ const backends = {
 };
 async function init(fastly, version, algoliaappid) {
   // go over all defined backends and create a new one
-  const mybackends = algoliaappid ? [...Object.values(backends), {
-    hostname: `${algoliaappid}-dsn.algolia.net`,
+  const mybackends = [...Object.values(backends), {
+    hostname: `${algoliaappid || 'undefined'}-dsn.algolia.net`,
     error_threshold: 0,
     first_byte_timeout: 60000,
     weight: 100,
-    address: `${algoliaappid}-dsn.algolia.net`,
+    address: `${algoliaappid || 'undefined'}-dsn.algolia.net`,
     connect_timeout: 1000,
     name: 'Algolia',
     port: 443,
     between_bytes_timeout: 10000,
     shield: 'iad-va-us',
-    ssl_cert_hostname: `${algoliaappid}-dsn.algolia.net`,
+    ssl_cert_hostname: `${algoliaappid || 'undefined'}-dsn.algolia.net`,
     max_conn: 200,
     use_ssl: true,
-  }] : Object.values(backends);
+  }];
   return Promise.all(mybackends.map((backend) => fastly.writeBackend(
     version,
     backend.name,

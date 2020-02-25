@@ -97,8 +97,9 @@ sub hlx_set_from_edge {
 sub hlx_recv_init {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_recv_init";
 
-  # This is set to true for some cases, but that is not cleared upon a restart
-  set req.hash_always_miss = false;
+  # This is used by the Query and Static restart VCL. For more info see
+  # hlx_fetch_query and hlx_fetch_static.
+  set req.http.X-Restarts = req.restarts;
 
   # Execute the rest only at the very start, not after restarts
   if (req.restarts > 0) {
@@ -409,12 +410,25 @@ sub hlx_determine_request_type {
     return;
   }
 
+  // something like /cgi-bin/foo.js or /cgi-bin/bar.cgi
+  if (req.url.dirname ~ "^/cgi-bin?") {
+    set req.http.X-Request-Type = "CGI-Action";
+    return;
+  }
+
   // something like /_query/index/name
   if (req.url.path ~ "^/_query/.+/.+$") {
     set req.http.X-Trace = req.http.X-Trace + "(query)";
     set req.http.X-Request-Type = "Query";
     unset req.http.Accept-Encoding;
     return;
+  }
+
+  // something like /hlx_fonts/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
+  // but not like /hlx_fonts/eic8tkf.css
+  if (req.url.path ~ "^/hlx_fonts/.+" && req.url.ext != "css") {
+    set req.http.X-Trace = req.http.X-Trace + "(fonts)";
+    set req.http.X-Request-Type = "Fonts";
   }
 
   if (req.url.ext ~ "^(hlx_([0-9a-f]){20,40}$)") {
@@ -529,6 +543,43 @@ sub hlx_type_static {
     + "&root=" + req.http.X-Github-Static-Root;
 }
 
+sub hlx_type_cgi {
+  declare local var.namespace STRING;
+  declare local var.package STRING;
+  declare local var.script STRING;
+
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_cgi";
+  # This is a CGI request.
+
+  set req.backend = F_AdobeRuntime;
+
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  call hlx_action_root;
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
+
+  # Load important information from edge dicts
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+
+  set var.script = regsuball(req.url.basename, "\..*$", "");
+
+  # get (strain-specific) parameter whitelist
+  include "params.vcl";
+
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace
+    + "/" + var.package
+    // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
+    + "/cgi-bin-" + var.script
+    + "?__hlx_owner=" + req.http.X-Owner
+    + "&__hlx_repo=" + req.http.X-Repo
+    + "&__hlx_ref=" + req.http.X-Ref
+    // we append the complete query string
+    + "&" + req.url.qs;
+}
+
 sub hlx_type_blob {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_blob";
   # This is a blob request.
@@ -560,9 +611,40 @@ sub hlx_type_query {
   # Load important information for content repo from edge dicts
   call hlx_owner;
   call hlx_repo;
+  call hlx_ref;
+
+
+  if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
+    # establish the fallback first
+    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@v1/" + re.group.1 + "/" + re.group.2
+    + "?__hlx_owner=" + req.http.X-Owner
+    + "&__hlx_repo=" + req.http.X-Repo
+    + "&__hlx_ref=" + req.http.X-Ref
+    // we append the complete query string
+    + "&" + req.url.qs;
+  }
 
   # run map queries
   include "queries.vcl";
+
+  # check if we are still using the fallback
+  if (req.http.X-Backend-URL ~ "^/api/v1/web/helix/helix-services/query-index@") {
+    # this is a Runtime URL
+    set req.backend = F_AdobeRuntime;
+  }
+}
+
+sub hlx_type_fonts {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_fonts";
+  # yes, it's a fonts request
+
+  # get it from Adobe Fonts
+  set req.backend = F_AdobeFonts;
+
+  # remove the /hlx_fonts/ prefix again
+  set req.http.X-Backend-URL = regsub(req.url, "^/hlx_fonts/", "/");
+
+  unset req.http.x-forwarded-host;
 }
 
 
@@ -570,18 +652,21 @@ sub hlx_type_query {
  * Handle redirect-serving for static files
  * If the static file is too large for the hlx--static action to serve,
  * because the payload would exceed 1 MB (OpenWhisk limit), the request
- * is restarted, using the `X-Request-Type: Redirect` header, which means the
- * static content will be fetched directly from GitHub, and the required
+ * is restarted, using the `X-Request-Type: Static/Redirect` header, which means
+ * the static content will be fetched directly from GitHub, and the required
  * response headers like Content-Type will be injected later on.
  */
-sub hlx_type_redirect {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_redirect";
+sub hlx_type_static_redirect {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_redirect";
   # Handle a redirect from static.js by
   # - fetching the resource from GitHub
   # - don't forget to override the Content-Type header
   set req.backend = F_GitHub;
-  # Replace what we have in the cache already (which is the cached redirect)
-  set req.hash_always_miss = true;
+}
+
+sub hlx_type_query_redirect {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query_redirect";
+  set req.backend = F_Algolia;
 }
 
 sub hlx_fetch_blob {
@@ -611,8 +696,29 @@ sub hlx_fetch_blob {
 }
 
 sub hlx_fetch_query {
-  if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query";
+  if (beresp.http.X-Static == "Raw/Query" && beresp.status == 307) {
+    set req.http.X-Trace = req.http.X-Trace + "(raw)";
+    # We're adding X-Restarts to the Vary here, so that we don't have to use
+    # req.hash_always_miss, which can cause a thundering herd. Since we only
+    # add to the Vary when we are restarting, and not on the final object, the
+    # final object will supersede the objects with the additional Vary. See
+    # https://vimeo.com/376921144 for the full explanation of how this works.
+    # The : after the header name is the subfield syntax. Basically, if the
+    # Vary header exists, we add `,X-Restarts` to it. If it doesn't exist,
+    # it will only contain `X-Restarts` after this statement.
+    set beresp.http.Vary:X-Restarts = "";
+    # Keep the redirect around for a short bit, to prevent thundering herd
+    set beresp.cacheable = true;
+    set beresp.ttl = 5s; #todo increase to 600s when this works
+    return(deliver);
+  }
+  if (req.http.X-Request-Type == "Query/Redirect" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query(redirect)";
+
+    # use the cache settings configured for the query
+    set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
+  } elseif (req.http.X-Request-Type == "Query" && beresp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query(regular)";
 
     # use the cache settings configured for the query
     set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
@@ -669,12 +775,15 @@ sub hlx_fetch_static {
   if (beresp.http.X-Static == "Raw/Static") {
     set req.http.X-Trace = req.http.X-Trace + "(raw)";
     if (beresp.status == 307) {
+      # This negates the need for hash_always_miss, see hlx_fetch_query for
+      # more info.
+      set beresp.http.Vary:X-Restarts = "";
       # Keep the redirect around for a short bit, to prevent thundering herd
       set beresp.cacheable = true;
       set beresp.ttl = 5s;
+      return(deliver);
     }
-    return(deliver);
-  } elsif (req.http.X-Request-Type == "Redirect" && beresp.status == 200) {
+  } elsif (req.http.X-Request-Type == "Static/Redirect" && beresp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(redirect)";
     // and this is where we fix the headers of the GitHub static response
     // so that they become digestible by a browser.
@@ -704,6 +813,9 @@ sub hlx_deliver_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
   if (req.http.X-Request-Type == "Dispatch") {
     call hlx_deliver_static;
+  }
+  if (req.http.X-Request-Type == "Query") {
+    call hlx_deliver_query;
   }
 }
 
@@ -744,15 +856,18 @@ sub hlx_deliver_static {
   } elsif (resp.status == 307) {
     # perform some additional validation
     if (resp.http.Location ~ "https://raw.githubusercontent.com(/.*)") {
-      set req.http.X-Request-Type = "Redirect";
+      set req.http.X-Request-Type = "Static/Redirect";
       set req.http.X-Backend-URL = re.group.1;
       set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
       set req.http.X-Trace = req.http.X-Trace + "(redirect)";
       restart;
     } else {
+      # We should only end up here if there was a 307 with an invalid Location
       set resp.status = 500;
       set resp.response = "Redirect to wrong hostname";
       set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      # Remove X-Restarts from the Vary
+      unset resp.http.Vary:X-Restarts;
     }
   } else {
     # any other error, ignore
@@ -760,6 +875,35 @@ sub hlx_deliver_static {
     #set req.http.X-Request-Type = "Error";
     #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     #restart;
+  }
+}
+
+sub hlx_deliver_query {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_query";
+  if (resp.status == 200) {
+    # just pass it through
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    return;
+  } elseif (resp.status == 307) {
+    # perform some additional validation
+    if (resp.http.Location ~ "^/1/indexes/") {
+      set req.http.X-Request-Type = "Query/Redirect";
+      set req.http.X-Backend-URL = resp.http.Location;
+      # save the cache control header for later
+      set req.http.X-Surrogate-Control = resp.http.Cache-Control;
+      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      restart;
+    } else {
+      # We should only end up here if there was a 307 with an invalid Location
+      set resp.status = 500;
+      set resp.response = "Redirect to wrong path";
+      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      # Remove X-Restarts from the Vary
+      unset resp.http.Vary:X-Restarts;
+    }
+  } else {
+    # any other error, ignore
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
   }
 }
 
@@ -932,7 +1076,7 @@ sub vcl_recv {
   if (req.http.X-From-Edge) {
     # Request came from a Fastly POP, send the raw response without ESI processing
     set req.esi = false;
-  } elseif ( req.url.ext == "html" ) {
+  } elseif ( req.url.ext == "html" || req.url.ext == "xml") {
     set req.http.x-esi = "1";
   }
 
@@ -973,10 +1117,20 @@ sub vcl_recv {
     call hlx_type_static;
   } elsif (req.http.X-Request-Type == "Blob") {
     call hlx_type_blob;
+  } elsif (req.http.X-Request-Type == "Fonts") {
+    call hlx_type_fonts;
+  } elsif (req.http.X-Request-Type == "CGI-Action") {
+    call hlx_type_cgi;
+    // we return here, so that we can skip the HTTP method check below
+    // all other request types are for GET only, but cgi-bin allows all
+    // HTTP methods
+    return(lookup);
   } elsif (req.http.X-Request-Type == "Query") {
     call hlx_type_query;
-  } elsif (req.http.X-Request-Type == "Redirect") {
-    call hlx_type_redirect;
+  } elsif (req.http.X-Request-Type == "Static/Redirect") {
+    call hlx_type_static_redirect;
+  } elsif (req.http.X-Request-Type == "Query/Redirect") {
+    call hlx_type_query_redirect;
   } elsif (req.http.X-Request-Type == "Embed") {
     call hlx_type_embed;
   } elseif (req.http.X-Request-Type == "Static-URL") {
@@ -1213,6 +1367,8 @@ sub hlx_bereq {
     } elseif (req.backend == F_Algolia) {
       # we are passing the APP ID through the secrets table
       set bereq.http.Host = table.lookup(secrets, "ALGOLIA_APP_ID") + "-dsn.algolia.net";
+    } elseif (req.backend == F_AdobeFonts) {
+      set bereq.http.Host = "use.typekit.net";
     }
   }
 
@@ -1251,6 +1407,7 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Owner;
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
+  unset bereq.http.X-Restarts;
 }
 
 sub vcl_miss {

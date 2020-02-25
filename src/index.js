@@ -12,6 +12,7 @@
 const { logger } = require('@adobe/openwhisk-action-logger');
 const { wrap } = require('@adobe/openwhisk-action-utils');
 const { wrap: status } = require('@adobe/helix-status');
+const { epsagon } = require('@adobe/helix-epsagon');
 const publish = require('./publish');
 
 async function publishConfig(params) {
@@ -27,30 +28,6 @@ async function publishConfig(params) {
     params.indexconfig,
     params.algoliaappid,
   );
-}
-
-/**
- * Instruments the action with epsagon, if a EPSAGON_TOKEN is configured.
- */
-function epsagon(action) {
-  return async (params) => {
-    if (params && params.EPSAGON_TOKEN) {
-      const { __ow_logger: log } = params;
-      // ensure that epsagon is only required, if a token is present.
-      // This is to avoid invoking their patchers otherwise.
-      // eslint-disable-next-line global-require
-      const { openWhiskWrapper } = require('epsagon');
-      log.info('instrumenting epsagon.');
-      // eslint-disable-next-line no-param-reassign
-      action = openWhiskWrapper(action, {
-        token_param: 'EPSAGON_TOKEN',
-        appName: 'Helix Services',
-        metadataOnly: false, // Optional, send more trace data
-        ignoredKeys: ['EPSAGON_TOKEN', 'token', /[A-Z0-9_]+/],
-      });
-    }
-    return action(params);
-  };
 }
 
 /**

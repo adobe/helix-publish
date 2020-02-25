@@ -1,3 +1,138 @@
+## [3.6.2](https://github.com/adobe/helix-publish/compare/v3.6.1...v3.6.2) (2020-02-18)
+
+
+### Bug Fixes
+
+* **vcl:** use Vary instead of hash_always_miss and cleanup ([86fd016](https://github.com/adobe/helix-publish/commit/86fd0169806c5b79d89ccdd3fcd4e06a6901264e))
+
+## [3.6.1](https://github.com/adobe/helix-publish/compare/v3.6.0...v3.6.1) (2020-02-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v5.2.1 ([2b067af](https://github.com/adobe/helix-publish/commit/2b067af52656e153bbb468c02d590ed37e78b93c))
+
+# [3.6.0](https://github.com/adobe/helix-publish/compare/v3.5.2...v3.6.0) (2020-02-13)
+
+
+### Bug Fixes
+
+* **query:** prevent error 500 when triggering restart ([277bb3d](https://github.com/adobe/helix-publish/commit/277bb3d69e3dd72bb4ba62c655849d9039f10711))
+* **query:** resolve the ref for fallback queries ([7237485](https://github.com/adobe/helix-publish/commit/7237485c5790b0bbce486a07949edc95e8cb0dde))
+
+
+### Features
+
+* **queries:** handle redirects from runtime ([f6697e3](https://github.com/adobe/helix-publish/commit/f6697e3095f7e9a5ed9d567de333f7f4a334eb19))
+* **vcl:** implement fallback queries ([d8b8799](https://github.com/adobe/helix-publish/commit/d8b87998805dacb5d0a0154a645981f4e3e58a80))
+
+## [3.5.2](https://github.com/adobe/helix-publish/compare/v3.5.1...v3.5.2) (2020-02-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v5.2.0 ([ae10b35](https://github.com/adobe/helix-publish/commit/ae10b356d9890767d301db5a0ed325d5602d472f))
+
+## [3.5.1](https://github.com/adobe/helix-publish/compare/v3.5.0...v3.5.1) (2020-02-11)
+
+
+### Bug Fixes
+
+* **vcl:** remove x-forwarded-host header when talking to Adobe Fonts ([98fd530](https://github.com/adobe/helix-publish/commit/98fd53095621992a351921b99cc64fd87e433299))
+
+# [3.5.0](https://github.com/adobe/helix-publish/compare/v3.4.2...v3.5.0) (2020-02-05)
+
+
+### Features
+
+* **sitemap:** allow ESI in XML, pass (owner,repo,ref) to cgi-bin ([#313](https://github.com/adobe/helix-publish/issues/313)) ([7c7debc](https://github.com/adobe/helix-publish/commit/7c7debc274eb9a23065b54f6d96531466afd6984))
+
+## [3.4.2](https://github.com/adobe/helix-publish/compare/v3.4.1...v3.4.2) (2020-01-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-logger to v2.1.0 ([c30b717](https://github.com/adobe/helix-publish/commit/c30b7173306cb1388a539d0dc3e0f4dde4e7804c))
+
+## [3.4.1](https://github.com/adobe/helix-publish/compare/v3.4.0...v3.4.1) (2020-01-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.1.3 ([bdf28c9](https://github.com/adobe/helix-publish/commit/bdf28c9ee2ec77735b5f33160d0b61035b39d4fc))
+
+# [3.4.0](https://github.com/adobe/helix-publish/compare/v3.3.4...v3.4.0) (2020-01-30)
+
+
+### Features
+
+* **fonts:** add new backend for font serving (Adobe Fonts) ([964b103](https://github.com/adobe/helix-publish/commit/964b103ed8122283ff308224097c88b4f3faf0ee))
+* **fonts:** add new request type for fonts ([0a7b6a1](https://github.com/adobe/helix-publish/commit/0a7b6a1314e5e99f836feace051e28d03c4e4ff1))
+
+## [3.3.4](https://github.com/adobe/helix-publish/compare/v3.3.3...v3.3.4) (2020-01-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v4.1.0 ([1957ec2](https://github.com/adobe/helix-publish/commit/1957ec27f4f2ed3dc5487af1af47e1e9b4240b24))
+
+## [3.3.3](https://github.com/adobe/helix-publish/compare/v3.3.2...v3.3.3) (2020-01-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.1.2 ([ba89881](https://github.com/adobe/helix-publish/commit/ba898813832746e6f7a14a2c1a86e613e2c01953))
+
+## [3.3.2](https://github.com/adobe/helix-publish/compare/v3.3.1...v3.3.2) (2020-01-28)
+
+
+### Bug Fixes
+
+* **query:** guard against missing algolia app id parameter ([28a2994](https://github.com/adobe/helix-publish/commit/28a2994f799b9561d135cd8589eeef9b9db4fa50)), closes [#298](https://github.com/adobe/helix-publish/issues/298)
+
+## [3.3.1](https://github.com/adobe/helix-publish/compare/v3.3.0...v3.3.1) (2020-01-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.1.1 ([db0fbdf](https://github.com/adobe/helix-publish/commit/db0fbdf6f76bfa92d1c9a5eb0e3c27b09e3aebfe))
+
+# [3.3.0](https://github.com/adobe/helix-publish/compare/v3.2.4...v3.3.0) (2020-01-24)
+
+
+### Features
+
+* **vcl:** adds cgi-bin request type ([c96b405](https://github.com/adobe/helix-publish/commit/c96b405c9b828a53a170d739ec4a3142c1e96165)), closes [#88](https://github.com/adobe/helix-publish/issues/88)
+* **vcl:** adds cgi-bin request type ([4d1aa25](https://github.com/adobe/helix-publish/commit/4d1aa25b8c7a845d53a7c37a147a511b08c2b79c)), closes [#88](https://github.com/adobe/helix-publish/issues/88)
+
+## [3.2.4](https://github.com/adobe/helix-publish/compare/v3.2.3...v3.2.4) (2020-01-24)
+
+
+### Bug Fixes
+
+* **package:** include required schemas in deployment ([342d8d2](https://github.com/adobe/helix-publish/commit/342d8d2a44ba73910b84b830ad19c9e6939e9155))
+
+## [3.2.3](https://github.com/adobe/helix-publish/compare/v3.2.2...v3.2.3) (2020-01-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.1.0 ([#294](https://github.com/adobe/helix-publish/issues/294)) ([384c40e](https://github.com/adobe/helix-publish/commit/384c40e3de79224b3e53e4d04d99a08e91246402))
+
+## [3.2.2](https://github.com/adobe/helix-publish/compare/v3.2.1...v3.2.2) (2020-01-24)
+
+
+### Bug Fixes
+
+* **epsagon:** use helix-epsagon wrapper ([#291](https://github.com/adobe/helix-publish/issues/291)) ([c90a0a3](https://github.com/adobe/helix-publish/commit/c90a0a39bc89fa2ec1a435f0cf4cebcd2e2d3db2))
+
+## [3.2.1](https://github.com/adobe/helix-publish/compare/v3.2.0...v3.2.1) (2020-01-23)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) ([6350a63](https://github.com/adobe/helix-publish/commit/6350a63fb130902e8b7981c1150c659e022ad19b))
+
 # [3.2.0](https://github.com/adobe/helix-publish/compare/v3.1.6...v3.2.0) (2020-01-22)
 
 
