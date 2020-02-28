@@ -1,3 +1,38 @@
+## [3.6.7](https://github.com/adobe/helix-publish/compare/v3.6.6...v3.6.7) (2020-02-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v5.3.0 ([0bd589d](https://github.com/adobe/helix-publish/commit/0bd589d54d2c6415d5596973f0eda0216caac91e))
+
+## [3.6.6](https://github.com/adobe/helix-publish/compare/v3.6.5...v3.6.6) (2020-02-25)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) ([#331](https://github.com/adobe/helix-publish/issues/331)) ([2b2bc73](https://github.com/adobe/helix-publish/commit/2b2bc73a74fabee1af28a94a5a24ad9724ed6348))
+
+## [3.6.5](https://github.com/adobe/helix-publish/compare/v3.6.4...v3.6.5) (2020-02-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-log to v4.5.1 ([6900aba](https://github.com/adobe/helix-publish/commit/6900abaa5cdacbc55a9cc5b46f54162eb27dd27a))
+
+## [3.6.4](https://github.com/adobe/helix-publish/compare/v3.6.3...v3.6.4) (2020-02-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v5.2.2 ([cf5bf76](https://github.com/adobe/helix-publish/commit/cf5bf7670b6bf3f0d0ea572274332cc13a17b786))
+
+## [3.6.3](https://github.com/adobe/helix-publish/compare/v3.6.2...v3.6.3) (2020-02-21)
+
+
+### Bug Fixes
+
+* **vcl:** switch from iad to bwi ([#327](https://github.com/adobe/helix-publish/issues/327)) ([5beb808](https://github.com/adobe/helix-publish/commit/5beb808cfa4f017d237a34b2f3f00a1659ebd5c3))
+
 ## [3.6.2](https://github.com/adobe/helix-publish/compare/v3.6.1...v3.6.2) (2020-02-18)
 
 
