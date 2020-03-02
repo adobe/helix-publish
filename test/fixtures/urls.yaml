@@ -32,8 +32,7 @@ strains:
     code: *myrepo
     static: *myrepo
     sticky: false
-    condition:
-      url: https://www.project-helix.io/client
+    url: https://www.project-helix.io/client
     content:
       repo: helix-cli
       ref: master
@@ -42,8 +41,7 @@ strains:
 
   pipeline:
     <<: *basestrain
-    condition:
-      url: https://www.project-helix.io/pipeline
+    url: https://www.project-helix.io/pipeline
     content:
       repo: hypermedia-pipeline
       ref: master
@@ -53,8 +51,7 @@ strains:
       path: /www
 
   proxy:
-    condition:
-      url: https://proxy.project-helix.io/
+    url: https://proxy.project-helix.io/
     origin: https://www.adobe.io/
     sticky: true
     params:

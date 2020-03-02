@@ -1,10 +1,10 @@
 # This file handles the strain resolution
 set req.http.X-Root-Path = "";
-if (req.http.host == "client.project-helix.io") {
+if (req.http.Host == "client.project-helix.io") {
   set req.http.X-Sticky = "false";
   set req.http.X-Strain = "client";
 } else if (req.http.host == "pipeline.project-helix.io") {
-  set req.http.X-Sticky = "false";
+  set req.http.X-Sticky = "true";
   set req.http.X-Strain = "pipeline";
 } else if (req.http.host == "proxy.project-helix.io") {
   
@@ -30,9 +30,9 @@ if (req.http.host == "client.project-helix.io") {
   set req.backend = F_publish;
   set req.http.host = "192.168.0.1";
   
-  set req.http.X-Sticky = "false";
+  set req.http.X-Sticky = "true";
   set req.http.X-Strain = "proxy-detailed";
-} else if (req.http.host == "developer.adobe.com" && (req.http.X-FullDirname ~ "^/olddir$" || req.http.X-FullDirname ~ "^/olddir/")) {
+} else if (req.http.Host == "developer.adobe.com" && (req.http.X-FullDirname ~ "^/olddir$" || req.http.X-FullDirname ~ "^/olddir/")) {
   set req.http.X-Dirname = regsub(req.http.X-FullDirname, "^/olddir", "");
   set req.http.X-Root-Path = "/olddir";
   

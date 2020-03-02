@@ -36,8 +36,7 @@ strains:
   client:
     code: *myrepo
     static: *myrepo
-    condition:
-      url: https://client.project-helix.io
+    url: "https://client.project-helix.io"
     sticky: false
     content:
       repo: helix-cli
@@ -50,8 +49,7 @@ strains:
 
   pipeline:
     <<: *basestrain
-    condition:
-      url.hostname=: pipeline.project-helix.io
+    condition: req.http.host == "pipeline.project-helix.io"
     content:
       repo: hypermedia-pipeline
       ref: master
@@ -62,16 +60,14 @@ strains:
 
   proxy:
     origin: https://www.adobe.io/
-    condition: 
-      url.hostname=: proxy.project-helix.io
+    condition: req.http.host == "proxy.project-helix.io"
     sticky: true
     params:
       - "search*"
       - "*lang"
 
   proxy-detailed:
-    condition:
-      url.hostname=: proxy2.project-helix.io
+    condition: req.http.host == "proxy2.project-helix.io"
     origin:
       address: 192.168.0.1
       name: publish
@@ -79,5 +75,4 @@ strains:
 
   proxy-path:
     origin: https://www.adobe.io/newdir
-    condition:
-      url: https://developer.adobe.com/olddir
+    url: https://developer.adobe.com/olddir

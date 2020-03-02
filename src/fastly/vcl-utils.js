@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+const URI = require('uri-js');
 const glob = require('glob-to-regexp');
 
 function writevcl(fastly, version, content, name, main) {
@@ -32,16 +33,22 @@ function vclbody(arr = []) {
 }
 
 function conditions([strain, vcl]) {
-  if (strain.condition) {
-    const result = [strain, {
-      sticky: false,
-      condition: strain.condition.toVCL(),
-      body: [...vclbody(vcl.body),
-        strain.condition.toVCLPath((_, subpath) => `set req.http.X-Dirname = regsub(req.http.X-FullDirname, "^${subpath}", "");
-set req.http.X-Root-Path = "${subpath}";`),
-      ].filter((line) => line),
-    }];
-    return result;
+  if (strain.url) {
+    const uri = URI.parse(strain.url);
+    if (uri.path && uri.path !== '/') {
+      const pathname = uri.path.replace(/\/$/, '');
+      const body = vclbody(vcl.body);
+      body.push(`set req.http.X-Dirname = regsub(req.http.X-FullDirname, "^${pathname}", "");`);
+      body.push(`set req.http.X-Root-Path = "${pathname}";`);
+      return [strain, {
+        sticky: false,
+        condition: `req.http.Host == "${uri.host}" && (req.http.X-FullDirname ~ "^${pathname}$" || req.http.X-FullDirname ~ "^${pathname}/")`,
+        body,
+      }];
+    }
+    return [strain, {
+      condition: `req.http.Host == "${uri.host}"`,
+    }, strain];
   }
   return [strain, vcl];
 }
@@ -70,8 +77,8 @@ set req.http.host = "${strain.origin.hostname}";
 }
 
 function proxyurls([strain, vcl]) {
-  let oldpath = strain.condition ? strain.condition.toVCLPath((_, subpath) => subpath) : '';
-  oldpath = oldpath || '/';
+  const uri = URI.parse(strain.url ? strain.url : '/');
+  const oldpath = uri.path ? uri.path : '/';
 
   const newpath = (strain.origin && strain.origin.path) ? strain.origin.path : '/';
 
