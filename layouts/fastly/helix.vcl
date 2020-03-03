@@ -137,6 +137,8 @@ sub hlx_recv_init {
     set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-4" + randomstr(3, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
   }
 
+  set req.http.X-CDN-URL = + "https://" + req.http.host + req.url;
+
   # set X-Version initial value
   set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
 
@@ -1491,6 +1493,7 @@ sub vcl_deliver {
     unset resp.http.X-Cache-Hits;
     unset resp.http.X-Cache;
     unset resp.http.X-CDN-Request-ID;
+    unset resp.http.X-CDN-URL;
     unset resp.http.X-Content-Type-Options;
     unset resp.http.X-Content-Type;
     unset resp.http.X-ESI;
