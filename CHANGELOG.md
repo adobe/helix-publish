@@ -1,3 +1,30 @@
+# [4.0.0](https://github.com/adobe/helix-publish/compare/v3.6.9...v4.0.0) (2020-03-03)
+
+
+### Bug Fixes
+
+* **condition:** synchronize version of epsagon ([6fb578a](https://github.com/adobe/helix-publish/commit/6fb578a150921c1908c0d9a03749d2ed714031c7))
+* **conditions:** change expected output and functions invoked ([b4ea267](https://github.com/adobe/helix-publish/commit/b4ea26700d293efc365d9e688c34b78b8456934d))
+* **conditions:** remove epsagon from dependencios ([289fc8a](https://github.com/adobe/helix-publish/commit/289fc8a74809450ae6e7ccab8c60db363638ec53))
+* sync package.json files ([35a2852](https://github.com/adobe/helix-publish/commit/35a28521c8466929600553ec839968f1eff44b7c))
+* **vcl:** conditions are no longer automatically sticky ([40be9d7](https://github.com/adobe/helix-publish/commit/40be9d7d8fad1cc91c227bcad536f83510ba0de9))
+* **vcl:** use v6 release of helix-shared ([99c8e5c](https://github.com/adobe/helix-publish/commit/99c8e5c34f165159f9e308a0ce738b9bc4a9500a))
+
+
+### Documentation
+
+* **readme:** update version number in example ([e9a4e97](https://github.com/adobe/helix-publish/commit/e9a4e977afff74ff6556282b66939cb3d16db31e)), closes [#339](https://github.com/adobe/helix-publish/issues/339)
+
+
+### Features
+
+* **condition:** wip ([1ec02ed](https://github.com/adobe/helix-publish/commit/1ec02edea797afca48223a6aa8b9c6f804eaf98f))
+
+
+### BREAKING CHANGES
+
+* **readme:** this branch removes the ability to use VCL-based conditions for the new YAML-based condition language, which is more composable. However, this is a breaking change that requires a major release.
+
 ## [3.6.9](https://github.com/adobe/helix-publish/compare/v3.6.8...v3.6.9) (2020-03-03)
 
 
