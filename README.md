@@ -5,8 +5,7 @@
 [![codecov](https://img.shields.io/codecov/c/github/adobe/helix-publish.svg)](https://codecov.io/gh/adobe/helix-publish)
 [![CircleCI](https://img.shields.io/circleci/project/github/adobe/helix-publish.svg)](https://circleci.com/gh/adobe/helix-publish)
 [![GitHub license](https://img.shields.io/github/license/adobe/helix-publish.svg)](https://github.com/adobe/helix-publish/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/adobe/helix-publish.svg)](https://github.com/adobe/helix-publish/issues) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/helix-publish.svg)](https://greenkeeper.io/)
-
+[![GitHub issues](https://img.shields.io/github/issues/adobe/helix-publish.svg)]
 
 > Microservice for publishing Project Helix Fastly service configurations
 
@@ -35,7 +34,7 @@ There are a number of important tasks involved in publishing that it does not do
 
 ## Usage
 
-Send a POST request with following (`Content-Type: application/json`-encoded) body parameters to `https://adobeioruntime.net/api/v1/web/helix/helix-services/publish@v1`:
+Send a POST request with following (`Content-Type: application/json`-encoded) body parameters to `https://adobeioruntime.net/api/v1/web/helix/helix-services/publish@v4`:
 
 * `configuration`: your `helix-config.yaml`, as a JSON document
 * `service`: the service ID of your Fastly service config
