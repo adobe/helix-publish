@@ -1,3 +1,10 @@
+## [4.1.1](https://github.com/adobe/helix-publish/compare/v4.1.0...v4.1.1) (2020-03-04)
+
+
+### Bug Fixes
+
+* **vcl:** X-CDN-Request-ID pattern typo ([59d88b0](https://github.com/adobe/helix-publish/commit/59d88b0a1b599d6b655d6b966f397dac68f92836))
+
 # [4.1.0](https://github.com/adobe/helix-publish/compare/v4.0.2...v4.1.0) (2020-03-04)
 
 
