@@ -1,3 +1,10 @@
+# [4.1.0](https://github.com/adobe/helix-publish/compare/v4.0.2...v4.1.0) (2020-03-04)
+
+
+### Features
+
+* **vcl:** add X-CDN-URL with full URL ([86e5716](https://github.com/adobe/helix-publish/commit/86e57161bc82adb28f3c8873a757794207d34903))
+
 ## [4.0.2](https://github.com/adobe/helix-publish/compare/v4.0.1...v4.0.2) (2020-03-04)
 
 
