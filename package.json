@@ -80,7 +80,7 @@
     "@adobe/helix-shared": "6.0.2",
     "@adobe/helix-status": "7.1.2",
     "@adobe/openwhisk-action-logger": "2.2.0",
-    "@adobe/openwhisk-action-utils": "4.2.1",
+    "@adobe/openwhisk-action-utils": "4.2.2",
     "fs-extra": "8.1.0",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
