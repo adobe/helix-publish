@@ -1,3 +1,10 @@
+## [4.1.8](https://github.com/adobe/helix-publish/compare/v4.1.7...v4.1.8) (2020-03-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v6.0.4 ([39c5700](https://github.com/adobe/helix-publish/commit/39c570068fdac3317256af82c617fae08937b76d))
+
 ## [4.1.7](https://github.com/adobe/helix-publish/compare/v4.1.6...v4.1.7) (2020-03-17)
 
 
