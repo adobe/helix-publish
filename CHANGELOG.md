@@ -1,3 +1,10 @@
+## [4.1.11](https://github.com/adobe/helix-publish/compare/v4.1.10...v4.1.11) (2020-03-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency fs-extra to v9 ([a98e443](https://github.com/adobe/helix-publish/commit/a98e443b54f49c70f89b1490d48f2ff21633f2a2))
+
 ## [4.1.10](https://github.com/adobe/helix-publish/compare/v4.1.9...v4.1.10) (2020-03-23)
 
 
