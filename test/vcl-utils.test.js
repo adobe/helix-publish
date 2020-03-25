@@ -80,6 +80,7 @@ describe('Testing vcl-utils.js', () => {
   it('#resolve/full', resolvetest('full'));
   it('#resolve/noconditions', resolvetest('noconditions'));
   it('#resolve/urls', resolvetest('urls'));
+  it('#resolve/urls_legacy', resolvetest('urls_legacy'));
   it('#reset/full', resettest('full'));
   it('#reset/demo', resettest('demo'));
   it('#parameters/full', parameterstest('full'));
