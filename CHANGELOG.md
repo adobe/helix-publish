@@ -1,3 +1,10 @@
+# [4.3.0](https://github.com/adobe/helix-publish/compare/v4.2.0...v4.3.0) (2020-03-31)
+
+
+### Features
+
+* **helix.vcl:** preserve ow activation id for logging ([def89b6](https://github.com/adobe/helix-publish/commit/def89b6a466163a8c39c95e54c7fef64c73f9ac6))
+
 # [4.2.0](https://github.com/adobe/helix-publish/compare/v4.1.14...v4.2.0) (2020-03-31)
 
 
