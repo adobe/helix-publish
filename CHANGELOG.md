@@ -1,3 +1,10 @@
+# [4.2.0](https://github.com/adobe/helix-publish/compare/v4.1.14...v4.2.0) (2020-03-31)
+
+
+### Features
+
+* **errors:** new error pages for errors 403, 404, 500, 502, 503, 504 ([4ce1a20](https://github.com/adobe/helix-publish/commit/4ce1a20173ffa5f42a081371779f490082c7660f))
+
 ## [4.1.14](https://github.com/adobe/helix-publish/compare/v4.1.13...v4.1.14) (2020-03-26)
 
 
