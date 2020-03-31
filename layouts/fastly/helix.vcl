@@ -1479,6 +1479,11 @@ sub vcl_deliver {
   unset resp.http.X-PreFetch-Pass;
   unset resp.http.X-PostFetch;
 
+  if (resp.http.x-openwhisk-activation-id) {
+    # make sure acivation id gets logged (https://github.com/adobe/helix-publish/issues/384)
+    set req.http.x-openwhisk-activation-id = resp.http.x-openwhisk-activation-id;
+  }
+
   if (!req.http.X-Debug) {
     # Unless we are debugging, shut up chatty headers
     unset resp.http.Access-Control-Allow-Headers;
