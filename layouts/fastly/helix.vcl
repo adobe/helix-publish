@@ -801,7 +801,6 @@ sub hlx_fetch_static {
     set req.http.X-Trace = req.http.X-Trace + "(400)";
     # Cache for a short time, restart will get rid of it anyway
     set beresp.ttl = 60s;
-    return(deliver);
   } else {
     set req.http.X-Trace = req.http.X-Trace + "(none)";
   }
@@ -833,6 +832,14 @@ sub hlx_fetch_error {
     # TODO: fix headers
     if (beresp.status == 404) {
        error 951 "Not Found";
+    } elsif (beresp.status == 403) {
+       error 955 "Forbidden";
+    } elsif (beresp.status == 502) {
+       error 962 "Bad Gateway";
+    } elsif (beresp.status == 503) {
+       error 963 "Service Unavailable";
+    } elsif (beresp.status == 504) {
+       error 964 "Gateway Timeout";
     } else {
        error 952 "Internal Server Error";
     }
@@ -1161,7 +1168,7 @@ sub hlx_fetch_errors {
     return;
   }
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_errors";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_errors(" beresp.status ")";
   # Interpreting OpenWhisk errors is a bit tricky, because we don't have access to the JSON
   # of the response body. Instead we are using the Content-Length of known error messages
   # to determine the most likely root cause. Each root cause will get an internal status code
@@ -1183,7 +1190,7 @@ sub hlx_fetch_errors {
 }
 
 sub hlx_deliver_errors {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_errors";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_errors(" resp.status ")";
 
   # Cache Condition: OpenWhisk Error Prio: 10
   if (resp.status == 951 ) {
@@ -1206,10 +1213,30 @@ sub hlx_deliver_errors {
       set resp.status = 500;
     }
   }
+  if (resp.status == 955) {
+     set resp.status = 403;
+     set resp.response = "Forbidden";
+  }
+
+  if (resp.status == 962) {
+     set resp.status = 502;
+     set resp.response = "Bad Gateway";
+  }
+
+  if (resp.status == 963) {
+     set resp.status = 503;
+     set resp.response = "Service Unavailable";
+  }
+
+  if (resp.status == 964) {
+     set resp.status = 504;
+     set resp.response = "Gateway Timeout";
+  }
 }
 
 sub hlx_error_errors {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_error_errors";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_error_errors(" obj.status ")";
+
   # Cache Condition: OpenWhisk Error Prio: 10
   if (obj.status == 951 ) {
     set obj.http.Content-Type = "text/html";
@@ -1237,6 +1264,26 @@ sub hlx_error_errors {
       return(deliver);
     }
     synthetic {"include:generic-error.html"};
+    return(deliver);
+  }
+  if (obj.status == 955 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:403.html"};
+    return(deliver);
+  }
+  if (obj.status == 962 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:502.html"};
+    return(deliver);
+  }
+  if (obj.status == 963 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:503.html"};
+    return(deliver);
+  }
+  if (obj.status == 964 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:504.html"};
     return(deliver);
   }
 }
@@ -1525,7 +1572,7 @@ sub vcl_deliver {
 }
 
 sub vcl_error {
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_error";
+  set req.http.X-Trace = req.http.X-Trace + "; vcl_error(" obj.status ")";
 #FASTLY error
 
   if (obj.status == 301 && req.http.X-Location) {
