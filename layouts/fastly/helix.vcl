@@ -1480,7 +1480,7 @@ sub vcl_deliver {
   unset resp.http.X-PostFetch;
 
   if (resp.http.x-openwhisk-activation-id) {
-    # make sure acivation id gets logged (https://github.com/adobe/helix-publish/issues/384)
+    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/384)
     set req.http.x-openwhisk-activation-id = resp.http.x-openwhisk-activation-id;
   }
 
