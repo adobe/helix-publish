@@ -1,3 +1,10 @@
+# [4.4.0](https://github.com/adobe/helix-publish/compare/v4.3.0...v4.4.0) (2020-03-31)
+
+
+### Features
+
+* **errors:** specific errors handling ([3a1850b](https://github.com/adobe/helix-publish/commit/3a1850b2a73ba63f056be08e0f374ff5a93ab537))
+
 # [4.3.0](https://github.com/adobe/helix-publish/compare/v4.2.0...v4.3.0) (2020-03-31)
 
 
