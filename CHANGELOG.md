@@ -1,3 +1,10 @@
+## [4.4.1](https://github.com/adobe/helix-publish/compare/v4.4.0...v4.4.1) (2020-04-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.15.1 ([afeb400](https://github.com/adobe/helix-publish/commit/afeb400682a2e43cb3209d87e7894943558faf79))
+
 # [4.4.0](https://github.com/adobe/helix-publish/compare/v4.3.0...v4.4.0) (2020-03-31)
 
 
