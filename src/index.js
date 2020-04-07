@@ -29,7 +29,7 @@ async function publishConfig(params) {
     params.algoliaappid,
     params.wskAuth,
     params.wskHost,
-    params.wskNamespace
+    params.wskNamespace,
   );
 }
 

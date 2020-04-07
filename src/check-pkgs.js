@@ -16,30 +16,28 @@ const openwhisk = require('openwhisk');
  * @param host {string} openwhisk api host
  * @param namespace {string} openwhisk namespace under which actions exist
  */
-function check_pkgs(auth, host, namespace, config){
-    return new Promise((resolve, reject) => {
-        const ow = openwhisk({
-            api_key: auth, 
-            apihost: host,
-            namespace: namespace
-        });
-        ow.packages.list().then((data) => {
-            const package_list = data.reduce((prev, curr) => {
-            prev[curr.name] = true;
-            return prev;
-            }, {});
-            
-            config.strains.forEach((strain) => {
-                if (strain.package && !(strain.package in package_list)){
-                    return reject(Error(`config package for the strain: ${strain.name} not deployed`));
-                }
-            });
-        return resolve(true);
-        })
-        .catch((e) => {
-            return reject(Error('Openwhisk error: please double check your credentials'));
-        });
+function check_pkgs(auth, host, namespace, config) {
+  return new Promise((resolve, reject) => {
+    const ow = openwhisk({
+      api_key: auth,
+      apihost: host,
+      namespace,
     });
+    ow.packages.list().then((data) => {
+      const package_list = data.reduce((prev, curr) => {
+        prev[curr.name] = true;
+        return prev;
+      }, {});
+
+      config.strains.forEach((strain) => {
+        if (strain.package && !(strain.package in package_list)) {
+          return reject(Error(`config package for the strain: ${strain.name} not deployed`));
+        }
+      });
+      return resolve(true);
+    })
+      .catch((e) => reject(Error('Openwhisk error: please double check your credentials')));
+  });
 }
 
 module.exports = check_pkgs;
