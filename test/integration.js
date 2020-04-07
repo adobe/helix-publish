@@ -58,7 +58,7 @@ const config = {
           path: '/htdocs',
         },
         directoryIndex: 'index.html',
-        package: 'dirty',
+        package: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty',
         sticky: false,
         condition: '',
         perf: { device: '', location: '', connection: '' },
@@ -185,6 +185,9 @@ describe('Integration Test', () => {
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
+      wskHost: 'fake_host',
+      wskAuth: 'fake_auth',
+      wskNamespace: 'fake_ns',
       version: -10,
       ...config,
     };
@@ -204,6 +207,9 @@ describe('Integration Test', () => {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       version: VERSION_NUM,
+      wskHost: 'fake_host',
+      wskAuth: 'fake_auth',
+      wskNamespace: 'fake_ns',
       ...config,
       indexconfig,
       algoliaappid: ALGOLIA_APP_ID,
@@ -213,7 +219,7 @@ describe('Integration Test', () => {
     assert.deepStrictEqual(res, {
       body: {
         status: 'published',
-        completed: 9,
+        completed: 10,
       },
       statusCode: 200,
     });

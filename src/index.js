@@ -27,6 +27,9 @@ async function publishConfig(params) {
     params.__ow_logger,
     params.indexconfig,
     params.algoliaappid,
+    params.wskAuth,
+    params.wskHost,
+    params.wskNamespace
   );
 }
 

@@ -17,7 +17,8 @@
     "build": "wsk-builder -v",
     "deploy": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json",
     "deploy-sequences": "wsk-builder --no-build -no-hints -l latest -l major -l minor",
-    "deploy-ci": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci"
+    "deploy-ci": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci",
+    "commit": "git-cz"
   },
   "wsk": {
     "name": "helix-services-private/publish@${version}",
@@ -85,8 +86,15 @@
     "@adobe/helix-status": "7.1.2",
     "@adobe/openwhisk-action-logger": "2.2.0",
     "@adobe/openwhisk-action-utils": "4.2.2",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.1.0",
     "fs-extra": "9.0.0",
     "glob-to-regexp": "0.4.1",
     "uri-js": "4.2.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
   }
 }

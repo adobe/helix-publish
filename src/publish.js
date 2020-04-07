@@ -16,7 +16,7 @@ const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
-
+const check_pkgs = require('./check-pkgs');
 /**
  *
  * @param {object} configuration the Helix Strains configuration
@@ -29,7 +29,7 @@ const redirects = require('./fastly/redirects');
  * @param {object} iconfig the IndexConfig from helix-shared
  * @param {string} algoliaappid Algolia App ID (not secret)
  */
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid) {
+async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid, wskAuth, wskHost, wskNamespace) {
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
@@ -50,10 +50,10 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       .withLogger(log)
       .withJSON(iconfig)
       .init();
-
     const fastly = await initfastly(token, service);
     log.info('running publishing tasks...');
     return Promise.all([
+      check_pkgs(wskAuth, wskHost, wskNamespace, config),
       backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version),
