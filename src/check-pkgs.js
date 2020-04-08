@@ -31,15 +31,13 @@ class PackageNotFoundError extends Error {
 }
 
 /**
+ * This function gets list of packages deployed to OpenWhisk
  *
  * @param auth {string} openwhisk authentication key
  * @param host {string} openwhisk api host
  * @param namespace {string} openwhisk namespace under which actions exist
- *
- * This function gets list of packages deployed to OpenWhisk
  */
 async function getPackageList(auth, host, namespace) {
-  let packageList;
   const ow = openwhisk({
     api_key: auth,
     apihost: host,
@@ -47,7 +45,7 @@ async function getPackageList(auth, host, namespace) {
   });
 
   try {
-    packageList = await ow.packages.list();
+    const packageList = await ow.packages.list();
     return packageList.reduce((prev, curr) => {
       // eslint-disable-next-line no-param-reassign
       prev[curr.name] = true;
@@ -59,13 +57,13 @@ async function getPackageList(auth, host, namespace) {
 }
 
 /**
+ * This function checks that packages defined for
+ * strains in a given Helix Configuration are deployed
+ *
  * @param auth {string} openwhisk authentication key
  * @param host {string} openwhisk api host
  * @param namespace {string} openwhisk namespace under which actions exist
  * @param config {object} a Helix Configuration object
- *
- * This function checks that packages defined for
- * strains in a given Helix Configuration are deployed
  */
 async function checkPkgs(auth, host, namespace, config) {
   const packages = await getPackageList(auth, host, namespace);
