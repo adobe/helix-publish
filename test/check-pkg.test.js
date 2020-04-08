@@ -10,13 +10,15 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-env mocha */
+
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
 const { HelixConfig } = require('@adobe/helix-shared');
 const assert = require('assert');
 const path = require('path');
-const check_pkgs = require('../src/check-pkgs');
+const { checkPkgs, WhiskError, PackageNotFoundError } = require('../src/check-pkgs');
 
 describe('test check_pkgs', () => {
   setupPolly({
@@ -45,30 +47,29 @@ describe('test check_pkgs', () => {
     },
   });
 
-  it('check_pkgs works successfully', async () => {
-    const host = 'fake_host1';
-    const auth = 'fake_auth1';
-    const namespace = 'fake_ns1';
+  it('checkPkgs works successfully', async () => {
+    const host = 'adobeioruntime.net';
+    const auth = 'fake_auth';
+    const namespace = 'fake_host';
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
       .init();
-    await check_pkgs(auth, host, namespace, config);
+    await checkPkgs(auth, host, namespace, config);
   });
 
-  it('check_pkgs fails if package list missing action', async () => {
-    const host = 'fake_host2';
-    const auth = 'fake_auth2';
-    const namespace = 'fake_ns2';
+  it('checkPkgs fails if package list missing action', async () => {
+    const host = 'adobeioruntime.net';
+    const auth = 'fake_auth';
+    const namespace = 'fake_ns';
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
       .init();
 
-    const fn = () => check_pkgs(auth, host, namespace, config);
-
-    await assert.rejects(fn, new Error('config package for the strain: default not deployed'));
+    const fn = async () => checkPkgs(auth, host, namespace, config);
+    await assert.rejects(fn, new PackageNotFoundError('config package for the following strain: << default >> not deployed'));
   });
 
-  it('check_pkgs fails if openwhisk fails', async () => {
+  it('checkPkgs fails if openwhisk fails', async () => {
     const host = 'fake_host3';
     const auth = 'fake_auth3';
     const namespace = 'fake_ns3';
@@ -76,8 +77,7 @@ describe('test check_pkgs', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
       .init();
 
-    const fn = async () => check_pkgs(auth, host, namespace, config);
-
-    await assert.rejects(fn, new Error('Openwhisk error: please double check your credentials'));
+    const fn = async () => checkPkgs(auth, host, namespace, config);
+    await assert.rejects(fn, new WhiskError('whisk failed to obtain package list'));
   });
 });

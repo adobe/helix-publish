@@ -16,7 +16,7 @@ const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
-const check_pkgs = require('./check-pkgs');
+const { checkPkgs } = require('./check-pkgs');
 /**
  *
  * @param {object} configuration the Helix Strains configuration
@@ -50,10 +50,11 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       .withLogger(log)
       .withJSON(iconfig)
       .init();
+
+    await checkPkgs(wskAuth, wskHost, wskNamespace, config);
     const fastly = await initfastly(token, service);
     log.info('running publishing tasks...');
     return Promise.all([
-      check_pkgs(wskAuth, wskHost, wskNamespace, config),
       backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version),

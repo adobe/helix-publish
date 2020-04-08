@@ -185,7 +185,7 @@ describe('Integration Test', () => {
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
-      wskHost: 'fake_host',
+      wskHost: 'adobeioruntime.net',
       wskAuth: 'fake_auth',
       wskNamespace: 'fake_ns',
       version: -10,
@@ -219,7 +219,7 @@ describe('Integration Test', () => {
     assert.deepStrictEqual(res, {
       body: {
         status: 'published',
-        completed: 10,
+        completed: 9,
       },
       statusCode: 200,
     });
