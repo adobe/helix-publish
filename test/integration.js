@@ -152,7 +152,7 @@ describe('Integration Test', () => {
       body: false,
       order: false,
       headers: {
-        exclude: ['content-length', 'user-agent', 'fastly-key'],
+        exclude: ['content-length', 'fastly-key'],
       },
       url: {
         protocol: true,
