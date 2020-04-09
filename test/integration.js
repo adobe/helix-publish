@@ -154,6 +154,16 @@ describe('Integration Test', () => {
       headers: {
         exclude: ['content-length', 'user-agent', 'fastly-key'],
       },
+      url: {
+        protocol: true,
+        username: false,
+        password: false,
+        hostname: true,
+        port: false,
+        pathname: true,
+        query: false,
+        hash: false,
+      },
     },
   });
 
