@@ -152,7 +152,7 @@ describe('Integration Test', () => {
       body: false,
       order: false,
       headers: {
-        exclude: ['content-length', 'fastly-key'],
+        exclude: ['content-length', 'user-agent', 'authorization', 'fastly-key'],
       },
       url: {
         protocol: true,
@@ -172,6 +172,7 @@ describe('Integration Test', () => {
       this.polly.server.any().on('beforeResponse', (req) => {
         // don't record the authorization header
         req.removeHeaders(['Fastly-Key']);
+        req.removeHeaders(['authorization']);
         delete req.body;
       });
     } else {
@@ -196,8 +197,8 @@ describe('Integration Test', () => {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       wskHost: 'adobeioruntime.net',
-      wskAuth: 'fake_auth',
-      wskNamespace: 'fake_ns',
+      wskAuth: 'fake',
+      wskNamespace: 'mrosier',
       version: -10,
       ...config,
     };
@@ -217,9 +218,9 @@ describe('Integration Test', () => {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       version: VERSION_NUM,
-      wskHost: 'fake_host',
-      wskAuth: 'fake_auth',
-      wskNamespace: 'fake_ns',
+      wskHost: 'adobeioruntime.net',
+      wskAuth: 'fake',
+      wskNamespace: 'mrosier',
       ...config,
       indexconfig,
       algoliaappid: ALGOLIA_APP_ID,

@@ -35,6 +35,9 @@ describe('test check_pkgs', () => {
     matchRequestsBy: {
       body: false,
       order: false,
+      headers: {
+        exclude: ['authorization'],
+      },
       url: {
         hostname: true,
         pathname: true,
@@ -47,10 +50,16 @@ describe('test check_pkgs', () => {
     },
   });
 
+  beforeEach(async function test() {
+    this.polly.server.any().on('beforeResponse', (req) => {
+      delete req.removeHeaders(['authorization']);
+    });
+  });
+
   it('checkPkgs works successfully', async () => {
     const host = 'adobeioruntime.net';
-    const auth = 'fake_auth';
-    const namespace = 'fake_host';
+    const auth = 'fake';
+    const namespace = 'mrosier';
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
       .init();
@@ -59,8 +68,8 @@ describe('test check_pkgs', () => {
 
   it('checkPkgs fails if package list missing action', async () => {
     const host = 'adobeioruntime.net';
-    const auth = 'fake_auth';
-    const namespace = 'fake_ns';
+    const auth = 'fake';
+    const namespace = 'mrosier';
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
       .init();
@@ -70,9 +79,9 @@ describe('test check_pkgs', () => {
   });
 
   it('checkPkgs fails if openwhisk fails', async () => {
-    const host = 'fake_host3';
-    const auth = 'fake_auth3';
-    const namespace = 'fake_ns3';
+    const host = 'adobeioruntime.net';
+    const auth = 'error';
+    const namespace = 'mrosier';
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
       .init();
