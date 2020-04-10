@@ -52,7 +52,9 @@ async function getPackageList(auth, host, namespace) {
       return prev;
     }, {});
   } catch (e) {
-    throw new WhiskError('whisk failed to obtain package list');
+    if (e.name === 'OpenWhiskError') {
+      throw new WhiskError('whisk failed to obtain package list');
+    }
   }
 }
 
