@@ -192,6 +192,10 @@ describe('Integration Test', () => {
       this.polly.server.any('https://api.fastly.com/*').intercept((req, res) => {
         res.sendStatus(500);
       });
+
+      this.polly.server.any('https://adobeioruntime.net/api/v1/namespaces/mrosier/packages').intercept((req, res) => {
+        res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
+      });
     }
     const params = {
       service: HLX_FASTLY_NAMESPACE,
@@ -213,6 +217,10 @@ describe('Integration Test', () => {
         res.sendStatus(200);
       });
     }
+
+    this.polly.server.any('https://adobeioruntime.net/api/v1/namespaces/mrosier/packages').intercept((req, res) => {
+      res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
+    });
 
     const params = {
       service: HLX_FASTLY_NAMESPACE,
