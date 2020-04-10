@@ -193,7 +193,7 @@ describe('Integration Test', () => {
         res.sendStatus(500);
       });
 
-      this.polly.server.any('https://adobeioruntime.net/api/v1/namespaces/mrosier/packages').intercept((req, res) => {
+      this.polly.server.any('https://adobeioruntime.net/*').intercept((req, res) => {
         res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
       });
     }
@@ -202,7 +202,7 @@ describe('Integration Test', () => {
       token: HLX_FASTLY_AUTH,
       wskHost: 'adobeioruntime.net',
       wskAuth: 'fake',
-      wskNamespace: 'mrosier',
+      wskNamespace: 'fake',
       version: -10,
       ...config,
     };
@@ -218,7 +218,7 @@ describe('Integration Test', () => {
       });
     }
 
-    this.polly.server.any('https://adobeioruntime.net/api/v1/namespaces/mrosier/packages').intercept((req, res) => {
+    this.polly.server.any('https://adobeioruntime.net/*').intercept((req, res) => {
       res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
     });
 
@@ -228,7 +228,7 @@ describe('Integration Test', () => {
       version: VERSION_NUM,
       wskHost: 'adobeioruntime.net',
       wskAuth: 'fake',
-      wskNamespace: 'mrosier',
+      wskNamespace: 'fake',
       ...config,
       indexconfig,
       algoliaappid: ALGOLIA_APP_ID,
