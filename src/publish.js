@@ -103,7 +103,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
         message: `${e}`,
         stack: e.stack.split('\n'),
       },
-      statusCode: 400,
+      statusCode: e.statusCode || 400,
     };
   }
 }

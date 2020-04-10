@@ -55,6 +55,7 @@ async function getPackageList(auth, host, namespace) {
     if (e.name === 'OpenWhiskError') {
       throw new WhiskError('whisk failed to obtain package list');
     }
+    throw e;
   }
 }
 
