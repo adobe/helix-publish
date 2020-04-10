@@ -52,6 +52,7 @@ async function getPackageList(auth, host, namespace) {
       return prev;
     }, {});
   } catch (e) {
+    console.error(e);
     throw new WhiskError('whisk failed to obtain package list');
   }
 }
