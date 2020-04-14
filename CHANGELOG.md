@@ -1,3 +1,10 @@
+## [4.4.7](https://github.com/adobe/helix-publish/compare/v4.4.6...v4.4.7) (2020-04-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v7.1.3 ([15ceb0f](https://github.com/adobe/helix-publish/commit/15ceb0fb0e236b0e709e608798265b212e1b78f0))
+
 ## [4.4.6](https://github.com/adobe/helix-publish/compare/v4.4.5...v4.4.6) (2020-04-14)
 
 
