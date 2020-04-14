@@ -1,3 +1,10 @@
+## [4.4.6](https://github.com/adobe/helix-publish/compare/v4.4.5...v4.4.6) (2020-04-14)
+
+
+### Bug Fixes
+
+* **deploy:** use helix-services package ([#400](https://github.com/adobe/helix-publish/issues/400)) ([d4ba50a](https://github.com/adobe/helix-publish/commit/d4ba50a3f7df66cd6cbc91d11710b5664cdb6e86))
+
 ## [4.4.5](https://github.com/adobe/helix-publish/compare/v4.4.4...v4.4.5) (2020-04-08)
 
 
