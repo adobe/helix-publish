@@ -15,7 +15,6 @@ const request = require('request-promise-native');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
-const { Condition } = require('@adobe/helix-shared');
 const { main } = require('../src/index');
 
 /* eslint-env mocha */
