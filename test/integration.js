@@ -15,6 +15,7 @@ const request = require('request-promise-native');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
+const { Condition } = require('@adobe/helix-shared');
 const { main } = require('../src/index');
 
 /* eslint-env mocha */
@@ -60,10 +61,11 @@ const config = {
         directoryIndex: 'index.html',
         package: 'dirty',
         sticky: false,
-        condition: '',
+        condition: {
+          url: 'https://www.project-helix.io/cli',
+        },
         perf: { device: '', location: '', connection: '' },
         urls: ['https://www.project-helix.io/cli'],
-        url: 'https://www.project-helix.io/cli',
         redirects: [
           {
             from: '(.*)\\.php',
