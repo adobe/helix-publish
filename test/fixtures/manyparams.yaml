@@ -31,7 +31,8 @@ strains:
   client:
     code: *myrepo
     static: *myrepo
-    url: "https://client.project-helix.io"
+    condition:
+      url: "https://client.project-helix.io"
     sticky: false
     content:
       repo: helix-cli

@@ -60,10 +60,11 @@ const config = {
         directoryIndex: 'index.html',
         package: 'dirty',
         sticky: false,
-        condition: '',
+        condition: {
+          url: 'https://www.project-helix.io/cli',
+        },
         perf: { device: '', location: '', connection: '' },
         urls: ['https://www.project-helix.io/cli'],
-        url: 'https://www.project-helix.io/cli',
         redirects: [
           {
             from: '(.*)\\.php',
