@@ -1,3 +1,15 @@
+# [5.0.0](https://github.com/adobe/helix-publish/compare/v4.4.7...v5.0.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7 ([#402](https://github.com/adobe/helix-publish/issues/402)) ([e2ed09d](https://github.com/adobe/helix-publish/commit/e2ed09d0afdb749532189a05844e00d5b300792d))
+
+
+### BREAKING CHANGES
+
+* **deps:** strains with url property are no longer supported
+
 ## [4.4.7](https://github.com/adobe/helix-publish/compare/v4.4.6...v4.4.7) (2020-04-14)
 
 
