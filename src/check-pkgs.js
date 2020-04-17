@@ -37,7 +37,7 @@ class PackageNotFoundError extends Error {
  * @param host {string} openwhisk api host
  * @param namespace {string} openwhisk namespace under which actions exist
  */
-async function getPackageList(auth, host, namespace) {
+async function getPackageList(auth, host, namespace, log) {
   const ow = openwhisk({
     api_key: auth,
     apihost: host,
@@ -52,6 +52,7 @@ async function getPackageList(auth, host, namespace) {
       return prev;
     }, {});
   } catch (e) {
+    log.error(e);
     throw new WhiskError('whisk failed to obtain package list');
   }
 }
@@ -65,8 +66,8 @@ async function getPackageList(auth, host, namespace) {
  * @param namespace {string} openwhisk namespace under which actions exist
  * @param config {object} a Helix Configuration object
  */
-async function checkPkgs(auth, host, namespace, config) {
-  const packages = await getPackageList(auth, host, namespace);
+async function checkPkgs(auth, host, namespace, config, log = console) {
+  const packages = await getPackageList(auth, host, namespace, log);
 
   config.strains.forEach((strain) => {
     if (strain.package && !(strain.package in packages)) {
