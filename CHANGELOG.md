@@ -1,3 +1,11 @@
+## [5.0.1](https://github.com/adobe/helix-publish/compare/v5.0.0...v5.0.1) (2020-04-20)
+
+
+### Bug Fixes
+
+* **deps:** npm audit fix ([8bd89ad](https://github.com/adobe/helix-publish/commit/8bd89ade158c898805cf3dc9f2021305eae4a322))
+* **redirects:** use req.url.path for more robust redirect conditions ([95a17f8](https://github.com/adobe/helix-publish/commit/95a17f8ca2406fa7da7b0d7592f6bda486077518)), closes [#407](https://github.com/adobe/helix-publish/issues/407)
+
 # [5.0.0](https://github.com/adobe/helix-publish/compare/v4.4.7...v5.0.0) (2020-04-16)
 
 
