@@ -246,7 +246,7 @@ function pattern2vcl(pattern) {
  * @param {string} strain - name of the strain
  */
 function condition(pattern, strain) {
-  const varname = pattern.match(/^https:\/\//) ? '("https://" + req.http.host + req.url)' : 'req.url';
+  const varname = pattern.match(/^https:\/\//) ? '("https://" + req.http.host + req.url.path)' : 'req.url.path';
   return `req.http.X-Strain == "${strain}" && ${varname} ~ "${pattern}"`;
 }
 
