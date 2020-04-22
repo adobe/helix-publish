@@ -27,9 +27,12 @@ async function publishConfig(params) {
     params.__ow_logger,
     params.indexconfig,
     params.algoliaappid,
-    params.wskAuth,
-    params.wskHost,
-    params.wskNamespace,
+    // eslint-disable-next-line no-underscore-dangle
+    params.wskAuth || process.env.__OW_API_KEY,
+    // eslint-disable-next-line no-underscore-dangle
+    params.wskHost || process.env.__OW_API_HOST,
+    // eslint-disable-next-line no-underscore-dangle
+    params.wskNamespace || process.env.__OW_NAMESPACE,
   );
 }
 
