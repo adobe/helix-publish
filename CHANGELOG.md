@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/adobe/helix-publish/compare/v5.0.2...v5.1.0) (2020-04-23)
+
+
+### Features
+
+* **publish:** add package checking ([e9dbb5b](https://github.com/adobe/helix-publish/commit/e9dbb5bae485f007b665e3fed66e1277a8ea411e))
+
 ## [5.0.2](https://github.com/adobe/helix-publish/compare/v5.0.1...v5.0.2) (2020-04-22)
 
 
