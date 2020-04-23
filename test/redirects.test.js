@@ -35,19 +35,19 @@ describe('Testing redirects.js', () => {
 
     assert.ok(fakeupdate.calledOnce);
     assert.deepStrictEqual(fakeupdate.lastCall.args, [{
-      condition: 'req.http.X-Strain == "default" && req.url ~ "\\/foo\\/(.*)"',
+      condition: 'req.http.X-Strain == "default" && req.url.path ~ "\\/foo\\/(.*)"',
       expression: '"/bar/" + re.group.1 + ""',
     },
     {
-      condition: 'req.http.X-Strain == "adhoc" && req.url ~ "\\/foo\\/(.*)"',
+      condition: 'req.http.X-Strain == "adhoc" && req.url.path ~ "\\/foo\\/(.*)"',
       expression: '"/bar/" + re.group.1 + ""',
     },
     {
-      condition: 'req.http.X-Strain == "client" && req.url ~ "\\/(.*).php"',
+      condition: 'req.http.X-Strain == "client" && req.url.path ~ "\\/(.*).php"',
       expression: '"/" + re.group.1 + ".html"',
     },
     {
-      condition: 'req.http.X-Strain == "pipeline" && req.url ~ "\\/foo\\/(.*)"',
+      condition: 'req.http.X-Strain == "pipeline" && req.url.path ~ "\\/foo\\/(.*)"',
       expression: '"/bar/" + re.group.1 + ""',
     }]);
   });

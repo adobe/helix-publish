@@ -94,7 +94,7 @@ describe('Testing vcl-utils.js', () => {
   });
 
   it('#condition', () => {
-    assert.equal(utils.condition('/old/(.*)', 'default'), 'req.http.X-Strain == "default" && req.url ~ "/old/(.*)"');
-    assert.equal(utils.condition('https://(.*).adobe.io', 'staging'), 'req.http.X-Strain == "staging" && ("https://" + req.http.host + req.url) ~ "https://(.*).adobe.io"');
+    assert.equal(utils.condition('/old/(.*)', 'default'), 'req.http.X-Strain == "default" && req.url.path ~ "/old/(.*)"');
+    assert.equal(utils.condition('https://(.*).adobe.io', 'staging'), 'req.http.X-Strain == "staging" && ("https://" + req.http.host + req.url.path) ~ "https://(.*).adobe.io"');
   });
 });
