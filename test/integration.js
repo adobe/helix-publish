@@ -58,7 +58,7 @@ const config = {
           path: '/htdocs',
         },
         directoryIndex: 'index.html',
-        package: 'dirty',
+        package: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty',
         sticky: false,
         condition: {
           url: 'https://www.project-helix.io/cli',
@@ -153,7 +153,17 @@ describe('Integration Test', () => {
       body: false,
       order: false,
       headers: {
-        exclude: ['content-length', 'user-agent', 'fastly-key'],
+        exclude: ['content-length', 'user-agent', 'authorization', 'fastly-key'],
+      },
+      url: {
+        protocol: true,
+        username: false,
+        password: false,
+        hostname: true,
+        port: false,
+        pathname: true,
+        query: false,
+        hash: false,
       },
     },
   });
@@ -163,6 +173,7 @@ describe('Integration Test', () => {
       this.polly.server.any().on('beforeResponse', (req) => {
         // don't record the authorization header
         req.removeHeaders(['Fastly-Key']);
+        req.removeHeaders(['authorization']);
         delete req.body;
       });
     } else {
@@ -183,9 +194,16 @@ describe('Integration Test', () => {
         res.sendStatus(500);
       });
     }
+
+    this.polly.server.any('https://adobeioruntime.net/*').intercept((req, res) => {
+      res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
+    });
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
+      wskHost: 'adobeioruntime.net',
+      wskAuth: 'fake',
+      wskNamespace: 'fake',
       version: -10,
       ...config,
     };
@@ -201,10 +219,17 @@ describe('Integration Test', () => {
       });
     }
 
+    this.polly.server.any('https://adobeioruntime.net/*').intercept((req, res) => {
+      res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
+    });
+
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       version: VERSION_NUM,
+      wskHost: 'adobeioruntime.net',
+      wskAuth: 'fake',
+      wskNamespace: 'fake',
       ...config,
       indexconfig,
       algoliaappid: ALGOLIA_APP_ID,
