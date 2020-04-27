@@ -23,12 +23,13 @@ class WhiskError extends Error {
   }
 }
 
-class PackageNotFoundError extends Error {
+/* class PackageNotFoundError extends Error {
   constructor(message) {
     super(message);
     this.name = 'PackageNotFoundError';
   }
 }
+*/
 
 /**
  * This function gets list of packages deployed to OpenWhisk
@@ -71,9 +72,7 @@ async function checkPkgs(auth, host, namespace, config, log = console) {
 
   config.strains.forEach((strain) => {
     if (strain.package && !(strain.package in packages)) {
-      throw new PackageNotFoundError(
-        `action package for the following strain: << ${strain.name} >> not deployed`,
-      );
+      log.error(`action package for the following strain: << ${strain.name} >> not deployed`);
     }
   });
 }
@@ -81,5 +80,4 @@ async function checkPkgs(auth, host, namespace, config, log = console) {
 module.exports = {
   checkPkgs,
   WhiskError,
-  PackageNotFoundError,
 };
