@@ -18,7 +18,7 @@ const { setupMocha: setupPolly } = require('@pollyjs/core');
 const { HelixConfig } = require('@adobe/helix-shared');
 const assert = require('assert');
 const path = require('path');
-const { checkPkgs, WhiskError, PackageNotFoundError } = require('../src/check-pkgs');
+const { checkPkgs, WhiskError } = require('../src/check-pkgs');
 
 describe('test check_pkgs', () => {
   setupPolly({
@@ -74,8 +74,8 @@ describe('test check_pkgs', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
       .init();
 
-    const fn = async () => checkPkgs(auth, host, namespace, config);
-    await assert.rejects(fn, new PackageNotFoundError('action package for the following strain: << default >> not deployed'));
+    await checkPkgs(auth, host, namespace, config);
+    //await assert.rejects(fn, new PackageNotFoundError('action package for the following strain: << default >> not deployed'));
   });
 
   it('checkPkgs fails if openwhisk fails', async () => {
