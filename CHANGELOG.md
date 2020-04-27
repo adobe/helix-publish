@@ -1,3 +1,16 @@
+# [5.2.0](https://github.com/adobe/helix-publish/compare/v5.1.2...v5.2.0) (2020-04-27)
+
+
+### Bug Fixes
+
+* **checkpkgs:** hotfix ([5150025](https://github.com/adobe/helix-publish/commit/5150025683d8472f7eb5442afab34efadb8afd6e)), closes [#416](https://github.com/adobe/helix-publish/issues/416)
+
+
+### Features
+
+* **index.js:** enable fallback ([c3afb64](https://github.com/adobe/helix-publish/commit/c3afb64172b21195841522719934cec64bffc8b5)), closes [#394](https://github.com/adobe/helix-publish/issues/394)
+* **publish:** add package checking ([df61bd5](https://github.com/adobe/helix-publish/commit/df61bd5c832ee357e08cfe30184de7f452f75327)), closes [#167](https://github.com/adobe/helix-publish/issues/167)
+
 ## [5.1.2](https://github.com/adobe/helix-publish/compare/v5.1.1...v5.1.2) (2020-04-24)
 
 
