@@ -75,7 +75,8 @@ describe('test check_pkgs', () => {
       .init();
 
     await checkPkgs(auth, host, namespace, config);
-    //await assert.rejects(fn, new PackageNotFoundError('action package for the following strain: << default >> not deployed'));
+    // await assert.rejects(fn, new PackageNotFoundError('action
+    // package for the following strain: << default >> not deployed'));
   });
 
   it('checkPkgs fails if openwhisk fails', async () => {

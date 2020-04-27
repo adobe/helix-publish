@@ -23,7 +23,7 @@ class WhiskError extends Error {
   }
 }
 
-/*class PackageNotFoundError extends Error {
+/* class PackageNotFoundError extends Error {
   constructor(message) {
     super(message);
     this.name = 'PackageNotFoundError';

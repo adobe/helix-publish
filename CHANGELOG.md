@@ -1,3 +1,24 @@
+## [5.1.2](https://github.com/adobe/helix-publish/compare/v5.1.1...v5.1.2) (2020-04-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.2.0 ([f5d7b03](https://github.com/adobe/helix-publish/commit/f5d7b0322eaf80030222edd5ac5120584d0a796d))
+
+## [5.1.1](https://github.com/adobe/helix-publish/compare/v5.1.0...v5.1.1) (2020-04-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.16.0 ([5ac8367](https://github.com/adobe/helix-publish/commit/5ac83676237660d678bc80e26cc7dce20c39e5f1))
+
+# [5.1.0](https://github.com/adobe/helix-publish/compare/v5.0.2...v5.1.0) (2020-04-23)
+
+
+### Features
+
+* **publish:** add package checking ([e9dbb5b](https://github.com/adobe/helix-publish/commit/e9dbb5bae485f007b665e3fed66e1277a8ea411e))
+
 ## [5.0.2](https://github.com/adobe/helix-publish/compare/v5.0.1...v5.0.2) (2020-04-22)
 
 
