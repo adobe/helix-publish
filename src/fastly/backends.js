@@ -54,7 +54,7 @@ const backends = {
     port: 443,
     between_bytes_timeout: 10000,
     shield: 'bwi-va-us',
-    ssl_cert_hostname: 'use.typekit.net',
+    ssl_check_cert: false,
     max_conn: 200,
     use_ssl: true,
   },
