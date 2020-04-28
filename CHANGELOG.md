@@ -1,3 +1,10 @@
+## [5.2.2](https://github.com/adobe/helix-publish/compare/v5.2.1...v5.2.2) (2020-04-28)
+
+
+### Bug Fixes
+
+* **backends:** disable SSL host verification for fonts backend ([#424](https://github.com/adobe/helix-publish/issues/424)) ([3633791](https://github.com/adobe/helix-publish/commit/3633791f94d6c634945efbf73fe29351528703f1))
+
 ## [5.2.1](https://github.com/adobe/helix-publish/compare/v5.2.0...v5.2.1) (2020-04-27)
 
 
