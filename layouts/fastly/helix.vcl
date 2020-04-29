@@ -840,6 +840,8 @@ sub hlx_fetch_error {
        error 963 "Service Unavailable";
     } elsif (beresp.status == 504) {
        error 964 "Gateway Timeout";
+    } elsif (beresp.status == 429) {
+       error 965 "Too many requests";
     } else {
        error 952 "Internal Server Error";
     }
@@ -1232,6 +1234,11 @@ sub hlx_deliver_errors {
      set resp.status = 504;
      set resp.response = "Gateway Timeout";
   }
+
+  if (resp.status == 965) {
+     set resp.status = 429;
+     set resp.response = "Too Many Requests";
+  }
 }
 
 sub hlx_error_errors {
@@ -1284,6 +1291,11 @@ sub hlx_error_errors {
   if (obj.status == 964 ) {
     set obj.http.Content-Type = "text/html";
     synthetic {"include:504.html"};
+    return(deliver);
+  }
+  if (obj.status == 965 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:429.html"};
     return(deliver);
   }
 }
