@@ -1568,6 +1568,7 @@ sub vcl_deliver {
     unset resp.http.X-GitHub-Request-Id;
     unset resp.http.X-GW-Cache;
     unset resp.http.x-openwhisk-activation-id;
+    unset resp.http.x-last-activation-id;
     unset resp.http.X-Request-Id;
     unset resp.http.X-Served-By;
     unset resp.http.X-Static;
