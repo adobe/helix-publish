@@ -27,6 +27,7 @@
       "./layouts/fastly/extensions.vcl",
       "./layouts/fastly/403.html",
       "./layouts/fastly/404.html",
+      "./layouts/fastly/429.html",
       "./layouts/fastly/500.html",
       "./layouts/fastly/502.html",
       "./layouts/fastly/503.html",
