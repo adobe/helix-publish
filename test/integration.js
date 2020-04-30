@@ -58,7 +58,7 @@ const config = {
           path: '/htdocs',
         },
         directoryIndex: 'index.html',
-        package: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty',
+        package: 'mrosier/9d723ce487448cc132cd240a484b65772b201241',
         sticky: false,
         condition: {
           url: 'https://www.project-helix.io/cli',
@@ -195,15 +195,9 @@ describe('Integration Test', () => {
       });
     }
 
-    this.polly.server.any('https://adobeioruntime.net/*').intercept((req, res) => {
-      res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
-    });
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
-      wskHost: 'adobeioruntime.net',
-      wskAuth: 'fake',
-      wskNamespace: 'fake',
       version: -10,
       ...config,
     };
@@ -219,17 +213,10 @@ describe('Integration Test', () => {
       });
     }
 
-    this.polly.server.any('https://adobeioruntime.net/*').intercept((req, res) => {
-      res.status(200).json([{ name: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty', namespace: 'mrosier' }]);
-    });
-
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
       version: VERSION_NUM,
-      wskHost: 'adobeioruntime.net',
-      wskAuth: 'fake',
-      wskNamespace: 'fake',
       ...config,
       indexconfig,
       algoliaappid: ALGOLIA_APP_ID,

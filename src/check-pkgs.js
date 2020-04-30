@@ -10,77 +10,31 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable max-classes-per-file */
-const openwhisk = require('openwhisk');
-
-/**
- * This creates specific errors to deal with
- * when this check fails.
- */
-class WhiskError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'WhiskError';
-  }
-}
-
-class PackageNotFoundError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'PackageNotFoundError';
-  }
-}
-
-/**
- * This function gets list of packages deployed to OpenWhisk
- *
- * @param auth {string} openwhisk authentication key
- * @param host {string} openwhisk api host
- * @param namespace {string} openwhisk namespace under which actions exist
- */
-async function getPackageList(auth, host, namespace, log) {
-  const ow = openwhisk({
-    api_key: auth,
-    apihost: host,
-    namespace,
-  });
-
-  try {
-    const packageList = await ow.packages.list();
-    return packageList.reduce((prev, curr) => {
-      // eslint-disable-next-line no-param-reassign
-      prev[curr.name] = true;
-      return prev;
-    }, {});
-  } catch (e) {
-    log.error(e);
-    throw new WhiskError('whisk failed to obtain package list');
-  }
-}
+const fetch = require('@adobe/helix-fetch');
 
 /**
  * This function checks that packages defined for
  * strains in a given Helix Configuration are deployed
  *
- * @param auth {string} openwhisk authentication key
- * @param host {string} openwhisk api host
- * @param namespace {string} openwhisk namespace under which actions exist
  * @param config {object} a Helix Configuration object
  */
-async function checkPkgs(auth, host, namespace, config, log = console) {
-  const packages = await getPackageList(auth, host, namespace, log);
-
-  config.strains.forEach((strain) => {
-    const package = new RegExp(`(?<=${namespace}/).*`).exec(strain.package);
-    if (package && !(package[0] in packages)) {
-      throw new PackageNotFoundError(
-        `action package for the following strain: << ${strain.name} >> not deployed`,
-      );
+async function checkPkgs(config) {
+  const checks = config.strains.getRuntimeStrains().reduce((acc, curr) => {
+    if (curr.package) {
+      acc.push(new Promise((resolve, reject) => {
+        fetch.fetch(`https://adobeioruntime.net/api/v1/web/${curr.package}/hlx--static/_status_check/healthcheck.json`)
+          .then((res) => {
+            if (!res.ok) {
+              reject(new Error(`the following health check failed: ${res.url}`));
+            }
+            resolve();
+          });
+      }));
     }
-  });
+    return acc;
+  }, []);
+
+  return Promise.all(checks);
 }
 
-module.exports = {
-  checkPkgs,
-  WhiskError,
-  PackageNotFoundError,
-};
+module.exports = checkPkgs;

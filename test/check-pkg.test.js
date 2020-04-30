@@ -18,7 +18,7 @@ const { setupMocha: setupPolly } = require('@pollyjs/core');
 const { HelixConfig } = require('@adobe/helix-shared');
 const assert = require('assert');
 const path = require('path');
-const { checkPkgs, WhiskError, PackageNotFoundError } = require('../src/check-pkgs');
+const checkPkgs = require('../src/check-pkgs');
 
 describe('test check_pkgs', () => {
   setupPolly({
@@ -57,36 +57,17 @@ describe('test check_pkgs', () => {
   });
 
   it('checkPkgs works successfully', async () => {
-    const host = 'adobeioruntime.net';
-    const auth = 'fake';
-    const namespace = 'mrosier';
     const config = await new HelixConfig()
-      .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
+      .withConfigPath(path.resolve(__dirname, 'fixtures/pass.yaml'))
       .init();
-    await checkPkgs(auth, host, namespace, config);
+    await checkPkgs(config);
   });
 
-  it('checkPkgs fails if package list missing action', async () => {
-    const host = 'adobeioruntime.net';
-    const auth = 'fake';
-    const namespace = 'mrosier';
+  it('checkPkgs fails if one check fails', async () => {
     const config = await new HelixConfig()
-      .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
+      .withConfigPath(path.resolve(__dirname, 'fixtures/fail.yaml'))
       .init();
 
-    const fn = async () => checkPkgs(auth, host, namespace, config);
-    await assert.rejects(fn, new PackageNotFoundError('action package for the following strain: << default >> not deployed'));
-  });
-
-  it('checkPkgs fails if openwhisk fails', async () => {
-    const host = 'adobeioruntime.net';
-    const auth = 'error';
-    const namespace = 'mrosier';
-    const config = await new HelixConfig()
-      .withConfigPath(path.resolve(__dirname, 'fixtures/demo.yaml'))
-      .init();
-
-    const fn = async () => checkPkgs(auth, host, namespace, config);
-    await assert.rejects(fn, new WhiskError('whisk failed to obtain package list'));
+    await assert.rejects(checkPkgs(config), Error('the following health check failed: https://adobeioruntime.net/api/v1/web/mrosier/d90a42b1babf33d430450e05cbd3dc1edc6b7135dafa/hlx--static/_status_check/healthcheck.json'));
   });
 });
