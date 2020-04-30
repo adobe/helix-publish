@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-const URI = require('uri-js');
 const glob = require('glob-to-regexp');
 
 function writevcl(fastly, version, content, name, main) {
