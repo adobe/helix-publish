@@ -1,3 +1,11 @@
+## [5.2.3](https://github.com/adobe/helix-publish/compare/v5.2.2...v5.2.3) (2020-04-30)
+
+
+### Bug Fixes
+
+* **strain:** remove check for no longer supported strain.url ([#429](https://github.com/adobe/helix-publish/issues/429)) ([c4889e9](https://github.com/adobe/helix-publish/commit/c4889e9f68d06bde75fd85c2ab69001521f65f07))
+* **strains:** implicit url condition is not backward compatible ([#373](https://github.com/adobe/helix-publish/issues/373)) ([e8c195e](https://github.com/adobe/helix-publish/commit/e8c195e186f641d197c5b3eea5224fbed0de74c1))
+
 ## [5.2.2](https://github.com/adobe/helix-publish/compare/v5.2.1...v5.2.2) (2020-04-28)
 
 
