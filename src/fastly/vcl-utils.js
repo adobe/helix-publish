@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-const URI = require('uri-js');
 const glob = require('glob-to-regexp');
 
 function writevcl(fastly, version, content, name, main) {
@@ -45,23 +44,6 @@ set req.http.X-Root-Path = "${subpath}";`),
     }];
     return result;
   }
-  if (strain.url) {
-    const uri = URI.parse(strain.url);
-    if (uri.path && uri.path !== '/') {
-      const pathname = uri.path.replace(/\/$/, '');
-      const body = vclbody(vcl.body);
-      body.push(`set req.http.X-Dirname = regsub(req.http.X-FullDirname, "^${pathname}", "");`);
-      body.push(`set req.http.X-Root-Path = "${pathname}";`);
-      return [strain, {
-        sticky: false,
-        condition: `req.http.Host == "${uri.host}" && (req.http.X-FullDirname ~ "^${pathname}$" || req.http.X-FullDirname ~ "^${pathname}/")`,
-        body,
-      }];
-    }
-    return [strain, {
-      condition: `req.http.Host == "${uri.host}"`,
-    }, strain];
-  }
   return [strain, vcl];
 }
 
@@ -92,8 +74,6 @@ function proxyurls([strain, vcl]) {
   let oldpath;
   if (strain.condition) {
     oldpath = strain.condition.toVCLPath((_, subpath) => subpath);
-  } else if (strain.url) {
-    oldpath = URI.parse(strain.url ? strain.url : '/').path;
   }
   oldpath = oldpath || '/';
 
