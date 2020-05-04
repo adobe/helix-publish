@@ -84,7 +84,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
         };
       })
       .catch((e) => {
-        log.error(`error executing tasks: ${e}`, e);
+        log.error(`error executing tasks: ${e}, ${e.data}`, e);
         return {
           body: {
             status: 'error',

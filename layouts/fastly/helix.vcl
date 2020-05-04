@@ -843,7 +843,9 @@ sub hlx_fetch_error {
     } else {
        error 952 "Internal Server Error";
     }
-  }
+  } elsif (!req.http.x-topurl && beresp.status == 429) {
+       error 965 "Too many requests";
+    }
   # if (req.url.basename ~ "^([0-9][0-9][0-9])") {
   #   set beresp.status = std.atoi(re.group.1);
   # } else {
@@ -1232,6 +1234,11 @@ sub hlx_deliver_errors {
      set resp.status = 504;
      set resp.response = "Gateway Timeout";
   }
+
+  if (resp.status == 965) {
+     set resp.status = 429;
+     set resp.response = "Too Many Requests";
+  }
 }
 
 sub hlx_error_errors {
@@ -1284,6 +1291,11 @@ sub hlx_error_errors {
   if (obj.status == 964 ) {
     set obj.http.Content-Type = "text/html";
     synthetic {"include:504.html"};
+    return(deliver);
+  }
+  if (obj.status == 965 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:429.html"};
     return(deliver);
   }
 }
@@ -1556,6 +1568,7 @@ sub vcl_deliver {
     unset resp.http.X-GitHub-Request-Id;
     unset resp.http.X-GW-Cache;
     unset resp.http.x-openwhisk-activation-id;
+    unset resp.http.x-last-activation-id;
     unset resp.http.X-Request-Id;
     unset resp.http.X-Served-By;
     unset resp.http.X-Static;
