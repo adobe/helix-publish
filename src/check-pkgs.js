@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable max-classes-per-file */
-const fetch = require('@adobe/helix-fetch');
+const { fetch } = require('@adobe/helix-fetch');
 
 /**
  * This function checks that packages defined for
@@ -22,12 +22,12 @@ async function checkPkgs(config) {
   const checks = config.strains.getRuntimeStrains().reduce((acc, curr) => {
     if (curr.package) {
       acc.push(new Promise((resolve, reject) => {
-        fetch.fetch(`https://adobeioruntime.net/api/v1/web/${curr.package}/hlx--static/_status_check/healthcheck.json`)
+        fetch(`https://adobeioruntime.net/api/v1/web/${curr.package}/hlx--static/_status_check/healthcheck.json`)
           .then((res) => {
             if (!res.ok) {
               reject(new Error(`the following health check failed: ${res.url}`));
             }
-            resolve();
+            resolve(res.json());
           });
       }));
     }
