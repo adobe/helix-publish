@@ -1,3 +1,17 @@
+# [5.3.0](https://github.com/adobe/helix-publish/compare/v5.2.3...v5.3.0) (2020-05-04)
+
+
+### Bug Fixes
+
+* **errors:** show 429 error page for any response body length ([c1933f7](https://github.com/adobe/helix-publish/commit/c1933f7ab3954b2963ecfb07cc84fadf6adc436c))
+* **package:** include missing error page ([94f8211](https://github.com/adobe/helix-publish/commit/94f82115d269aeaff4b544f30082c0689ec66c92)), closes [#421](https://github.com/adobe/helix-publish/issues/421)
+* **vcl:** stop leaking x-last-activation-id header ([6cf8b2d](https://github.com/adobe/helix-publish/commit/6cf8b2d0ec5b7f8fa50bd3a67e97bf63ba650ae5))
+
+
+### Features
+
+* **errors:** custom error page for 429 errors ([e90b798](https://github.com/adobe/helix-publish/commit/e90b7989963c7833cb2f6f6f7103b2db9e614ca4)), closes [#421](https://github.com/adobe/helix-publish/issues/421)
+
 ## [5.2.3](https://github.com/adobe/helix-publish/compare/v5.2.2...v5.2.3) (2020-04-30)
 
 
