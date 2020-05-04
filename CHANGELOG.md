@@ -1,3 +1,11 @@
+## [5.3.1](https://github.com/adobe/helix-publish/compare/v5.3.0...v5.3.1) (2020-05-04)
+
+
+### Bug Fixes
+
+* **vcl:** a question of taste ([d979535](https://github.com/adobe/helix-publish/commit/d979535d397e93d8c51b9fdc364b606cbbc59989))
+* **vcl:** make sure activation id gets logged when serving error pages ([460e9da](https://github.com/adobe/helix-publish/commit/460e9dac9456d18b926f416802df10fe7295eeb4)), closes [#427](https://github.com/adobe/helix-publish/issues/427)
+
 # [5.3.0](https://github.com/adobe/helix-publish/compare/v5.2.3...v5.3.0) (2020-05-04)
 
 
