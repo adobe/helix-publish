@@ -330,6 +330,11 @@ sub hlx_github_static_ref {
 sub hlx_headers_fetch {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_fetch";
 
+  if (beresp.http.x-openwhisk-activation-id) {
+    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427)
+    set req.http.x-openwhisk-activation-id = beresp.http.x-openwhisk-activation-id;
+  }
+
   # Add Surrogate-Key headers for soft purges
   if (!beresp.http.Surrogate-Key) {
     set beresp.http.Surrogate-Key = "all";
@@ -1312,11 +1317,6 @@ sub vcl_fetch {
   # Sprinkling in our debugging
   call hlx_headers_fetch;
 
-  if (beresp.http.x-openwhisk-activation-id) {
-    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427)
-    set req.http.x-openwhisk-activation-id = beresp.http.x-openwhisk-activation-id;
-  }
-
   # Don't try to do anything else with Proxy requests
   if (req.http.X-Request-Type == "Proxy") {
     return(pass);
@@ -1597,7 +1597,6 @@ sub vcl_error {
     # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427) 
     set obj.http.x-openwhisk-activation-id = req.http.x-openwhisk-activation-id;
   }
-
   if (obj.status == 301 && req.http.X-Location) {
     set obj.http.Content-Type = "text/html";
     set obj.http.Location = req.http.X-Location;
