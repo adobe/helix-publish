@@ -1312,6 +1312,11 @@ sub vcl_fetch {
   # Sprinkling in our debugging
   call hlx_headers_fetch;
 
+  if (beresp.http.x-openwhisk-activation-id) {
+    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427)
+    set req.http.x-openwhisk-activation-id = beresp.http.x-openwhisk-activation-id;
+  }
+
   # Don't try to do anything else with Proxy requests
   if (req.http.X-Request-Type == "Proxy") {
     return(pass);
@@ -1587,6 +1592,11 @@ sub vcl_deliver {
 sub vcl_error {
   set req.http.X-Trace = req.http.X-Trace + "; vcl_error(" obj.status ")";
 #FASTLY error
+
+  if (req.http.x-openwhisk-activation-id) {
+    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427) 
+    set obj.http.x-openwhisk-activation-id = req.http.x-openwhisk-activation-id;
+  }
 
   if (obj.status == 301 && req.http.X-Location) {
     set obj.http.Content-Type = "text/html";
