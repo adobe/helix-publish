@@ -1,3 +1,10 @@
+## [5.3.4](https://github.com/adobe/helix-publish/compare/v5.3.3...v5.3.4) (2020-05-07)
+
+
+### Bug Fixes
+
+* **vcl:** make sure trace is complete and available in synthetic error responses [#383](https://github.com/adobe/helix-publish/issues/383) ([afafd72](https://github.com/adobe/helix-publish/commit/afafd727d8c881e6a194556eb5d4ad8a739a4255))
+
 ## [5.3.3](https://github.com/adobe/helix-publish/compare/v5.3.2...v5.3.3) (2020-05-07)
 
 
