@@ -68,6 +68,6 @@ describe('test check_pkgs', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/fail.yaml'))
       .init();
 
-    await assert.rejects(checkPkgs(config), Error('the following health check failed: https://adobeioruntime.net/api/v1/web/mrosier/d90a42b1babf33d430450e05cbd3dc1edc6b7135dafa/hlx--static/_status_check/healthcheck.json'));
+    await assert.rejects(checkPkgs(config));
   });
 });

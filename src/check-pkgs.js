@@ -25,7 +25,7 @@ async function checkPkgs(config) {
         fetch(`https://adobeioruntime.net/api/v1/web/${curr.package}/hlx--static/_status_check/healthcheck.json`)
           .then((res) => {
             if (!res.ok) {
-              reject(new Error(`the following health check failed: ${res.url}`));
+              reject(res.text());
             }
             resolve(res.json());
           });
