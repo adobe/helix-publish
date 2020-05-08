@@ -1,3 +1,61 @@
+## [5.3.4](https://github.com/adobe/helix-publish/compare/v5.3.3...v5.3.4) (2020-05-07)
+
+
+### Bug Fixes
+
+* **vcl:** make sure trace is complete and available in synthetic error responses [#383](https://github.com/adobe/helix-publish/issues/383) ([afafd72](https://github.com/adobe/helix-publish/commit/afafd727d8c881e6a194556eb5d4ad8a739a4255))
+
+## [5.3.3](https://github.com/adobe/helix-publish/compare/v5.3.2...v5.3.3) (2020-05-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.3.0 ([e624bc6](https://github.com/adobe/helix-publish/commit/e624bc6c701a247c1b147d63c8f8c362d4f8a3cc))
+
+## [5.3.2](https://github.com/adobe/helix-publish/compare/v5.3.1...v5.3.2) (2020-05-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.2.1 ([eb9a8dc](https://github.com/adobe/helix-publish/commit/eb9a8dcfe3151a5d8dbbb67e6c479eb74098915a))
+
+## [5.3.1](https://github.com/adobe/helix-publish/compare/v5.3.0...v5.3.1) (2020-05-04)
+
+
+### Bug Fixes
+
+* **vcl:** a question of taste ([d979535](https://github.com/adobe/helix-publish/commit/d979535d397e93d8c51b9fdc364b606cbbc59989))
+* **vcl:** make sure activation id gets logged when serving error pages ([460e9da](https://github.com/adobe/helix-publish/commit/460e9dac9456d18b926f416802df10fe7295eeb4)), closes [#427](https://github.com/adobe/helix-publish/issues/427)
+
+# [5.3.0](https://github.com/adobe/helix-publish/compare/v5.2.3...v5.3.0) (2020-05-04)
+
+
+### Bug Fixes
+
+* **errors:** show 429 error page for any response body length ([c1933f7](https://github.com/adobe/helix-publish/commit/c1933f7ab3954b2963ecfb07cc84fadf6adc436c))
+* **package:** include missing error page ([94f8211](https://github.com/adobe/helix-publish/commit/94f82115d269aeaff4b544f30082c0689ec66c92)), closes [#421](https://github.com/adobe/helix-publish/issues/421)
+* **vcl:** stop leaking x-last-activation-id header ([6cf8b2d](https://github.com/adobe/helix-publish/commit/6cf8b2d0ec5b7f8fa50bd3a67e97bf63ba650ae5))
+
+
+### Features
+
+* **errors:** custom error page for 429 errors ([e90b798](https://github.com/adobe/helix-publish/commit/e90b7989963c7833cb2f6f6f7103b2db9e614ca4)), closes [#421](https://github.com/adobe/helix-publish/issues/421)
+
+## [5.2.3](https://github.com/adobe/helix-publish/compare/v5.2.2...v5.2.3) (2020-04-30)
+
+
+### Bug Fixes
+
+* **strain:** remove check for no longer supported strain.url ([#429](https://github.com/adobe/helix-publish/issues/429)) ([c4889e9](https://github.com/adobe/helix-publish/commit/c4889e9f68d06bde75fd85c2ab69001521f65f07))
+* **strains:** implicit url condition is not backward compatible ([#373](https://github.com/adobe/helix-publish/issues/373)) ([e8c195e](https://github.com/adobe/helix-publish/commit/e8c195e186f641d197c5b3eea5224fbed0de74c1))
+
+## [5.2.2](https://github.com/adobe/helix-publish/compare/v5.2.1...v5.2.2) (2020-04-28)
+
+
+### Bug Fixes
+
+* **backends:** disable SSL host verification for fonts backend ([#424](https://github.com/adobe/helix-publish/issues/424)) ([3633791](https://github.com/adobe/helix-publish/commit/3633791f94d6c634945efbf73fe29351528703f1))
+
 ## [5.2.1](https://github.com/adobe/helix-publish/compare/v5.2.0...v5.2.1) (2020-04-27)
 
 

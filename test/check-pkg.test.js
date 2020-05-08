@@ -12,50 +12,12 @@
 
 /* eslint-env mocha */
 
-const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
-const FSPersister = require('@pollyjs/persister-fs');
-const { setupMocha: setupPolly } = require('@pollyjs/core');
 const { HelixConfig } = require('@adobe/helix-shared');
 const assert = require('assert');
 const path = require('path');
 const checkPkgs = require('../src/check-pkgs');
 
 describe('test check_pkgs', () => {
-  setupPolly({
-    recordFailedRequests: true,
-    recordIfMissing: true,
-    logging: false,
-    adapters: [NodeHttpAdapter],
-    persister: FSPersister,
-    persisterOptions: {
-      fs: {
-        recordingsDir: path.resolve(__dirname, 'fixtures/recordings'),
-      },
-    },
-    matchRequestsBy: {
-      body: false,
-      order: false,
-      headers: {
-        exclude: ['authorization'],
-      },
-      url: {
-        hostname: true,
-        pathname: true,
-        protocol: false,
-        username: false,
-        port: false,
-        query: false,
-        hash: false,
-      },
-    },
-  });
-
-  beforeEach(async function test() {
-    this.polly.server.any().on('beforeResponse', (req) => {
-      delete req.removeHeaders(['authorization']);
-    });
-  });
-
   it('checkPkgs works successfully', async () => {
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/pass.yaml'))

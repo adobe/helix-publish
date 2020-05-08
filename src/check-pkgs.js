@@ -18,23 +18,14 @@ const { fetch } = require('@adobe/helix-fetch');
  * @param {object} strains array of strains from HelixConfig
  * @param {object} log logger
  */
-async function getPromises(strains, log) {
-  const checks = strains.reduce((acc, curr) => {
-    if (curr.package) {
-      acc.push(fetch(`https://adobeioruntime.net/api/v1/web/${curr.package}/hlx--static/_status_check/healthcheck.json`)
-        .then(async (result) => {
-          if (!result.ok) {
-            log.error(`fetch call failed for url ${result.url}`);
-            throw new Error(await result.text());
-          } else {
-            return result.json();
-          }
-        }));
-    }
-    return acc;
-  }, []);
-
-  return checks;
+async function checkStrains(strain, log = console) {
+  const result = await fetch(`https://adobeioruntime.net/api/v1/web/${strain.package}/hlx--static/_status_check/healthcheck.json`);
+  if (!result.ok) {
+    log.error(`fetch call failed for url ${result.url}`);
+    throw new Error(await result.text());
+  } else {
+    return result.json();
+  }
 }
 
 /**
@@ -46,7 +37,9 @@ async function getPromises(strains, log) {
  */
 async function checkPkgs(config, log = console) {
   const strains = config.strains.getRuntimeStrains();
-  return Promise.all(await getPromises(strains, log));
+  const checkArr = strains.filter((strain) => !!strain.package)
+    .map((strain) => checkStrains(strain, log));
+  return Promise.all(checkArr);
 }
 
 module.exports = checkPkgs;

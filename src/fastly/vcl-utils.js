@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+
 const glob = require('glob-to-regexp');
 
 function writevcl(fastly, version, content, name, main) {
@@ -70,7 +71,10 @@ set req.http.host = "${strain.origin.hostname}";
 }
 
 function proxyurls([strain, vcl]) {
-  let oldpath = strain.condition ? strain.condition.toVCLPath((_, subpath) => subpath) : '';
+  let oldpath;
+  if (strain.condition) {
+    oldpath = strain.condition.toVCLPath((_, subpath) => subpath);
+  }
   oldpath = oldpath || '/';
 
   const newpath = (strain.origin && strain.origin.path) ? strain.origin.path : '/';

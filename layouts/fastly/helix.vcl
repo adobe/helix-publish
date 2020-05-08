@@ -328,7 +328,14 @@ sub hlx_github_static_ref {
 
 # rewrite required headers (called from fetch)
 sub hlx_headers_fetch {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_fetch";
+  # We're in the 'fetch' state where we temporarily store 
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_headers_fetch";
+
+  if (beresp.http.x-openwhisk-activation-id) {
+    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427)
+    set req.http.x-openwhisk-activation-id = beresp.http.x-openwhisk-activation-id;
+  }
 
   # Add Surrogate-Key headers for soft purges
   if (!beresp.http.Surrogate-Key) {
@@ -672,8 +679,10 @@ sub hlx_type_query_redirect {
 }
 
 sub hlx_fetch_blob {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_blob";
+  # We're in the 'fetch' state where we temporarily store 
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_blob";
     # The URLs are a hash of the content, so we can cache stuff for a year
     # both on the edge and in the browser
     set beresp.http.Cache-Control = "max-age=31622400,immutable";
@@ -698,8 +707,10 @@ sub hlx_fetch_blob {
 }
 
 sub hlx_fetch_query {
+  # We're in the 'fetch' state where we temporarily store 
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   if (beresp.http.X-Static == "Raw/Query" && beresp.status == 307) {
-    set req.http.X-Trace = req.http.X-Trace + "(raw)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(raw)";
     # We're adding X-Restarts to the Vary here, so that we don't have to use
     # req.hash_always_miss, which can cause a thundering herd. Since we only
     # add to the Vary when we are restarting, and not on the final object, the
@@ -715,12 +726,12 @@ sub hlx_fetch_query {
     return(deliver);
   }
   if (req.http.X-Request-Type == "Query/Redirect" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query(redirect)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(redirect)";
 
     # use the cache settings configured for the query
     set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
   } elseif (req.http.X-Request-Type == "Query" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_query(regular)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(regular)";
 
     # use the cache settings configured for the query
     set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
@@ -728,32 +739,36 @@ sub hlx_fetch_query {
 }
 
 sub hlx_fetch_static {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_static";
+  # We're in the 'fetch' state where we temporarily store 
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_static";
   declare local var.ext STRING;
 
   if (req.http.X-Request-Type == "Static-URL" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(url)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(url)";
+    # we copy the trace to the req in order to make it availale in vcl_error
+    set req.http.X-PostFetch = beresp.http.X-PostFetch;
     # Get the ETag response header and use it to construct a stable URL
 
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
-    set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
     set req.http.X-Location = regsub(req.http.X-Orig-URL, ".url$", var.ext);
     error 303 "URL";
   }
   if (req.http.X-Request-Type == "Static-302" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(302)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(302)";
     # Get the ETag response header and use it to construct a stable URL
 
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
-    set req.http.X-Trace = req.http.X-Trace + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
     set req.http.X-Location = regsub(req.http.X-Orig-URL, ".302$", var.ext);
     error 902 "302";
   }
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
-    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(immutable)";
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
 
@@ -768,14 +783,14 @@ sub hlx_fetch_static {
       set beresp.ttl = 31622400s;
     } else {
       set beresp.ttl = 300s;
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[etag=" + beresp.http.ETag + ", ext=" + var.ext + "]";
       error 404 "Invalid";
-      set beresp.http.X-Trace = "etag=" + beresp.http.ETag + "; ext=" + var.ext;
 
     }
     return(deliver);
   }
   if (beresp.http.X-Static == "Raw/Static") {
-    set req.http.X-Trace = req.http.X-Trace + "(raw)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(raw)";
     if (beresp.status == 307) {
       # This negates the need for hash_always_miss, see hlx_fetch_query for
       # more info.
@@ -786,7 +801,7 @@ sub hlx_fetch_static {
       return(deliver);
     }
   } elsif (req.http.X-Request-Type == "Static/Redirect" && beresp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(redirect)";
     // and this is where we fix the headers of the GitHub static response
     // so that they become digestible by a browser.
     // - recover Content-Type from X-Content-Type
@@ -798,11 +813,11 @@ sub hlx_fetch_static {
     unset beresp.http.X-XSS-Protection;
     unset beresp.http.Content-Security-Policy;
   } elsif (beresp.status == 404 || beresp.status == 204) {
-    set req.http.X-Trace = req.http.X-Trace + "(400)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(400)";
     # Cache for a short time, restart will get rid of it anyway
     set beresp.ttl = 60s;
   } else {
-    set req.http.X-Trace = req.http.X-Trace + "(none)";
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(none)";
   }
 }
 
@@ -826,7 +841,12 @@ sub hlx_deliver_type {
  * 2. no error page could be found, so set the correct status code and deliver a fallback
  */
 sub hlx_fetch_error {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_error(" + beresp.status + ")";
+  # We're in the 'fetch' state where we temporarily store 
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_error(" + beresp.status + ")";
+  # we copy the trace to the req in order to make it availale in vcl_error
+  set req.http.X-PostFetch = beresp.http.X-PostFetch;
+
   # only use syntethic errors if not in esi sub-request and no content is delivered from the dispatcher.
   if (!req.http.x-topurl && beresp.status != 200 && beresp.http.Content-Length == "0") {
     # TODO: fix headers
@@ -843,7 +863,9 @@ sub hlx_fetch_error {
     } else {
        error 952 "Internal Server Error";
     }
-  }
+  } elsif (!req.http.x-topurl && beresp.status == 429) {
+       error 965 "Too many requests";
+    }
   # if (req.url.basename ~ "^([0-9][0-9][0-9])") {
   #   set beresp.status = std.atoi(re.group.1);
   # } else {
@@ -1168,7 +1190,12 @@ sub hlx_fetch_errors {
     return;
   }
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_errors(" beresp.status ")";
+  # We're in the 'fetch' state where we temporarily store 
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_errors(" beresp.status ")";
+  # we copy the trace to the req in order to make it availale in vcl_error
+  set req.http.X-PostFetch = beresp.http.X-PostFetch;
+
   # Interpreting OpenWhisk errors is a bit tricky, because we don't have access to the JSON
   # of the response body. Instead we are using the Content-Length of known error messages
   # to determine the most likely root cause. Each root cause will get an internal status code
@@ -1232,10 +1259,19 @@ sub hlx_deliver_errors {
      set resp.status = 504;
      set resp.response = "Gateway Timeout";
   }
+
+  if (resp.status == 965) {
+     set resp.status = 429;
+     set resp.response = "Too Many Requests";
+  }
 }
 
 sub hlx_error_errors {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_error_errors(" obj.status ")";
+  if (req.http.X-PostFetch) {
+    set req.http.X-PostFetch = req.http.X-PostFetch + "; hlx_error_errors(" obj.status ")";
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_error_errors(" obj.status ")";
+  }
 
   # Cache Condition: OpenWhisk Error Prio: 10
   if (obj.status == 951 ) {
@@ -1286,6 +1322,11 @@ sub hlx_error_errors {
     synthetic {"include:504.html"};
     return(deliver);
   }
+  if (obj.status == 965 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:429.html"};
+    return(deliver);
+  }
 }
 
 sub vcl_fetch {
@@ -1295,6 +1336,8 @@ sub vcl_fetch {
   set beresp.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
   set beresp.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
   set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url " " req.http.X-Request-Type ")";
+  # we still want to keep the trace in the req in order to make it also availale in vcl_error
+  set req.http.X-PostFetch = beresp.http.X-PostFetch;
 #FASTLY fetch
 
   # Sprinkling in our debugging
@@ -1556,6 +1599,7 @@ sub vcl_deliver {
     unset resp.http.X-GitHub-Request-Id;
     unset resp.http.X-GW-Cache;
     unset resp.http.x-openwhisk-activation-id;
+    unset resp.http.x-last-activation-id;
     unset resp.http.X-Request-Id;
     unset resp.http.X-Served-By;
     unset resp.http.X-Static;
@@ -1572,9 +1616,24 @@ sub vcl_deliver {
 }
 
 sub vcl_error {
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_error(" obj.status ")";
+  if (req.http.X-PostFetch) {
+    set req.http.X-PostFetch = req.http.X-PostFetch + "; vcl_error(" obj.status ")";
+  } else {
+    set req.http.X-Trace = req.http.X-Trace + "; vcl_error(" obj.status ")";
+  }
 #FASTLY error
 
+  # store trace information in error response headers in order
+  # to make them available in vcl_deliver
+  set obj.http.X-Trace = req.http.X-Trace;
+  set obj.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
+  set obj.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
+  set obj.http.X-PostFetch = req.http.X-PostFetch;
+
+  if (req.http.x-openwhisk-activation-id) {
+    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427) 
+    set obj.http.x-openwhisk-activation-id = req.http.x-openwhisk-activation-id;
+  }
   if (obj.status == 301 && req.http.X-Location) {
     set obj.http.Content-Type = "text/html";
     set obj.http.Location = req.http.X-Location;
