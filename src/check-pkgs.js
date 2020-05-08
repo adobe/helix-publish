@@ -13,28 +13,40 @@
 const { fetch } = require('@adobe/helix-fetch');
 
 /**
- * This function checks that packages defined for
- * strains in a given Helix Configuration are deployed
- *
- * @param config {object} a Helix Configuration object
+ * This function takes strains and sends requests
+ * to ensure the corresponding action is deployed.
+ * @param {object} strains array of strains from HelixConfig
+ * @param {object} log logger
  */
-async function checkPkgs(config) {
-  const checks = config.strains.getRuntimeStrains().reduce((acc, curr) => {
+async function getPromises(strains, log) {
+  const checks = strains.reduce((acc, curr) => {
     if (curr.package) {
-      acc.push(new Promise((resolve, reject) => {
-        fetch(`https://adobeioruntime.net/api/v1/web/${curr.package}/hlx--static/_status_check/healthcheck.json`)
-          .then((res) => {
-            if (!res.ok) {
-              reject(res.text());
-            }
-            resolve(res.json());
-          });
-      }));
+      acc.push(fetch(`https://adobeioruntime.net/api/v1/web/${curr.package}/hlx--static/_status_check/healthcheck.json`)
+        .then(async (result) => {
+          if (!result.ok) {
+            log.error(`fetch call failed for url ${result.url}`);
+            throw new Error(await result.text());
+          } else {
+            return result.json();
+          }
+        }));
     }
     return acc;
   }, []);
 
-  return Promise.all(checks);
+  return checks;
+}
+
+/**
+ * This function checks that packages defined for
+ * strains in a given Helix Configuration are deployed
+ *
+ * @param {object} config a Helix Configuration object
+ * @param {object} log logger
+ */
+async function checkPkgs(config, log = console) {
+  const strains = config.strains.getRuntimeStrains();
+  return Promise.all(await getPromises(strains, log));
 }
 
 module.exports = checkPkgs;

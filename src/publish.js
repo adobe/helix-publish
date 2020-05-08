@@ -51,7 +51,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       .withJSON(iconfig)
       .init();
 
-    await checkPkgs(config);
+    await checkPkgs(config, log);
     const fastly = await initfastly(token, service);
     log.info('running publishing tasks...');
     return Promise.all([

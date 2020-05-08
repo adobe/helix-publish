@@ -23,7 +23,7 @@ const checkPkgs = require('../src/check-pkgs');
 describe('test check_pkgs', () => {
   setupPolly({
     recordFailedRequests: true,
-    recordIfMissing: false,
+    recordIfMissing: true,
     logging: false,
     adapters: [NodeHttpAdapter],
     persister: FSPersister,
@@ -67,7 +67,11 @@ describe('test check_pkgs', () => {
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/fail.yaml'))
       .init();
-
-    await assert.rejects(checkPkgs(config));
+    try {
+      await checkPkgs(config);
+      assert.fail('test should have failed');
+    } catch (e) {
+      assert.ok('checkPkg failed properly');
+    }
   });
 });
