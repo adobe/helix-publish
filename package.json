@@ -82,7 +82,7 @@
   },
   "dependencies": {
     "@adobe/fastly-native-promises": "1.16.0",
-    "@adobe/helix-epsagon": "1.2.1",
+    "@adobe/helix-epsagon": "1.2.2",
     "@adobe/helix-log": "4.5.1",
     "@adobe/helix-shared": "7.3.0",
     "@adobe/helix-status": "7.1.3",
