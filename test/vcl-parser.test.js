@@ -27,11 +27,12 @@ describe('Test VCL Parser', () => {
   });
 
   it('Parses helix.vcl', () => {
-    const transformed = new Parser(helix)
+    const p = new Parser(helix)
       .parse()
       .on('comment', { before: () => '# here comes a comment' })
-      .on('subend', { after: () => '# that is all' })
-      .transform();
+      .on('subend', { after: () => '# that is all' });
+
+    const transformed = p.transform();
 
     assert.ok(transformed.endsWith(`sub vcl_log {
 # here comes a comment

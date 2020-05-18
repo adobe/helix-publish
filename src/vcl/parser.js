@@ -68,6 +68,18 @@ function type(line) {
       to,
       line,
     };
+  } else if (/^\s*call\s+(.*);\s*$/.test(line)) {
+    return {
+      type: 'call',
+      to: line.replace(/^\s*call\s+(.*);\s*$/, '$1'),
+      line,
+    };
+  } else if (/^\s*set\s+(.*)\s*=.*;\s*$/.test(line)) {
+    return {
+      type: 'set',
+      name: line.replace(/^\s*set\s+(.*)\s=.*;\s*$/, '$1'),
+      line,
+    };
   }
   return {
     type: 'unknown',
@@ -88,6 +100,8 @@ class VCLParser {
     let state;
     let name;
     let level = 0;
+    let sub = undefined;
+
     this.typed.forEach((element) => {
       if (element.type === 'commentstart' && state === undefined) {
         state = 'comment';
@@ -102,15 +116,25 @@ class VCLParser {
         level += 1;
         element.level = level;
         name = element.name;
+        sub = element;
+        sub.vars = new Set();
       } else if (element.type === 'blockend') {
         level -= 1;
         element.level = level;
         if (level === 0) {
           element.type = 'subend';
           element.name = name;
+          element.start = sub;
+          sub = undefined;
         }
       } else if (element.type === 'return') {
         element.name = name;
+        element.start = sub;
+      } else if (element.type === 'call') {
+        element.name = name;
+        element.start = sub;
+      } else if (element.type === 'set') {
+        sub.vars.add(element.name);
       }
     });
 
@@ -131,12 +155,15 @@ class VCLParser {
     const lines = [];
 
     this.typed.forEach((element) => {
+      const startingws = /^\s*/;
+      const ws = element.line.match(startingws) ? element.line.match(startingws)[0] + '' : '';
+
       if (this.before[element.type] && this.before[element.type](element)) {
-        lines.push(this.before[element.type](element));
+        lines.push(ws + this.before[element.type](element));
       }
       lines.push(element.line);
       if (this.after[element.type] && this.after[element.type](element)) {
-        lines.push(this.after[element.type](element));
+        lines.push(ws + this.after[element.type](element));
       }
     });
 
