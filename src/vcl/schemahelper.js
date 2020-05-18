@@ -30,10 +30,6 @@ function toString(schema, root = true) {
   }
 }
 
-function concat(...args) {
-  return args.map(toString).join('');
-}
-
 function vcl([expr]) {
   return `"${END} ${expr} ${BGN}"`;
 }
@@ -43,5 +39,5 @@ function str(expr) {
 }
 
 module.exports = {
-  toString, vcl, str, concat,
+  toString, vcl, str,
 };
