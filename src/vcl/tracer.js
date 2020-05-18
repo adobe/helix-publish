@@ -12,11 +12,14 @@
 
 const Parser = require('./parser');
 const {
-  toString, vcl, str
+  toString, vcl, str,
 } = require('./schemahelper');
-
+/**
+ * List all vars that have been set in a subroutine and add them to the data
+ */
 function logvars(start) {
   return Array.from(start.vars).reduce((data, varname) => {
+    // eslint-disable-next-line no-param-reassign
     data[varname] = vcl([varname]);
     return data;
   }, {});
@@ -27,6 +30,9 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
     return `log {"syslog ${serviceid} ${logname} :: "} ${toString(schema)};`;
   }
 
+  /**
+   * Entering a subroutine, data is empty because no vars have been set yet
+   */
   function tracesubentry({ name }) {
     return formatLog({
       epsagon_token: str(token),
@@ -36,6 +42,9 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
     });
   }
 
+  /*
+   * Exiting a subroutine normally
+  */
   function tracesubexit({ name, start }) {
     return formatLog({
       epsagon_token: str(token),
@@ -45,6 +54,9 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
     });
   }
 
+  /**
+  * Return from a subroutine to a defined state in the state machine
+  */
   function tracereturn({ name, to, start }) {
     return formatLog({
       epsagon_token: str(token),
@@ -55,6 +67,9 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
     });
   }
 
+  /**
+  * Calling a different subroutine
+ */
   function tracecall({ name, to, start }) {
     return formatLog({
       epsagon_token: str(token),

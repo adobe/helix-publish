@@ -9,8 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-const BGN = `{json"`;
-const END = '"json}'
+const BGN = '{json"';
+const END = '"json}';
 
 function toString(schema, root = true) {
   if (typeof schema === 'object') {

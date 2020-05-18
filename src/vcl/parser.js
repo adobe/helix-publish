@@ -100,7 +100,7 @@ class VCLParser {
     let state;
     let name;
     let level = 0;
-    let sub = undefined;
+    let sub;
 
     this.typed.forEach((element) => {
       if (element.type === 'commentstart' && state === undefined) {
@@ -156,7 +156,7 @@ class VCLParser {
 
     this.typed.forEach((element) => {
       const startingws = /^\s*/;
-      const ws = element.line.match(startingws) ? element.line.match(startingws)[0] + '' : '';
+      const ws = element.line.match(startingws) ? `${element.line.match(startingws)[0]}` : '';
 
       if (this.before[element.type] && this.before[element.type](element)) {
         lines.push(ws + this.before[element.type](element));

@@ -11,8 +11,8 @@
  */
 /* eslint-env mocha */
 
-const tracer = require('../src/vcl/tracer');
 const assert = require('assert');
+const tracer = require('../src/vcl/tracer');
 
 const before = `
 sub vcl_fake {
