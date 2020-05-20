@@ -30,15 +30,32 @@ function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
     return `log {"syslog ${serviceId} ${loggerName} :: "} ${toString(schema)};`;
   }
 
+  const shared = {
+    epsagon_token: str(epsagonToken),
+    epsagon_app: str('Helix Fastly Epsagon'),
+    'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
+    time: {
+      start: vcl`time.start.usec`,
+      elapsed: vcl`time.elapsed.usec`,
+    },
+    req: {
+      hostname: vcl`req.http.Host`,
+      url: vcl`req.url`,
+      xid: vcl`req.xid`
+    },
+    fastly: {
+      info_state: vcl`fastly_info.state`,
+      error: vcl`fastly.error`
+    }
+  }
+
   /**
    * Entering a subroutine, data is empty because no vars have been set yet
    */
   function tracesubentry({ name }) {
     return formatLog({
-      epsagon_token: str(epsagonToken),
-      epsagon_app: str('Helix Fastly Epsagon'),
+      ...shared,
       enter: str(name),
-      'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
       data: {},
     });
   }
@@ -48,10 +65,8 @@ function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
   */
   function tracesubexit({ name, start }) {
     return formatLog({
-      epsagon_token: str(epsagonToken),
-      epsagon_app: str('Helix Fastly Epsagon'),
+      ...shared,
       leave: str(name),
-      'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
       data: logvars(start),
     });
   }
@@ -61,11 +76,9 @@ function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
   */
   function tracereturn({ name, to, start }) {
     return formatLog({
-      epsagon_token: str(epsagonToken),
-      epsagon_app: str('Helix Fastly Epsagon'),
+      ...shared,
       leave: str(name),
       next: str(to),
-      'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
       data: logvars(start),
     });
   }
@@ -75,11 +88,9 @@ function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
  */
   function tracecall({ name, to, start }) {
     return formatLog({
-      epsagon_token: str(epsagonToken),
-      epsagon_app: str('Helix Fastly Epsagon'),
+      ...shared,
       from: str(name),
       call: str(to),
-      'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
       data: logvars(start),
     });
   }
