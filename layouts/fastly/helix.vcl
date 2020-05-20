@@ -1593,7 +1593,7 @@ sub vcl_deliver {
     unset resp.http.X-Cache-Hits;
     unset resp.http.X-Cache;
     unset resp.http.X-CDN-Request-ID;
-    unset res.http.X-Request-ID;
+    unset resp.http.X-Request-ID;
     unset resp.http.X-CDN-URL;
     unset resp.http.X-Content-Type-Options;
     unset resp.http.X-Content-Type;
