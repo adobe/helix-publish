@@ -34,15 +34,13 @@ function basedir() {
 
 async function init(fastly, version, options) {
   const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
-  console.log('init', options);
   const content = options
     ? include(vclfile, addEpsagonTraces, {
-      serviceId: options.serviceId,
+      serviceId: options.serviceid,
       loggerName: options.logname,
       epsagonToken: options.token,
     })
     : include(vclfile);
-  console.log(content);
   await writevcl(fastly, version, content, 'helix.vcl');
   return fastly.setMainVCL(version, 'helix.vcl');
 }
