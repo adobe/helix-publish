@@ -28,8 +28,9 @@ const { checkPkgs } = require('./check-pkgs');
  * @param {object} log a logger
  * @param {object} iconfig the IndexConfig from helix-shared
  * @param {string} algoliaappid Algolia App ID (not secret)
+ * @param {string} epsagonToken Epsagon Token for tracing
  */
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid, wskAuth, wskHost, wskNamespace) {
+async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid, wskAuth, wskHost, wskNamespace, epsagonToken) {
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
@@ -57,7 +58,9 @@ async function publish(configuration, service, token, version, vclOverrides = {}
     return Promise.all([
       backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
-      vcl.init(fastly, version),
+      vcl.init(fastly, version, epsagonToken
+        ? { token: epsagonToken, logname: 'helix-epsagon', serviceid: service }
+        : undefined),
       vcl.dynamic(fastly, version, dispatchVersion),
       vcl.extensions(fastly, version, vclOverrides),
       vcl.updatestrains(fastly, version, config.strains),

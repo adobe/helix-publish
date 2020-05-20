@@ -24,15 +24,25 @@ const {
 
 const { queryvcl } = require('./algolia');
 
+const addEpsagonTraces = require('../vcl/tracer');
+
 const package = require('../../package.json');
 
 function basedir() {
   return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
 }
 
-async function init(fastly, version) {
+async function init(fastly, version, options) {
   const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
-  const content = include(vclfile);
+  console.log('init', options);
+  const content = options
+    ? include(vclfile, addEpsagonTraces, {
+      serviceId: options.serviceId,
+      loggerName: options.logname,
+      epsagonToken: options.token,
+    })
+    : include(vclfile);
+  console.log(content);
   await writevcl(fastly, version, content, 'helix.vcl');
   return fastly.setMainVCL(version, 'helix.vcl');
 }

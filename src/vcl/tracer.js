@@ -25,9 +25,9 @@ function logvars(start) {
   }, {});
 }
 
-function addEpsagonTraces(txt, serviceid, logname, token) {
+function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
   function formatLog(schema) {
-    return `log {"syslog ${serviceid} ${logname} :: "} ${toString(schema)};`;
+    return `log {"syslog ${serviceId} ${loggerName} :: "} ${toString(schema)};`;
   }
 
   /**
@@ -35,7 +35,8 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
    */
   function tracesubentry({ name }) {
     return formatLog({
-      epsagon_token: str(token),
+      epsagon_token: str(epsagonToken),
+      epsagon_app: str('Helix Fastly Epsagon'),
       enter: str(name),
       'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
       data: {},
@@ -47,7 +48,8 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
   */
   function tracesubexit({ name, start }) {
     return formatLog({
-      epsagon_token: str(token),
+      epsagon_token: str(epsagonToken),
+      epsagon_app: str('Helix Fastly Epsagon'),
       leave: str(name),
       'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
       data: logvars(start),
@@ -59,7 +61,8 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
   */
   function tracereturn({ name, to, start }) {
     return formatLog({
-      epsagon_token: str(token),
+      epsagon_token: str(epsagonToken),
+      epsagon_app: str('Helix Fastly Epsagon'),
       leave: str(name),
       next: str(to),
       'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
@@ -72,7 +75,8 @@ function addEpsagonTraces(txt, serviceid, logname, token) {
  */
   function tracecall({ name, to, start }) {
     return formatLog({
-      epsagon_token: str(token),
+      epsagon_token: str(epsagonToken),
+      epsagon_app: str('Helix Fastly Epsagon'),
       from: str(name),
       call: str(to),
       'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
