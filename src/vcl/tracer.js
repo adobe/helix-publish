@@ -37,6 +37,8 @@ function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
     epsagon_app: str('Helix Fastly Epsagon'),
     // request ID, can be used to connect Fastly to OpenWhisk
     'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
+    // once again – this should become the OW activation or transaction ID
+    'x-request-id': vcl`req.http.x-request-id`,
     time: {
       // start time of the request in microseconds since 1970
       start: vcl`time.start.usec`,
