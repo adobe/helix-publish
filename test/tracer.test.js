@@ -55,7 +55,7 @@ describe('Tracer Integration Test', () => {
       loggerName: 'epsagon-https',
       epsagonToken: 'fake-token',
     });
-    //console.log(result);
+    // console.log(result);
     assert.equal(result, after);
   });
 
