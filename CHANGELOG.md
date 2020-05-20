@@ -1,3 +1,10 @@
+# [5.4.0](https://github.com/adobe/helix-publish/compare/v5.3.8...v5.4.0) (2020-05-20)
+
+
+### Features
+
+* **blob:** support SVG ([5f268b7](https://github.com/adobe/helix-publish/commit/5f268b75118cead56f866536250995e477b7dc1e))
+
 ## [5.3.8](https://github.com/adobe/helix-publish/compare/v5.3.7...v5.3.8) (2020-05-18)
 
 
