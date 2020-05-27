@@ -25,7 +25,9 @@ function logvars(start) {
   }, {});
 }
 
-function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken, epsagonAppName }) {
+function addEpsagonTraces(txt, {
+  serviceId, loggerName, epsagonToken, epsagonAppName,
+}) {
   function formatLog(schema) {
     return `log {"syslog ${serviceId} ${loggerName} :: "} ${toString(schema)};`;
   }

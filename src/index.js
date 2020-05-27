@@ -34,7 +34,7 @@ async function publishConfig(params) {
     // eslint-disable-next-line no-underscore-dangle
     params.wskNamespace || process.env.__OW_NAMESPACE,
     params.epsagontoken,
-    params.epsagonapp
+    params.epsagonapp,
   );
 }
 

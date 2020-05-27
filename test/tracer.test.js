@@ -30,24 +30,6 @@ sub vcl_fake {
 }
 `;
 
-const after = `
-sub vcl_fake {
-log {"syslog fake-id epsagon-https :: "} {json"{ "epsagon_token": "fake-token",  "epsagon_app": "Helix Fastly Epsagon",  "x-cdn-request-id": ""json} req.http.x-cdn-request-id {json"",  "time": { "start": ""json} time.start.usec {json"",  "elapsed": ""json} time.elapsed.usec {json"" },  "req": { "hostname": ""json} req.http.Host {json"",  "url": ""json} req.url {json"",  "xid": ""json} req.xid {json"" },  "fastly": { "info_state": ""json} fastly_info.state {json"",  "error": ""json} fastly.error {json"" },  "enter": "vcl_fake",  "data": { } }"json};
-  # synthetic response for Static-302: creates a redirect to the immutable URL
-  if (obj.status == 902 && req.http.X-Location) {
-    set obj.http.Content-Type = "text/html";
-    set obj.status = 302;
-    set obj.http.Location = req.http.X-Location;
-    synthetic "Found: <a href='" + req.http.X-Location+ "'>" + req.http.X-Location + "</a>";
-    log {"syslog fake-id epsagon-https :: "} {json"{ "epsagon_token": "fake-token",  "epsagon_app": "Helix Fastly Epsagon",  "x-cdn-request-id": ""json} req.http.x-cdn-request-id {json"",  "time": { "start": ""json} time.start.usec {json"",  "elapsed": ""json} time.elapsed.usec {json"" },  "req": { "hostname": ""json} req.http.Host {json"",  "url": ""json} req.url {json"",  "xid": ""json} req.xid {json"" },  "fastly": { "info_state": ""json} fastly_info.state {json"",  "error": ""json} fastly.error {json"" },  "leave": "vcl_fake",  "next": "deliver",  "data": { "obj.http.Content-Type": ""json} obj.http.Content-Type {json"",  "obj.status": ""json} obj.status {json"",  "obj.http.Location": ""json} obj.http.Location {json"" } }"json};
-    return(deliver);
-  }
-  log {"syslog fake-id epsagon-https :: "} {json"{ "epsagon_token": "fake-token",  "epsagon_app": "Helix Fastly Epsagon",  "x-cdn-request-id": ""json} req.http.x-cdn-request-id {json"",  "time": { "start": ""json} time.start.usec {json"",  "elapsed": ""json} time.elapsed.usec {json"" },  "req": { "hostname": ""json} req.http.Host {json"",  "url": ""json} req.url {json"",  "xid": ""json} req.xid {json"" },  "fastly": { "info_state": ""json} fastly_info.state {json"",  "error": ""json} fastly.error {json"" },  "from": "vcl_fake",  "call": "hlx_error_errors",  "data": { "obj.http.Content-Type": ""json} obj.http.Content-Type {json"",  "obj.status": ""json} obj.status {json"",  "obj.http.Location": ""json} obj.http.Location {json"" } }"json};
-  call hlx_error_errors;
-log {"syslog fake-id epsagon-https :: "} {json"{ "epsagon_token": "fake-token",  "epsagon_app": "Helix Fastly Epsagon",  "x-cdn-request-id": ""json} req.http.x-cdn-request-id {json"",  "time": { "start": ""json} time.start.usec {json"",  "elapsed": ""json} time.elapsed.usec {json"" },  "req": { "hostname": ""json} req.http.Host {json"",  "url": ""json} req.url {json"",  "xid": ""json} req.xid {json"" },  "fastly": { "info_state": ""json} fastly_info.state {json"",  "error": ""json} fastly.error {json"" },  "leave": "vcl_fake",  "data": { "obj.http.Content-Type": ""json} obj.http.Content-Type {json"",  "obj.status": ""json} obj.status {json"",  "obj.http.Location": ""json} obj.http.Location {json"" } }"json};
-}
-`;
-
 describe('Tracer Integration Test', () => {
   it('Trace Statements gets Injected', () => {
     const result = tracer(before, {

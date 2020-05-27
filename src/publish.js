@@ -60,7 +60,9 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version, epsagonToken
-        ? { token: epsagonToken, logname: 'helix-epsagon', serviceid: service, epsagonAppName }
+        ? {
+          token: epsagonToken, logname: 'helix-epsagon', serviceid: service, epsagonAppName,
+        }
         : undefined),
       vcl.dynamic(fastly, version, dispatchVersion),
       vcl.extensions(fastly, version, vclOverrides),
