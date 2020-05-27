@@ -28,7 +28,7 @@ const ignore = [
 const alwaysinclude = [
   'req.http.user-agent',
   'req.http.accept',
-  'req.http.referer'
+  'req.http.referer',
 ];
 
 /**
