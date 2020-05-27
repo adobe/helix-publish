@@ -39,6 +39,7 @@ async function init(fastly, version, options) {
       serviceId: options.serviceid,
       loggerName: options.logname,
       epsagonToken: options.token,
+      epsagonAppName: options.appName
     })
     : include(vclfile);
   await writevcl(fastly, version, content, 'helix.vcl');

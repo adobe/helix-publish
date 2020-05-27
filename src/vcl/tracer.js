@@ -25,7 +25,7 @@ function logvars(start) {
   }, {});
 }
 
-function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
+function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken, epsagonAppName }) {
   function formatLog(schema) {
     return `log {"syslog ${serviceId} ${loggerName} :: "} ${toString(schema)};`;
   }
@@ -34,7 +34,7 @@ function addEpsagonTraces(txt, { serviceId, loggerName, epsagonToken }) {
     // self-explanatory
     epsagon_token: str(epsagonToken),
     // the app name, currently hardcoded
-    epsagon_app: str('Helix Fastly Epsagon'),
+    epsagon_app: str(epsagonAppName || 'Helix Fastly Epsagon'),
     // request ID, can be used to connect Fastly to OpenWhisk
     'x-cdn-request-id': vcl`req.http.x-cdn-request-id`,
     // once again – this should become the OW activation or transaction ID
