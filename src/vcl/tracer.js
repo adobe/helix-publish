@@ -14,15 +14,34 @@ const Parser = require('./parser');
 const {
   toString, vcl, str,
 } = require('./schemahelper');
+
+// list of values to ignore every time
+const ignore = [
+  'req.http.X-PreFetch-Miss',
+  'req.http.X-PreFetch-Pass',
+  'req.http.X-Trace',
+  'beresp.http.X-PreFetch-Miss',
+  'beresp.http.X-PreFetch-Pass',
+];
+
+// list of values to include every time
+const alwaysinclude = [
+  // 'req.http.user-agent',
+];
+
 /**
  * List all vars that have been set in a subroutine and add them to the data
  */
 function logvars(start) {
-  return Array.from(start.vars).reduce((data, varname) => {
-    // eslint-disable-next-line no-param-reassign
-    data[varname] = vcl([varname]);
+  const usedvars = [...alwaysinclude, ...Array.from(start.vars)].reduce((data, varname) => {
+    if (!ignore.includes(varname)) {
+      // eslint-disable-next-line no-param-reassign
+      data[varname] = vcl([varname]);
+    }
     return data;
   }, {});
+
+  return usedvars;
 }
 
 function addEpsagonTraces(txt, {

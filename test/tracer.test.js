@@ -40,6 +40,8 @@ describe('Tracer Integration Test', () => {
     // console.log(result);
     const results = result.match(/log {"syslog fake-id epsagon-https :: "}/g);
     assert.equal(results.length, 4);
+
+    console.log(result);
   });
 
   it('Trace Statements get injected into helix.vcl', () => {
