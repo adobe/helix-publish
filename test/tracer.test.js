@@ -56,7 +56,8 @@ describe('Tracer Integration Test', () => {
       epsagonToken: 'fake-token',
     });
     // console.log(result);
-    assert.equal(result, after);
+    const results = result.match(/log {"syslog fake-id epsagon-https :: "}/g);
+    assert.equal(results.length, 4);
   });
 
   it('Trace Statements get injected into helix.vcl', () => {
