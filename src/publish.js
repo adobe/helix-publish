@@ -16,6 +16,7 @@ const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
+const epsagon = require('./fastly/epsagon');
 const { checkPkgs } = require('./check-pkgs');
 /**
  *
@@ -56,7 +57,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
     await checkPkgs(wskAuth, wskHost, wskNamespace, config, log);
     const fastly = await initfastly(token, service);
     log.info('running publishing tasks...');
-    return Promise.all([
+    const publishtasks = [
       backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version, epsagonToken
@@ -78,7 +79,11 @@ async function publish(configuration, service, token, version, vclOverrides = {}
           version,
           config.strains,
         )),
-    ])
+    ];
+    if (epsagonToken) {
+      publishtasks.push(epsagon.init(fastly, version, 'helix-epsagon'));
+    }
+    return Promise.all(publishtasks)
       .then((tasks) => {
         log.info(`completed ${tasks.length} tasks.`);
         return {
