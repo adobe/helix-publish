@@ -13,7 +13,7 @@
 function init(fastly, version, name) {
   return fastly.writeHttps(version, name, {
     name,
-    format: '{}', // empty object as regular value
+    format: '', // empty string as regular value
     url: 'https://fastly.epsagon.com/logs',
     request_max_entries: 20,
     content_type: 'application/json',
