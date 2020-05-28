@@ -81,6 +81,12 @@ function addEpsagonTraces(txt, {
       info_state: vcl`fastly_info.state`,
       // https://developer.fastly.com/reference/vcl/variables/miscellaneous/fastly-error/
       error: vcl`fastly.error`,
+      // https://developer.fastly.com/reference/vcl/variables/miscellaneous/req-vcl/
+      vcl_version: vcl`req.vcl`,
+      // https://developer.fastly.com/reference/vcl/variables/server/server-identity/
+      server_identity: vcl`server.identity`,
+      // https://developer.fastly.com/reference/vcl/variables/esi/req-esi-level/
+      esi_level: vcl`req.esi_level`,
     },
   };
 
