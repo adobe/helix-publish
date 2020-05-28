@@ -24,7 +24,7 @@ const ignore = [
   'beresp.http.X-PreFetch-Pass',
 ];
 
-// list of values to include every time (rember that only req is readable at any time)
+// list of values to include every time (remember that only req is readable at any time)
 const alwaysinclude = [
   'req.http.user-agent',
   'req.http.accept',
