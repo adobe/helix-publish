@@ -136,6 +136,7 @@ const HLX_FASTLY_NAMESPACE = process.env.HLX_FASTLY_NAMESPACE || '54nWWFJicKgbdV
 const HLX_FASTLY_AUTH = process.env.HLX_FASTLY_AUTH || 'secret';
 const VERSION_NUM = process.env.VERSION_NUM || 247;
 const ALGOLIA_APP_ID = process.env.ALGOLIA_APP_ID || 'A8PL9E4TZT';
+const EPSAGON_TOKEN = process.env.EPSAGON_TOKEN || 'fake-token';
 
 describe('Integration Test', () => {
   setupPolly({
@@ -233,13 +234,14 @@ describe('Integration Test', () => {
       ...config,
       indexconfig,
       algoliaappid: ALGOLIA_APP_ID,
+      epsagontoken: EPSAGON_TOKEN,
     };
 
     const res = await main(params);
     assert.deepStrictEqual(res, {
       body: {
         status: 'published',
-        completed: 9,
+        completed: 10,
       },
       statusCode: 200,
     });

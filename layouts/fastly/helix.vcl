@@ -124,6 +124,7 @@ sub hlx_recv_init {
     # Allow through from another Fastly POP as well as from debugger
     if (!req.http.X-From-Edge) {
       unset req.http.X-CDN-Request-ID;
+      unset req.http.x-request-id;
     }
   }
 
@@ -134,7 +135,8 @@ sub hlx_recv_init {
 
   # Set a unique ID if not present
   if (!req.http.X-CDN-Request-ID) {
-    set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(3, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
+    set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
+    set req.http.x-request-id = req.http.X-CDN-Request-ID;
   }
 
   set req.http.X-CDN-URL = + "https://" + req.http.host + req.url;
@@ -352,6 +354,9 @@ sub hlx_headers_fetch {
     }
     if (!beresp.http.X-CDN-Request-ID) {
       set beresp.http.X-CDN-Request-ID = req.http.X-CDN-Request-ID;
+    }
+    if (!beresp.http.X-Request-ID) {
+      set beresp.http.X-Request-ID = req.http.X-Request-ID;
     }
   }
 }
@@ -1588,6 +1593,7 @@ sub vcl_deliver {
     unset resp.http.X-Cache-Hits;
     unset resp.http.X-Cache;
     unset resp.http.X-CDN-Request-ID;
+    unset resp.http.X-Request-ID;
     unset resp.http.X-CDN-URL;
     unset resp.http.X-Content-Type-Options;
     unset resp.http.X-Content-Type;

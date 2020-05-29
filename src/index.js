@@ -33,6 +33,8 @@ async function publishConfig(params) {
     params.wskHost || process.env.__OW_API_HOST,
     // eslint-disable-next-line no-underscore-dangle
     params.wskNamespace || process.env.__OW_NAMESPACE,
+    params.epsagontoken,
+    params.epsagonapp,
   );
 }
 
