@@ -1,3 +1,32 @@
+# [5.5.0](https://github.com/adobe/helix-publish/compare/v5.4.1...v5.5.0) (2020-05-29)
+
+
+### Bug Fixes
+
+* **epsagon:** fix typo in comment ([ac997ca](https://github.com/adobe/helix-publish/commit/ac997ca98f9afac9f5dc31875f50137f313b6256))
+* **epsagon:** instrument vcl before processing includes ([2bf2273](https://github.com/adobe/helix-publish/commit/2bf22732aa423cdc9c6fc81b18a66bf6ab4c67bb))
+* **epsagon:** replace esi_level with topurl ([0a66f16](https://github.com/adobe/helix-publish/commit/0a66f1604ff886d0d230315e41771f8c8e390530))
+* **epsagon:** use empty string instead of empty object as default log value ([4a2a446](https://github.com/adobe/helix-publish/commit/4a2a446f59da1b348ca63c69ef3c24db7ee38b93))
+* **errors:** use correct CSS url syntax ([53a863f](https://github.com/adobe/helix-publish/commit/53a863fb1bd13a296c74ae41ddf6091b78d373b2))
+* **errors:** use hotlinked images for error pages ([2063d68](https://github.com/adobe/helix-publish/commit/2063d687e98c9162a9f88a0db1147ae43a962e64))
+* **vcl:** fix variable name ([770b02e](https://github.com/adobe/helix-publish/commit/770b02e7e06c8aafb87cba90960e431092f4e2dc))
+* **vcl:** x-cdn-request-id is now one character longer ([52785a6](https://github.com/adobe/helix-publish/commit/52785a6144b7b88702531f4ce0e3f5d8c9c82b4f)), closes [/github.com/adobe/helix-publish/pull/446#issuecomment-632021386](https://github.com//github.com/adobe/helix-publish/pull/446/issues/issuecomment-632021386)
+
+
+### Features
+
+* **epsagon:** allow specifying epsagon application name in parameters ([31a95fc](https://github.com/adobe/helix-publish/commit/31a95fcc4b176c2cf9eec4667405241c625569bf))
+* **epsagon:** instrument helix.vcl with espagon logging ([f2dffe2](https://github.com/adobe/helix-publish/commit/f2dffe24dd88ade04fa96a403886aa55ed4f2b46))
+* **epsagon:** log all variables that have been set in the sub ([47e9e7f](https://github.com/adobe/helix-publish/commit/47e9e7f349f9f1655ffe579ede872c2eea3e8da8))
+* **epsagon:** log more things ([8d2fc87](https://github.com/adobe/helix-publish/commit/8d2fc8738106f28a5f70c55b43baf71140ce532d))
+* **epsagon:** maintain ignore and block list of parameters to never trace ([2c019a4](https://github.com/adobe/helix-publish/commit/2c019a416d416a0fddfcd817e4c73fbb72d5bc41))
+* **epsagon:** pass x-request-id as well ([7ae33b2](https://github.com/adobe/helix-publish/commit/7ae33b2d1f475eb604129ee973e0ca2a297c2a2d))
+* **epsagon:** trace additional variables ([3897674](https://github.com/adobe/helix-publish/commit/3897674a3e445483877ca8560f70467268a6fe40))
+* **epsagon:** trace user-agent, accept and referer by default ([1b94a27](https://github.com/adobe/helix-publish/commit/1b94a27e9c2deb037b6cd58d3a06ebf780989081))
+* **publish:** add epsagon log configuration if token has been provided ([b60bbbc](https://github.com/adobe/helix-publish/commit/b60bbbc6b7707affd9f8521b59c97bea175b29ad))
+* **vcl:** add simple VCL parser for post-processing ([31926fe](https://github.com/adobe/helix-publish/commit/31926fe03b466b65959f359653da8d48abb0ee96))
+* **vcl:** track x-request-id ([08dda1e](https://github.com/adobe/helix-publish/commit/08dda1eea6a8cfdc744ad0fde7fb3be3c14ca983)), closes [#305](https://github.com/adobe/helix-publish/issues/305)
+
 ## [5.4.1](https://github.com/adobe/helix-publish/compare/v5.4.0...v5.4.1) (2020-05-26)
 
 
