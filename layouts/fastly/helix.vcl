@@ -124,6 +124,7 @@ sub hlx_recv_init {
     # Allow through from another Fastly POP as well as from debugger
     if (!req.http.X-From-Edge) {
       unset req.http.X-CDN-Request-ID;
+      unset req.http.x-request-id;
     }
   }
 
@@ -134,7 +135,8 @@ sub hlx_recv_init {
 
   # Set a unique ID if not present
   if (!req.http.X-CDN-Request-ID) {
-    set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(3, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
+    set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
+    set req.http.x-request-id = req.http.X-CDN-Request-ID;
   }
 
   set req.http.X-CDN-URL = + "https://" + req.http.host + req.url;
@@ -353,6 +355,9 @@ sub hlx_headers_fetch {
     if (!beresp.http.X-CDN-Request-ID) {
       set beresp.http.X-CDN-Request-ID = req.http.X-CDN-Request-ID;
     }
+    if (!beresp.http.X-Request-ID) {
+      set beresp.http.X-Request-ID = req.http.X-Request-ID;
+    }
   }
 }
 
@@ -412,7 +417,7 @@ sub hlx_determine_request_type {
   }
 
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
-  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif|svg)$") {
     set req.http.X-Trace = req.http.X-Trace + "(blob)";
     set req.http.X-Request-Type = "Blob";
     unset req.http.Accept-Encoding;
@@ -1588,6 +1593,7 @@ sub vcl_deliver {
     unset resp.http.X-Cache-Hits;
     unset resp.http.X-Cache;
     unset resp.http.X-CDN-Request-ID;
+    unset resp.http.X-Request-ID;
     unset resp.http.X-CDN-URL;
     unset resp.http.X-Content-Type-Options;
     unset resp.http.X-Content-Type;

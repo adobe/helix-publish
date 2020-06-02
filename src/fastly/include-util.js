@@ -22,8 +22,11 @@ function synthetize(content, filePath) {
   });
 }
 
-function include(srcfile) {
-  return synthetize(fs.readFileSync(srcfile).toString(), path.dirname(srcfile));
+function include(srcfile, tracer, opts) {
+  const str = tracer
+    ? tracer(fs.readFileSync(srcfile).toString(), opts)
+    : fs.readFileSync(srcfile).toString();
+  return synthetize(str, path.dirname(srcfile));
 }
 
 module.exports.include = include;
