@@ -1,3 +1,10 @@
+## [5.5.2](https://github.com/adobe/helix-publish/compare/v5.5.1...v5.5.2) (2020-06-02)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) ([6a88c80](https://github.com/adobe/helix-publish/commit/6a88c80b8e4b23a06c0512ed8cbde220bfa246d9))
+
 ## [5.5.1](https://github.com/adobe/helix-publish/compare/v5.5.0...v5.5.1) (2020-06-01)
 
 
