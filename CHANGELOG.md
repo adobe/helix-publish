@@ -1,3 +1,10 @@
+# [5.6.0](https://github.com/adobe/helix-publish/compare/v5.5.2...v5.6.0) (2020-06-03)
+
+
+### Features
+
+* **publish:** fix package check ([#425](https://github.com/adobe/helix-publish/issues/425)) ([4eae668](https://github.com/adobe/helix-publish/commit/4eae6684c22a672506310321254a55cb5a1abbaa))
+
 ## [5.5.2](https://github.com/adobe/helix-publish/compare/v5.5.1...v5.5.2) (2020-06-02)
 
 
