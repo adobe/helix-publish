@@ -1,3 +1,10 @@
+## [5.6.3](https://github.com/adobe/helix-publish/compare/v5.6.2...v5.6.3) (2020-06-03)
+
+
+### Bug Fixes
+
+* **vcl:** serve 429 error page when no response body exists ([0ba8b15](https://github.com/adobe/helix-publish/commit/0ba8b15bdbcf26c1453a600379be223c9c3a0c7a))
+
 ## [5.6.2](https://github.com/adobe/helix-publish/compare/v5.6.1...v5.6.2) (2020-06-03)
 
 
