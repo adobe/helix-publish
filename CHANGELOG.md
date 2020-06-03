@@ -1,3 +1,10 @@
+## [5.7.1](https://github.com/adobe/helix-publish/compare/v5.7.0...v5.7.1) (2020-06-03)
+
+
+### Bug Fixes
+
+* **re-enable-image-optimization-for-dispatch,-static,-and-static-redirect-request-types:** the only request type where it was enabled was hlx-blob ([306ee23](https://github.com/adobe/helix-publish/commit/306ee230808318699220da2ae2e0bcc38be41d4c)), closes [#318](https://github.com/adobe/helix-publish/issues/318)
+
 # [5.7.0](https://github.com/adobe/helix-publish/compare/v5.6.4...v5.7.0) (2020-06-03)
 
 
