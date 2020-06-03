@@ -1,3 +1,10 @@
+## [5.6.1](https://github.com/adobe/helix-publish/compare/v5.6.0...v5.6.1) (2020-06-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-fetch to v1.6.1 ([#457](https://github.com/adobe/helix-publish/issues/457)) ([21675e8](https://github.com/adobe/helix-publish/commit/21675e8fd6d3e2c3468bd1b0b3b5af513e52fc23))
+
 # [5.6.0](https://github.com/adobe/helix-publish/compare/v5.5.2...v5.6.0) (2020-06-03)
 
 
