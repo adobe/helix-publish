@@ -17,7 +17,7 @@ const vcl = require('./fastly/vcl');
 const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 const epsagon = require('./fastly/epsagon');
-const { checkPkgs } = require('./check-pkgs');
+const checkPkgs = require('./check-pkgs');
 /**
  *
  * @param {object} configuration the Helix Strains configuration
@@ -32,7 +32,7 @@ const { checkPkgs } = require('./check-pkgs');
  * @param {string} epsagonToken Epsagon Token for tracing
  * @param {string} epsagonAppName Epsagon Application name for tracing
  */
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid, wskAuth, wskHost, wskNamespace, epsagonToken, epsagonAppName) {
+async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid, epsagonToken, epsagonAppName) {
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
@@ -54,7 +54,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       .withJSON(iconfig)
       .init();
 
-    await checkPkgs(wskAuth, wskHost, wskNamespace, config, log);
+    await checkPkgs(config, log);
     const fastly = await initfastly(token, service);
     log.info('running publishing tasks...');
     const publishtasks = [

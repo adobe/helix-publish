@@ -10,51 +10,21 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable max-classes-per-file */
-const openwhisk = require('openwhisk');
+const { fetch } = require('@adobe/helix-fetch');
 
 /**
- * This creates specific errors to deal with
- * when this check fails.
+ * This function takes strains and sends requests
+ * to ensure the corresponding action is deployed.
+ * @param {object} strains array of strains from HelixConfig
+ * @param {object} log logger
  */
-class WhiskError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'WhiskError';
-  }
-}
-
-/* class PackageNotFoundError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'PackageNotFoundError';
-  }
-}
-*/
-
-/**
- * This function gets list of packages deployed to OpenWhisk
- *
- * @param auth {string} openwhisk authentication key
- * @param host {string} openwhisk api host
- * @param namespace {string} openwhisk namespace under which actions exist
- */
-async function getPackageList(auth, host, namespace, log) {
-  const ow = openwhisk({
-    api_key: auth,
-    apihost: host,
-    namespace,
-  });
-
-  try {
-    const packageList = await ow.packages.list();
-    return packageList.reduce((prev, curr) => {
-      // eslint-disable-next-line no-param-reassign
-      prev[curr.name] = true;
-      return prev;
-    }, {});
-  } catch (e) {
-    log.error(e);
-    throw new WhiskError('whisk failed to obtain package list');
+async function checkStrains(strain, log = console) {
+  const result = await fetch(`https://adobeioruntime.net/api/v1/web/${strain.package}/hlx--static/_status_check/healthcheck.json`);
+  if (!result.ok) {
+    log.error(`fetch call failed for url ${result.url}`);
+    throw new Error(await result.text());
+  } else {
+    return result.json();
   }
 }
 
@@ -62,22 +32,14 @@ async function getPackageList(auth, host, namespace, log) {
  * This function checks that packages defined for
  * strains in a given Helix Configuration are deployed
  *
- * @param auth {string} openwhisk authentication key
- * @param host {string} openwhisk api host
- * @param namespace {string} openwhisk namespace under which actions exist
- * @param config {object} a Helix Configuration object
+ * @param {object} config a Helix Configuration object
+ * @param {object} log logger
  */
-async function checkPkgs(auth, host, namespace, config, log = console) {
-  const packages = await getPackageList(auth, host, namespace, log);
-
-  config.strains.forEach((strain) => {
-    if (strain.package && !(strain.package in packages)) {
-      log.error(`action package for the following strain: << ${strain.name} >> not deployed`);
-    }
-  });
+async function checkPkgs(config, log = console) {
+  const strains = config.strains.getRuntimeStrains();
+  const checkArr = strains.filter((strain) => !!strain.package)
+    .map((strain) => checkStrains(strain, log));
+  return Promise.all(checkArr);
 }
 
-module.exports = {
-  checkPkgs,
-  WhiskError,
-};
+module.exports = checkPkgs;

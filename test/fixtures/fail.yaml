@@ -30,54 +30,15 @@ strains:
 
   adhoc:
     <<: *basestrain
-    package: fake/75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty
+    package: fake/d90a42b1babf33d430450e05cbd3dc1edc6b7135dafa
     directoryIndex: foo.html
 
-  client:
-    code: *myrepo
-    static: *myrepo
-    condition:
-      url: https://client.project-helix.io
-    sticky: false
-    content:
-      repo: helix-cli
-      ref: master
-      owner: adobe
-    directoryIndex: readme.html
-    redirects:
-      - from: /(.*).php
-        to: /$1.html
-
-  pipeline:
+  adhoc1:
     <<: *basestrain
-    condition:
-      url.hostname=: pipeline.project-helix.io
-    content:
-      repo: hypermedia-pipeline
-      ref: master
-      owner: adobe
-    static:
-      <<: *myrepo
-      path: /www
+    package: fake/9d723ce487448cc132cd240a484b65772b201241
+    directoryIndex: foo.html
 
-  proxy:
-    origin: https://www.adobe.io/
-    condition: 
-      url.hostname=: proxy.project-helix.io
-    sticky: true
-    params:
-      - "search*"
-      - "*lang"
-
-  proxy-detailed:
-    condition:
-      url.hostname=: proxy2.project-helix.io
-    origin:
-      address: 192.168.0.1
-      name: publish
-      use_ssl: false
-
-  proxy-path:
-    origin: https://www.adobe.io/newdir
-    condition:
-      url: https://developer.adobe.com/olddir
+  adhoc2:
+    <<: *basestrain
+    package: fake/c4763cd3420bf015454e2e1f2ce2ecd1dd1ca942
+    directoryIndex: foo.html

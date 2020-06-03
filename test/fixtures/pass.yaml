@@ -30,7 +30,17 @@ strains:
 
   adhoc:
     <<: *basestrain
-    package: fake/75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty
+    package: mrosier/d90a42b1babf33d430450e05cbd3dc1edc6b7135
+    directoryIndex: foo.html
+
+  adhoc1:
+    <<: *basestrain
+    package: mrosier/9d723ce487448cc132cd240a484b65772b201241
+    directoryIndex: foo.html
+
+  adhoc2:
+    <<: *basestrain
+    package: mrosier/c4763cd3420bf015454e2e1f2ce2ecd1dd1ca942
     directoryIndex: foo.html
 
   client:
