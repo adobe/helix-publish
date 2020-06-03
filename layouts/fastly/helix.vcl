@@ -1460,6 +1460,10 @@ sub hlx_bereq {
     }
     if (req.backend == F_AdobeRuntime) {
       set bereq.http.Host = "adobeioruntime.net";
+      // Adobe I/O Runtime overrides the Host and Forwarded-Host
+      // headers, so we create a new one that Runtime won't
+      // override
+      set bereq.http.hlx-forwarded-host = req.http.X-Orig-Host;
     } elsif (req.backend == F_GitHub) {
       set bereq.http.Host = "raw.githubusercontent.com";
     } elseif (req.backend == F_AzureBlobs) {
