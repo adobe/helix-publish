@@ -865,12 +865,15 @@ sub hlx_fetch_error {
        error 963 "Service Unavailable";
     } elsif (beresp.status == 504) {
        error 964 "Gateway Timeout";
+    } elsif (beresp.status == 429) {
+      // serve a standard 429 error page when there is no response body
+      error 965 "Too many requests";
     } else {
        error 952 "Internal Server Error";
     }
   } elsif (!req.http.x-topurl && beresp.status == 429) {
-       error 965 "Too many requests";
-    }
+    error 965 "Too many requests";
+  }
   # if (req.url.basename ~ "^([0-9][0-9][0-9])") {
   #   set beresp.status = std.atoi(re.group.1);
   # } else {
