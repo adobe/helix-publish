@@ -555,6 +555,11 @@ sub hlx_type_static {
     + "&allow=" urlencode(req.http.X-Allow)
     + "&deny=" urlencode(req.http.X-Deny)
     + "&root=" + req.http.X-Github-Static-Root;
+
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+    # request image optimization
+    set req.http.X-Fastly-Imageopto-Api = "fastly";
+  }
 }
 
 sub hlx_type_cgi {
@@ -608,7 +613,7 @@ sub hlx_type_blob {
     set var.sha = re.group.1;
     set var.ext = req.url.ext;
 
-    # TODO verify
+    # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
 
@@ -676,6 +681,11 @@ sub hlx_type_static_redirect {
   # - fetching the resource from GitHub
   # - don't forget to override the Content-Type header
   set req.backend = F_GitHub;
+
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+    # request image optimization
+    set req.http.X-Fastly-Imageopto-Api = "fastly";
+  }
 }
 
 sub hlx_type_query_redirect {
@@ -704,8 +714,6 @@ sub hlx_fetch_blob {
       unset beresp.http.x-ms-version;
       unset beresp.http.Server;
     }
-
-    # TODO: should we set req.http.X-Fastly-Imageopto-Api ?
 
     return(deliver);
   }
@@ -1032,6 +1040,11 @@ sub hlx_type_dispatch {
   if (req.http.X-Encoded-Params) {
     set req.http.X-Backend-URL = req.http.X-Backend-URL
       + "&params=" + req.http.X-Encoded-Params;
+  }
+
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+    # request image optimization
+    set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
 
   call hlx_type_pipeline_after;
