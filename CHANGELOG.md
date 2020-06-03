@@ -1,3 +1,10 @@
+# [5.7.0](https://github.com/adobe/helix-publish/compare/v5.6.4...v5.7.0) (2020-06-03)
+
+
+### Features
+
+* **vcl:** add hlx-forwarded-host header ([0d5420a](https://github.com/adobe/helix-publish/commit/0d5420adaa9441d1a2892c36b6d8cb10ccd91a13)), closes [#451](https://github.com/adobe/helix-publish/issues/451)
+
 ## [5.6.4](https://github.com/adobe/helix-publish/compare/v5.6.3...v5.6.4) (2020-06-03)
 
 
