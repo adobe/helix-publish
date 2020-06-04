@@ -410,6 +410,19 @@ sub hlx_determine_request_type {
     return;
   }
 
+  if (req.url.ext === "md") {
+    set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    set req.http.X-Request-Type = "Content/MD";
+    return;
+  }
+
+  // TODO: enable when JSON support is requested
+  if (false && req.url.ext === "json") {
+    set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    set req.http.X-Request-Type = "Content/JSON";
+    return;
+  }
+
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
     set req.http.X-Trace = req.http.X-Trace + "(existing:" + req.http.X-Request-Type + ")" ;
@@ -1225,6 +1238,10 @@ sub vcl_recv {
     call hlx_type_static_url;
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
+  } elseif (req.http.X-Request-Type == "Content/MD") {
+    call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Content/JSON") {
+    call hlx_type_content;
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
