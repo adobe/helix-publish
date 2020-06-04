@@ -970,6 +970,42 @@ sub hlx_type_embed {
   set req.backend = F_AdobeRuntime;
 }
 
+/**
+ * Serve MD and JSON from Helix-Content-Proxy
+ */
+sub hlx_type_content {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_content";
+
+  # get it from OpenWhisk
+  set req.backend = F_AdobeRuntime;
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.action STRING; # the action to call
+  declare local var.namespace STRING;
+
+  # Load important information for content repo from edge dicts
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+  call hlx_root_path;
+  call hlx_index;
+
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  call hlx_action_root;
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace // i.e. /trieloff
+    + "/helix-services/content-proxy@1"
+    + "?ref=" + subfield(req.url.qs, "ref", "&")
+    // content repo
+    + "&owner=" + req.http.X-Owner
+    + "&repo=" + req.http.X-Repo
+    + "&ref=" + req.http.X-Ref
+    + "&root=" + req.http.X-Repo-Root-Path;
+}
+
 
 /**
  * Handles requests for the main Helix rendering pipeline.
