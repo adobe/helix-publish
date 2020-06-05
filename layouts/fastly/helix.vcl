@@ -996,6 +996,7 @@ sub hlx_type_content {
   # them into the URL
   declare local var.action STRING; # the action to call
   declare local var.namespace STRING;
+  declare local var.ref STRING;
 
   # Load important information for content repo from edge dicts
   call hlx_owner;
@@ -1008,14 +1009,21 @@ sub hlx_type_content {
   call hlx_action_root;
   set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
 
+  if (subfield(req.url.qs, "ref", "&")) {
+    // use the ref provided in the URL if possible
+    set var.ref = subfield(req.url.qs, "ref", "&");
+  } else {
+    // otherwise use the one from the strain, expecting it to be uncachable
+    set var.ref = req.http.X-Ref;
+  }
+
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
     + "/helix-services/content-proxy@1"
-    + "?ref=" + subfield(req.url.qs, "ref", "&")
+    + "?ref=" + var.ref
     // content repo
     + "&owner=" + req.http.X-Owner
     + "&repo=" + req.http.X-Repo
-    + "&ref=" + req.http.X-Ref
     + "&root=" + req.http.X-Repo-Root-Path;
 }
 
