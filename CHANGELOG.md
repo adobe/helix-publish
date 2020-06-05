@@ -1,3 +1,10 @@
+## [5.7.4](https://github.com/adobe/helix-publish/compare/v5.7.3...v5.7.4) (2020-06-05)
+
+
+### Bug Fixes
+
+* **vcl:** forward x-forwarded-host as hlx-forwarded-host to fix runtime ([cc690a2](https://github.com/adobe/helix-publish/commit/cc690a29a073d470abc25f98ef75d7fc50e5c403)), closes [#451](https://github.com/adobe/helix-publish/issues/451)
+
 ## [5.7.3](https://github.com/adobe/helix-publish/compare/v5.7.2...v5.7.3) (2020-06-05)
 
 
