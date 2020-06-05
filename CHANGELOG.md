@@ -1,3 +1,10 @@
+## [5.7.3](https://github.com/adobe/helix-publish/compare/v5.7.2...v5.7.3) (2020-06-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.3.7 ([575f336](https://github.com/adobe/helix-publish/commit/575f336d56314b5fc036c8e5009c4a0034219098))
+
 ## [5.7.2](https://github.com/adobe/helix-publish/compare/v5.7.1...v5.7.2) (2020-06-05)
 
 
