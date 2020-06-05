@@ -410,14 +410,14 @@ sub hlx_determine_request_type {
     return;
   }
 
-  if (req.url.ext === "md") {
+  if (req.url.ext == "md") {
     set req.http.X-Trace = req.http.X-Trace + "(content-md)";
     set req.http.X-Request-Type = "Content/MD";
     return;
   }
 
   // TODO: enable when JSON support is requested
-  if (false && req.url.ext === "json") {
+  if (false && req.url.ext == "json") {
     set req.http.X-Trace = req.http.X-Trace + "(content-md)";
     set req.http.X-Request-Type = "Content/JSON";
     return;
