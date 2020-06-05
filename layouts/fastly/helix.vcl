@@ -1476,7 +1476,13 @@ sub hlx_bereq {
       // Adobe I/O Runtime overrides the Host and Forwarded-Host
       // headers, so we create a new one that Runtime won't
       // override
-      set bereq.http.hlx-forwarded-host = req.http.X-Orig-Host;
+      if (req.http.x-forwarded-host) {
+        // if there is an outer CDN, use the forwarded host
+        // header we have recieved from the outer CDN
+        set bereq.http.hlx-forwarded-host = req.http.x-forwarded-host;
+      } else {
+        set bereq.http.hlx-forwarded-host = req.http.X-Orig-Host;
+      }
     } elsif (req.backend == F_GitHub) {
       set bereq.http.Host = "raw.githubusercontent.com";
     } elseif (req.backend == F_AzureBlobs) {
