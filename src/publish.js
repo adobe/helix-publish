@@ -96,6 +96,16 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       })
       .catch((e) => {
         log.error(`error executing tasks: ${e}, ${e.data}`, e);
+        if (e.cause && e.cause.code && e.cause.code === 'ESOCKETTIMEDOUT') {
+          return {
+            body: {
+              status: 'error',
+              message: `${e}`,
+              stack: e.stack.split('\n'),
+            },
+            statusCode: 504,
+          };
+        }
         return {
           body: {
             status: 'error',
