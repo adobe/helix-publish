@@ -396,7 +396,7 @@ sub hlx_headers_deliver {
 
 sub hlx_determine_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type(" + req.url.ext + ")";
-  // TODO check for topurl
+  // TODO check for topurl  
   if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
     set req.http.X-Request-Type = "Static-URL";
@@ -1021,8 +1021,9 @@ sub hlx_type_content {
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/content-proxy@1"
+    + "/helix-services/content-proxy@v1"
     + "?ref=" + var.ref
+    + "&path=" + req.url.path
     // content repo
     + "&owner=" + req.http.X-Owner
     + "&repo=" + req.http.X-Repo
