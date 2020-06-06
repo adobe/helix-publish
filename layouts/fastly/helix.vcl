@@ -395,7 +395,7 @@ sub hlx_headers_deliver {
 }
 
 sub hlx_determine_request_type {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type(" + req.url.ext + ")";
   // TODO check for topurl
   if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
@@ -1146,7 +1146,8 @@ sub hlx_check_debug_key {
   if (var.debugSecret && var.key == var.debugSecret) {
     set req.http.X-Debug = var.level;
   } else {
-    unset req.http.X-Debug;
+    set req.http.X-Trace = "[" var.key "," var.debugSecret "]";
+    # unset req.http.X-Debug;
   }
 }
 
