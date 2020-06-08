@@ -1,3 +1,11 @@
+## [5.8.1](https://github.com/adobe/helix-publish/compare/v5.8.0...v5.8.1) (2020-06-08)
+
+
+### Bug Fixes
+
+* **deps:** pin dependency p-limit to 2.3.0 ([7203f88](https://github.com/adobe/helix-publish/commit/7203f8808788ed5567dd636786fad8d509f0f856))
+* **epsagon:** escape strings in json ([cd2fd54](https://github.com/adobe/helix-publish/commit/cd2fd5421a11764253c945d68e4fd8ece94656ff))
+
 # [5.8.0](https://github.com/adobe/helix-publish/compare/v5.7.7...v5.8.0) (2020-06-08)
 
 
