@@ -18,6 +18,31 @@ const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 const epsagon = require('./fastly/epsagon');
 const checkPkgs = require('./check-pkgs');
+
+function reportError(e) {
+  if (e.cause && e.cause.code
+    && (e.cause.code === 'ESOCKETTIMEDOUT'
+    || e.cause.code === 'ETIMEDOUT')
+  ) {
+    return {
+      body: {
+        status: 'error',
+        message: `timeout ${e}`,
+        stack: e.stack.split('\n'),
+      },
+      statusCode: 504,
+    };
+  }
+  return {
+    body: {
+      status: 'error',
+      message: `${e}`,
+      stack: e.stack.split('\n'),
+    },
+    statusCode: 500,
+  };
+}
+
 /**
  *
  * @param {object} configuration the Helix Strains configuration
@@ -96,14 +121,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       })
       .catch((e) => {
         log.error(`error executing tasks: ${e}, ${e.data}`, e);
-        return {
-          body: {
-            status: 'error',
-            message: `${e}`,
-            stack: e.stack.split('\n'),
-          },
-          statusCode: 500,
-        };
+        return reportError(e);
       });
   } catch (e) {
     // invalid configuration
@@ -120,3 +138,4 @@ async function publish(configuration, service, token, version, vclOverrides = {}
 }
 
 module.exports = publish;
+module.exports.reportError = reportError;

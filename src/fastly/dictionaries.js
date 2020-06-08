@@ -9,7 +9,10 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+const promiseLimit = require('p-limit');
 const { regexp } = require('./vcl-utils');
+
+const limit = promiseLimit(2);
 
 const dictionaries = [
   'secrets',
@@ -76,7 +79,7 @@ async function updatestrains(fastly, version, strains) {
   }, {});
 
   const updates = Object.entries(strainoperations).reduce((p, [dictname, operations]) => {
-    p.push(fastly.bulkUpdateDictItems(version, dictname, ...operations));
+    p.push(limit(() => fastly.bulkUpdateDictItems(version, dictname, ...operations)));
     return p;
   }, []);
 

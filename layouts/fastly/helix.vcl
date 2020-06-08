@@ -438,6 +438,21 @@ sub hlx_determine_request_type {
     return;
   }
 
+  // move below cg-bin and queries to allow serving
+  // md and json from there
+  if (req.url.ext ~ "^md$") {
+    set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    set req.http.X-Request-Type = "Content/MD";
+    return;
+  }
+
+  // TODO: enable when JSON support is requested
+  if (false && req.url.ext ~ "^json$") {
+    set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    set req.http.X-Request-Type = "Content/JSON";
+    return;
+  }
+
   // something like /hlx_fonts/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
   // but not like /hlx_fonts/eic8tkf.css
   if (req.url.path ~ "^/hlx_fonts/.+" && req.url.ext != "css") {
@@ -970,6 +985,51 @@ sub hlx_type_embed {
   set req.backend = F_AdobeRuntime;
 }
 
+/**
+ * Serve MD and JSON from Helix-Content-Proxy
+ */
+sub hlx_type_content {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_content";
+
+  # get it from OpenWhisk
+  set req.backend = F_AdobeRuntime;
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.action STRING; # the action to call
+  declare local var.namespace STRING;
+  declare local var.ref STRING;
+
+  # Load important information for content repo from edge dicts
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+  call hlx_root_path;
+  call hlx_index;
+
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  call hlx_action_root;
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+
+  if (subfield(req.url.qs, "ref", "&")) {
+    // use the ref provided in the URL if possible
+    set var.ref = subfield(req.url.qs, "ref", "&");
+  } else {
+    // otherwise use the one from the strain, expecting it to be uncachable
+    set var.ref = req.http.X-Ref;
+  }
+
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace // i.e. /trieloff
+    + "/helix-services/content-proxy@v1"
+    + "?ref=" + var.ref
+    + "&path=" + req.url.path
+    // content repo
+    + "&owner=" + req.http.X-Owner
+    + "&repo=" + req.http.X-Repo
+    + "&root=" + req.http.X-Repo-Root-Path;
+}
+
 
 /**
  * Handles requests for the main Helix rendering pipeline.
@@ -1189,6 +1249,10 @@ sub vcl_recv {
     call hlx_type_static_url;
   } elseif (req.http.X-Request-Type == "Static-302") {
     call hlx_type_static_url;
+  } elseif (req.http.X-Request-Type == "Content/MD") {
+    call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Content/JSON") {
+    call hlx_type_content;
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
