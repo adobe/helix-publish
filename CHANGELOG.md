@@ -1,3 +1,21 @@
+# [5.8.0](https://github.com/adobe/helix-publish/compare/v5.7.7...v5.8.0) (2020-06-08)
+
+
+### Bug Fixes
+
+* **content:** do not allow raw content to override cgi-bin or queries ([245a0e4](https://github.com/adobe/helix-publish/commit/245a0e4b8ef6eb30d39148765a0e9483fdb22c79))
+* **content:** fix VCL syntax ([88612fe](https://github.com/adobe/helix-publish/commit/88612fec06970c95df677a8ea6944f5e1ec89cf3))
+* **content:** ref in URL can override ref in strain ([736f60e](https://github.com/adobe/helix-publish/commit/736f60ebeb832dc37a9c5b430c4da53501423d4d))
+* **content:** use correct url ([ec8ff87](https://github.com/adobe/helix-publish/commit/ec8ff87e58aba781b47343765b147c608d8989e8))
+* **dictionaries:** reduce paralellism when updating dictionaries ([4cbeeeb](https://github.com/adobe/helix-publish/commit/4cbeeeb0b656e503b5110d176211f01721bc91c5))
+* **http:** report timeouts ([779d400](https://github.com/adobe/helix-publish/commit/779d400e625aa4872adaa4367c2efefa4e922838))
+
+
+### Features
+
+* **vcl:** add support for helix-content-proxy and create new request type ([ae8f1ff](https://github.com/adobe/helix-publish/commit/ae8f1ff6c3b8e3ffd566023c631884b870f1a1b6))
+* **vcl:** send md requests to content proxy request type ([6246771](https://github.com/adobe/helix-publish/commit/6246771cb42840b4fbc069bd6dae21e6989b921b))
+
 ## [5.7.7](https://github.com/adobe/helix-publish/compare/v5.7.6...v5.7.7) (2020-06-08)
 
 
