@@ -91,7 +91,7 @@
     "@adobe/openwhisk-action-utils": "4.2.2",
     "fs-extra": "9.0.1",
     "glob-to-regexp": "0.4.1",
-    "p-limit": "^2.3.0",
+    "p-limit": "2.3.0",
     "uri-js": "4.2.2"
   },
   "config": {
