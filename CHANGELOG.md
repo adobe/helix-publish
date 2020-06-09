@@ -1,3 +1,10 @@
+## [5.8.2](https://github.com/adobe/helix-publish/compare/v5.8.1...v5.8.2) (2020-06-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency p-limit to v3 ([#477](https://github.com/adobe/helix-publish/issues/477)) ([72c51c7](https://github.com/adobe/helix-publish/commit/72c51c74078706af57935afc26b89cd0e543a562))
+
 ## [5.8.1](https://github.com/adobe/helix-publish/compare/v5.8.0...v5.8.1) (2020-06-08)
 
 
