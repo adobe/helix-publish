@@ -446,7 +446,6 @@ sub hlx_determine_request_type {
     return;
   }
 
-  // TODO: enable when JSON support is requested
   if (req.url.ext ~ "^json$") {
     set req.http.X-Trace = req.http.X-Trace + "(content-md)";
     set req.http.X-Request-Type = "Content/JSON";
