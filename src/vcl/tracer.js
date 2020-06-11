@@ -54,7 +54,7 @@ function logvars(start) {
     return data;
   }, {});
 
-  return usedvars;
+  return {} || usedvars;
 }
 
 function addEpsagonTraces(txt, {
