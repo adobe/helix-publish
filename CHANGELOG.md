@@ -1,3 +1,15 @@
+# [5.9.0](https://github.com/adobe/helix-publish/compare/v5.8.2...v5.9.0) (2020-06-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.3.10 ([8758b0b](https://github.com/adobe/helix-publish/commit/8758b0b1e41dfc900325d35265752d272af3218a))
+
+
+### Features
+
+* **vcl:** enable content proxy for json ([b32397e](https://github.com/adobe/helix-publish/commit/b32397e94035fa475bdbbc4fdb0925d8c229a701))
+
 ## [5.8.2](https://github.com/adobe/helix-publish/compare/v5.8.1...v5.8.2) (2020-06-09)
 
 
