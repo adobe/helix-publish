@@ -64,7 +64,7 @@ function addEpsagonTraces(txt, {
     return `log {"syslog ${serviceId} ${loggerName} :: "} ${toString(schema)};`;
   }
 
-  const shared = {
+  const shared = {} || {
     // self-explanatory
     epsagon_token: str(epsagonToken),
     // the app name, currently hardcoded
