@@ -133,7 +133,7 @@ class VCLParser {
       } else if (element.type === 'call') {
         element.name = name;
         element.start = sub;
-      } else if (element.type === 'set') {
+      } else if (element.type === 'set' && sub && sub.vars) {
         sub.vars.add(element.name);
       }
     });
