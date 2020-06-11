@@ -31,7 +31,7 @@ function toString(schema, root = true) {
 }
 
 function vcl([expr]) {
-  return `"${END} json.escape(${expr}) ${BGN}"`;
+  return `"${END} urlencode(${expr}) ${BGN}"`;
 }
 
 function str(expr) {
