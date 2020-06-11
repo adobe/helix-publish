@@ -36,6 +36,6 @@ describe('Test Schema Helper', () => {
       enter: str`hlx_strain`,
       'req.http.X-CDN-Request-ID': vcl`req.http.X-CDN-Request-ID`,
     }),
-    '{json"{ "epsagon_token": "fake",  "enter": "hlx_strain",  "req.http.X-CDN-Request-ID": ""json} json.escape(req.http.X-CDN-Request-ID) {json"" }"json}');
+    '{json"{ "epsagon_token": "fake",  "enter": "hlx_strain",  "req.http.X-CDN-Request-ID": ""json} urlencode(req.http.X-CDN-Request-ID) {json"" }"json}');
   });
 });
