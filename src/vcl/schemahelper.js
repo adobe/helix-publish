@@ -31,7 +31,7 @@ function toString(schema, root = true) {
 }
 
 function vcl([expr]) {
-  return `"${END} urlencode(${expr}) ${BGN}"`;
+  return `"${END} ${expr} ${BGN}"`;
 }
 
 function str(expr) {
