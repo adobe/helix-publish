@@ -17,11 +17,22 @@ const {
 
 // list of values to ignore every time
 const ignore = [
+  'beresp.http.X-PreFetch-Miss',
+  'beresp.http.X-PreFetch-Pass',
+  'beresp.http.X-PostFetch',
+  'beresp.http.X-Trace',
+  'obj.http.X-PostFetch',
+  'obj.http.X-PreFetch-Miss',
+  'obj.http.X-PreFetch-Pass',
+  'obj.http.X-Trace',
+  'req.http.X-PostFetch',
   'req.http.X-PreFetch-Miss',
   'req.http.X-PreFetch-Pass',
   'req.http.X-Trace',
-  'beresp.http.X-PreFetch-Miss',
-  'beresp.http.X-PreFetch-Pass',
+  'resp.http.X-Trace',
+  'bereq.http.Authorization',
+  'req.http.X-CDN-Request-ID',
+  'req.http.x-request-id'
 ];
 
 // list of values to include every time (remember that only req is readable at any time)
