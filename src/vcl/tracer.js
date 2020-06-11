@@ -130,50 +130,52 @@ function addEpsagonTraces(txt, {
     },
   };
 
+
+  const PATTERN = /^vcl_/;
   /**
    * Entering a subroutine, data is empty because no vars have been set yet
    */
   function tracesubentry({ name }) {
-    return formatLog({
+    return PATTERN.test(name) ? formatLog({
       ...shared,
       enter: str(name),
       data: {},
-    });
+    }) : '';
   }
 
   /*
    * Exiting a subroutine normally
   */
   function tracesubexit({ name, start }) {
-    return formatLog({
+    return PATTERN.test(name) ? formatLog({
       ...shared,
       leave: str(name),
       data: logvars(start),
-    });
+    }) : '';
   }
 
   /**
   * Return from a subroutine to a defined state in the state machine
   */
   function tracereturn({ name, to, start }) {
-    return formatLog({
+    return PATTERN.test(name) ? formatLog({
       ...shared,
       leave: str(name),
       next: str(to),
       data: logvars(start),
-    });
+    }) : '';
   }
 
   /**
   * Calling a different subroutine
  */
   function tracecall({ name, to, start }) {
-    return formatLog({
+    return PATTERN.test(name) ? formatLog({
       ...shared,
       from: str(name),
       call: str(to),
       data: logvars(start),
-    });
+    }) : '';
   }
 
   return new Parser(txt)
