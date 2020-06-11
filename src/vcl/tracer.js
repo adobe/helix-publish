@@ -32,7 +32,7 @@ const ignore = [
   'resp.http.X-Trace',
   'bereq.http.Authorization',
   'req.http.X-CDN-Request-ID',
-  'req.http.x-request-id'
+  'req.http.x-request-id',
 ];
 
 // list of values to include every time (remember that only req is readable at any time)
