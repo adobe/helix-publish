@@ -90,6 +90,7 @@ function addEpsagonTraces(txt, {
       h: vcl`req.http.Host`,
       u: vcl`req.url`,
       t: vcl`req.topurl`,
+      m: vcl`req.request`,
     },
     f: {
       // https://developer.fastly.com/reference/vcl/variables/miscellaneous/fastly-info-state/
