@@ -1,3 +1,21 @@
+## [5.10.1](https://github.com/adobe/helix-publish/compare/v5.10.0...v5.10.1) (2020-06-12)
+
+
+### Bug Fixes
+
+* **epsagon:** add data (compressed) ([73c81a0](https://github.com/adobe/helix-publish/commit/73c81a0579ef90eb78ea4cd458fb86e411a92f0c))
+* **epsagon:** add some basic info back in ([1000374](https://github.com/adobe/helix-publish/commit/100037450bd5d35577fba6c87242e0ccf50aacee))
+* **epsagon:** do not urlencode ([4f58f97](https://github.com/adobe/helix-publish/commit/4f58f970df72e9d1a391b3f86aa2e7a55935caba))
+* **epsagon:** exclude all data ([28ada0f](https://github.com/adobe/helix-publish/commit/28ada0fcb1d9e9c3c2f7903fae7ff2c6bc890fb0)), closes [#480](https://github.com/adobe/helix-publish/issues/480)
+* **epsagon:** further reduce size ([11f90ae](https://github.com/adobe/helix-publish/commit/11f90ae4825de87712d463548650dd885e3d12dc))
+* **epsagon:** minimize schema ([48a9954](https://github.com/adobe/helix-publish/commit/48a9954972588031412042425767afb7667245b1))
+* **epsagon:** reduce log size ([45415d2](https://github.com/adobe/helix-publish/commit/45415d2924a3e15dfb5d6eed4544c05031161a26)), closes [#480](https://github.com/adobe/helix-publish/issues/480)
+* **epsagon:** send less data ([ae776d4](https://github.com/adobe/helix-publish/commit/ae776d45faa8eda078c54170cb115555c48c8f1a))
+* **epsagon:** send more data ([e2a5505](https://github.com/adobe/helix-publish/commit/e2a550523d6839bcc308b9ca5ecf5cc72bdc718b))
+* **epsagon:** trace fastly state ([9195088](https://github.com/adobe/helix-publish/commit/9195088916ff71499722516790a72214815b3162))
+* **epsagon:** trace only VCL functions ([4550bbc](https://github.com/adobe/helix-publish/commit/4550bbc83028bc9938c0dd7c323ef92922cb8881))
+* **epsagon:** use urlencode instead of json encode ([0ded9b6](https://github.com/adobe/helix-publish/commit/0ded9b6b268c20f7adc82c2d2d755e5a2db16be7))
+
 # [5.10.0](https://github.com/adobe/helix-publish/compare/v5.9.0...v5.10.0) (2020-06-11)
 
 
