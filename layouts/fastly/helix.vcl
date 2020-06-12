@@ -124,7 +124,7 @@ sub hlx_recv_init {
     # Allow through from another Fastly POP as well as from debugger
     if (!req.http.X-From-Edge) {
       unset req.http.X-CDN-Request-ID;
-      unset req.http.x-request-id;
+      unset req.http.X-Request-ID;
     }
   }
 
@@ -136,7 +136,7 @@ sub hlx_recv_init {
   # Set a unique ID if not present
   if (!req.http.X-CDN-Request-ID) {
     set req.http.X-CDN-Request-ID = randomstr(8, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(4, "0123456789abcdef") + "-" + randomstr(1, "89ab") + randomstr(3, "0123456789abcdef") + "-" + randomstr(12, "0123456789abcdef");
-    set req.http.x-request-id = req.http.X-CDN-Request-ID;
+    set req.http.X-Request-ID = req.http.X-CDN-Request-ID;
   }
 
   set req.http.X-CDN-URL = + "https://" + req.http.host + req.url;
