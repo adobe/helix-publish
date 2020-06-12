@@ -56,7 +56,7 @@ function logvars(start) {
 }
 
 function addEpsagonTraces(txt, {
-  serviceId, loggerName, epsagonToken, epsagonAppName,
+  serviceId, loggerName, /* epsagonToken, */ epsagonAppName,
 }) {
   function formatLog(schema) {
     return `log {"syslog ${serviceId} ${loggerName} :: "} ${toString(schema)};`;
@@ -69,7 +69,7 @@ function addEpsagonTraces(txt, {
       s: vcl`time.start.usec`,
       // elapsed time in request processing. Add time.start to get current time
       e: vcl`time.elapsed.usec`,
-    }
+    },
   };
 
   const normal = {
@@ -89,7 +89,7 @@ function addEpsagonTraces(txt, {
       v: vcl`req.vcl`,
       // https://developer.fastly.com/reference/vcl/variables/server/server-identity/
       s: vcl`server.identity`,
-    }
+    },
   };
 
   const PATTERN = /^vcl_/;
@@ -130,7 +130,7 @@ function addEpsagonTraces(txt, {
   /**
   * Calling a different subroutine
  */
-  function tracecall({ name, to, start }) {
+  function tracecall({ name, to /* start */ }) {
     return PATTERN.test(name) ? formatLog({
       ...minimal,
       from: str(name),
