@@ -40,6 +40,17 @@ const ignore = [
 const alwaysinclude = [
 ];
 
+function short(varname) {
+  return varname
+    .replace(/^req/, 'q')
+    .replace(/^resp/, 'p')
+    .replace(/^bereq/, 'bq')
+    .replace(/^beresp/, 'bp')
+    .replace(/^obj/, 'o')
+    .replace(/^var/, 'v')
+    .replace(/\.http\./, '.h.');
+}
+
 /**
  * List all vars that have been set in a subroutine and add them to the data
  */
@@ -47,12 +58,12 @@ function logvars(start) {
   const usedvars = [...alwaysinclude, ...Array.from(start.vars)].reduce((data, varname) => {
     if (!ignore.includes(varname)) {
       // eslint-disable-next-line no-param-reassign
-      data[varname] = vcl([varname]);
+      data[short(varname)] = vcl([varname]);
     }
     return data;
   }, {});
 
-  return {} || usedvars;
+  return usedvars;
 }
 
 function addEpsagonTraces(txt, {
