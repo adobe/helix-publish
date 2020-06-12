@@ -1,3 +1,10 @@
+# [5.10.0](https://github.com/adobe/helix-publish/compare/v5.9.0...v5.10.0) (2020-06-11)
+
+
+### Features
+
+* **epsagon:** trace HTTP method ([f9277d0](https://github.com/adobe/helix-publish/commit/f9277d068847e222147eee3af160ddb63c44fb8a)), closes [#482](https://github.com/adobe/helix-publish/issues/482)
+
 # [5.9.0](https://github.com/adobe/helix-publish/compare/v5.8.2...v5.9.0) (2020-06-11)
 
 
