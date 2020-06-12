@@ -52,5 +52,6 @@ describe('Tracer Integration Test', () => {
     });
     assert.ok(result);
     // just don't throw
+    console.log(result);
   });
 });
