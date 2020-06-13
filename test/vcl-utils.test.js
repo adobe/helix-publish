@@ -73,7 +73,7 @@ describe('Testing vcl-utils.js', () => {
       const expected = fs.readFileSync(path.resolve(__dirname, `fixtures/${name}-params.vcl`)).toString();
 
       const vcl = utils.parameters(config.strains);
-      assert.equal(vcl, expected);
+      assert.equal(vcl.trim(), expected.trim());
     };
   }
 

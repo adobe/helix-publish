@@ -28,6 +28,7 @@ function getbaseurl() {
 
 describe('Post-Deploy Tests', () => {
   it('Print Test Instructions', async () => {
+    // eslint-disable-next-line no-console
     console.log(`Try it yourself:
 hlx publish --api-publish https://adobeioruntime.net/${getbaseurl()}`);
   }).timeout(10000);

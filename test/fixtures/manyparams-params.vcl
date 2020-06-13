@@ -1,4 +1,4 @@
-# This file handles the URL parameter whitelist
+# This file handles the URL parameter allowlist
 if (req.http.X-Strain == "pipeline") {
   set req.http.X-Old-Url = req.url;
   set req.url = querystring.regfilter_except(req.url, "^search$|^lang$|^hlx_.*$");

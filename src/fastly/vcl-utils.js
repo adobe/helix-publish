@@ -184,7 +184,7 @@ function filter(params) {
   return regexp([...params, 'hlx_*']);
 }
 
-function whitelist(params, indent = '') {
+function allowlist(params, indent = '') {
   return `set req.http.X-Old-Url = req.url;
 set req.url = querystring.regfilter_except(req.url, "${filter(params)}");
 set req.http.X-Encoded-Params = urlencode(req.url.qs);
@@ -198,23 +198,23 @@ set req.url = req.http.X-Old-Url;`
    * Generates VCL for strain resolution from a list of strains
    */
 function parameters(strains) {
-  let retvcl = `# This file handles the URL parameter whitelist
+  let retvcl = `# This file handles the URL parameter allowlist
 `;
   const otherstrains = strains.getByFilter((strain) => strain.params
     && strain.params.length);
 
   retvcl += otherstrains.map(({ name, params }) => `if (req.http.X-Strain == "${name}") {
-${whitelist(params, '  ')}
+${allowlist(params, '  ')}
 }`).join(' else');
 
   if (otherstrains.length) {
     retvcl += ` else {
   # default parameters, can be overridden per strain
-${whitelist([], '  ')}
+${allowlist([], '  ')}
 }`;
   } else {
     retvcl += `# default parameters, can be overridden per strain
-${whitelist([])}`;
+${allowlist([])}`;
   }
 
   return retvcl;

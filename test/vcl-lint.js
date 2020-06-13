@@ -39,24 +39,28 @@ describe('Lint helix.vcl', () => {
   it('Request header count is below limit', () => {
     const headers = Array.from(vars.req).filter((name) => name.startsWith('req.http'));
     assert.ok(headers.length < 85, 'likely header overflow');
+    // eslint-disable-next-line no-console
     console.log(`found ${headers.length} request headers`);
   });
 
   it('BE Request header count is below limit', () => {
     const headers = Array.from(vars.bereq).filter((name) => name.startsWith('bereq.http'));
     assert.ok(headers.length < 85, 'likely header overflow');
+    // eslint-disable-next-line no-console
     console.log(`found ${headers.length} be request headers`);
   });
 
   it('Response header count is below limit', () => {
     const headers = Array.from(vars.resp).filter((name) => name.startsWith('resp.http'));
     assert.ok(headers.length < 85, 'likely header overflow');
+    // eslint-disable-next-line no-console
     console.log(`found ${headers.length} response headers`);
   });
 
   it('BE Response header count is below limit', () => {
     const headers = Array.from(vars.beresp).filter((name) => name.startsWith('beresp.http'));
     assert.ok(headers.length < 85, 'likely header overflow');
+    // eslint-disable-next-line no-console
     console.log(`found ${headers.length} be response headers`);
   });
 });
