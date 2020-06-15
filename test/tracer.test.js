@@ -40,7 +40,7 @@ describe('Tracer Integration Test', () => {
     // console.log(result);
     const results = result.match(/log {"syslog fake-id epsagon-https :: "}/g);
     assert.equal(results.length, 4);
-
+    // eslint-disable-next-line no-console
     console.log(result);
   });
 
@@ -52,6 +52,7 @@ describe('Tracer Integration Test', () => {
     });
     assert.ok(result);
     // just don't throw
+    // eslint-disable-next-line no-console
     console.log(result);
   });
 });

@@ -14,7 +14,7 @@ This microservice sets up a Fastly service config so that it can be used for Pro
 - creating VCL for
   - basic Project Helix operations
   - strain resolution based on `condition`s specified in `helix-config.yaml`
-  - URL parameter whitelists based on `params` whitelists from `helix-config.yaml`
+  - URL parameter allow lists based on `params` list from `helix-config.yaml`
 - updating edge dictionary values for
   - content resolution
   - static asset resolution

@@ -183,7 +183,7 @@ sub hlx_strain {
   }
 }
 
-# Gets the content whitelist for the current strain and sets the X-Allow header
+# Gets the content allow list for the current strain and sets the X-Allow header
 sub hlx_allow {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_allow";
 
@@ -194,7 +194,7 @@ sub hlx_allow {
   }
 }
 
-# Gets the content blacklist for the current strain and sets the X-Deny header
+# Gets the content denylist for the current strain and sets the X-Deny header
 sub hlx_deny {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deny";
 
@@ -330,7 +330,7 @@ sub hlx_github_static_ref {
 
 # rewrite required headers (called from fetch)
 sub hlx_headers_fetch {
-  # We're in the 'fetch' state where we temporarily store 
+  # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_headers_fetch";
 
@@ -598,7 +598,7 @@ sub hlx_type_cgi {
 
   set var.script = regsuball(req.url.basename, "\..*$", "");
 
-  # get (strain-specific) parameter whitelist
+  # get (strain-specific) parameter allowlist
   include "params.vcl";
 
   set req.http.X-Backend-URL = "/api/v1/web"
@@ -708,7 +708,7 @@ sub hlx_type_query_redirect {
 }
 
 sub hlx_fetch_blob {
-  # We're in the 'fetch' state where we temporarily store 
+  # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
     set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_blob";
@@ -734,7 +734,7 @@ sub hlx_fetch_blob {
 }
 
 sub hlx_fetch_query {
-  # We're in the 'fetch' state where we temporarily store 
+  # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   if (beresp.http.X-Static == "Raw/Query" && beresp.status == 307) {
     set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(raw)";
@@ -766,7 +766,7 @@ sub hlx_fetch_query {
 }
 
 sub hlx_fetch_static {
-  # We're in the 'fetch' state where we temporarily store 
+  # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_static";
   declare local var.ext STRING;
@@ -868,7 +868,7 @@ sub hlx_deliver_type {
  * 2. no error page could be found, so set the correct status code and deliver a fallback
  */
 sub hlx_fetch_error {
-  # We're in the 'fetch' state where we temporarily store 
+  # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_error(" + beresp.status + ")";
   # we copy the trace to the req in order to make it availale in vcl_error
@@ -1073,7 +1073,7 @@ sub hlx_type_dispatch {
   set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
 
 
-  # get (strain-specific) parameter whitelist
+  # get (strain-specific) parameter allowlist
   include "params.vcl";
 
   set req.http.X-Backend-URL = "/api/v1/web"
@@ -1274,7 +1274,7 @@ sub hlx_fetch_errors {
     return;
   }
 
-  # We're in the 'fetch' state where we temporarily store 
+  # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_errors(" beresp.status ")";
   # we copy the trace to the req in order to make it availale in vcl_error
@@ -1726,7 +1726,7 @@ sub vcl_error {
   set obj.http.X-PostFetch = req.http.X-PostFetch;
 
   if (req.http.x-openwhisk-activation-id) {
-    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427) 
+    # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427)
     set obj.http.x-openwhisk-activation-id = req.http.x-openwhisk-activation-id;
   }
   if (obj.status == 301 && req.http.X-Location) {
