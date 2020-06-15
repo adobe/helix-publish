@@ -1,3 +1,10 @@
+## [5.10.3](https://github.com/adobe/helix-publish/compare/v5.10.2...v5.10.3) (2020-06-15)
+
+
+### Bug Fixes
+
+* **epsagon:** add method (again) ([1e8a2ce](https://github.com/adobe/helix-publish/commit/1e8a2cececfaba825aa352108d60c2e19dfde567))
+
 ## [5.10.2](https://github.com/adobe/helix-publish/compare/v5.10.1...v5.10.2) (2020-06-13)
 
 
