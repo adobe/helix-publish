@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-function init(fastly, version, name) {
+function init(fastly, version, name, token) {
   return fastly.writeHttps(version, name, {
     name,
     format: '', // empty string as regular value
@@ -18,6 +18,8 @@ function init(fastly, version, name) {
     request_max_entries: 20,
     content_type: 'application/json',
     method: 'POST',
+    header_name: 'x-epsagon-token',
+    header_value: token,
   });
 }
 

@@ -106,7 +106,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
         )),
     ];
     if (epsagonToken) {
-      publishtasks.push(epsagon.init(fastly, version, 'helix-epsagon'));
+      publishtasks.push(epsagon.init(fastly, version, 'helix-epsagon', epsagonToken));
     }
     return Promise.all(publishtasks)
       .then((tasks) => {
