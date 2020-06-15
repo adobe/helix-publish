@@ -1,3 +1,10 @@
+# [5.11.0](https://github.com/adobe/helix-publish/compare/v5.10.4...v5.11.0) (2020-06-15)
+
+
+### Features
+
+* **epsagon:** set token header ([5ff853c](https://github.com/adobe/helix-publish/commit/5ff853c02153e2ba9ca3eadc1a37a5700231b709))
+
 ## [5.10.4](https://github.com/adobe/helix-publish/compare/v5.10.3...v5.10.4) (2020-06-15)
 
 
