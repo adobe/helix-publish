@@ -1018,6 +1018,9 @@ sub hlx_type_content {
     set var.ref = req.http.X-Ref;
   }
 
+  // clean up the query string
+  set req.url = querystring.regfilter_except(req.url, "^(limit|offset|hlx_.*)$");
+
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
     + "/helix-services/content-proxy@v1"
@@ -1026,7 +1029,9 @@ sub hlx_type_content {
     // content repo
     + "&owner=" + req.http.X-Owner
     + "&repo=" + req.http.X-Repo
-    + "&root=" + req.http.X-Repo-Root-Path;
+    + "&root=" + req.http.X-Repo-Root-Path
+    // we append the complete query string
+    + "&" + req.url.qs;
 }
 
 
