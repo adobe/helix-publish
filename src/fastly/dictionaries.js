@@ -67,7 +67,6 @@ async function updatestrains(fastly, version, strains) {
 
     upsertstrain(p, 'strain_index_files', strain.name, strain.directoryIndex);
 
-
     upsertstrain(p, 'strain_github_static_repos', strain.name, strain.static.repo);
     upsertstrain(p, 'strain_github_static_owners', strain.name, strain.static.owner);
     upsertstrain(p, 'strain_github_static_refs', strain.name, strain.static.ref);
