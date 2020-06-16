@@ -1019,7 +1019,7 @@ sub hlx_type_content {
   }
 
   // clean up the query string
-  req.url = querystring.regfilter_except(req.url, "^(limit|offset|hlx_.*)$");
+  set req.url = querystring.regfilter_except(req.url, "^(limit|offset|hlx_.*)$");
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
