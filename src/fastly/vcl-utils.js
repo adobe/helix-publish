@@ -114,7 +114,6 @@ function namebody([strain, vcl]) {
   return [strain, vcl];
 }
 
-
 function resolve(mystrains) {
   const strains = Array.from(mystrains.values());
   let retvcl = '# This file handles the strain resolution\nset req.http.X-Root-Path = "";\n';
@@ -167,7 +166,6 @@ function reset(backends) {
   Object.values(backends).forEach((backend) => {
     origins[backend.name] = backend;
   });
-
 
   const backendresets = Object.values(origins).map(shielding);
 
