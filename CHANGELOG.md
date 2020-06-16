@@ -1,3 +1,16 @@
+# [5.12.0](https://github.com/adobe/helix-publish/compare/v5.11.0...v5.12.0) (2020-06-16)
+
+
+### Bug Fixes
+
+* **content-proxy:** fix vcl syntax ([8a20cb8](https://github.com/adobe/helix-publish/commit/8a20cb831499d414b73fcad874ffdff31aa6d08e))
+* **deps:** update dependency @adobe/helix-epsagon to v1.3.12 ([bf5da58](https://github.com/adobe/helix-publish/commit/bf5da583e96645309c6df27a81619eb705cc5dff))
+
+
+### Features
+
+* **content-proxy:** pass along querybuilder parameters ([c0002f4](https://github.com/adobe/helix-publish/commit/c0002f4221da58fd76fa89c310c29a961bd2d268))
+
 # [5.11.0](https://github.com/adobe/helix-publish/compare/v5.10.4...v5.11.0) (2020-06-15)
 
 
