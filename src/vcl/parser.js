@@ -52,7 +52,7 @@ function type(line) {
       type: 'blockend',
       line,
     };
-  } else if (/^.*{\s*$/.test(line)) {
+  } else if (/^.*{(\s*|\s*#.*|\s*\/\/.*)$/.test(line)) {
     return {
       type: 'blockstart',
       line,
