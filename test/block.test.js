@@ -15,7 +15,7 @@ const assert = require('assert');
 const path = require('path');
 const fs = require('fs-extra');
 
-const re = new RegExp(fs.readFileSync(path.resolve(__dirname, '../layouts/fastly/helix.vcl')).toString().match(/"(.*)".* # block baddies/)[1]);
+const re = new RegExp(fs.readFileSync(path.resolve(__dirname, '../layouts/fastly/helix.vcl')).toString().match(/"(.*)".* # block baddies/)[1].replace(/%25/g, '%'));
 console.log(re);
 
 describe('Test blocked paths', () => {
