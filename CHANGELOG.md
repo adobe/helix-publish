@@ -1,3 +1,18 @@
+# [5.13.0](https://github.com/adobe/helix-publish/compare/v5.12.0...v5.13.0) (2020-06-17)
+
+
+### Bug Fixes
+
+* **vcl:** escape % with %25 ([80ead00](https://github.com/adobe/helix-publish/commit/80ead00b5a7384278bc30b21cea0bdaf481da7a4))
+* **vcl:** escape percent sign ([fb5041c](https://github.com/adobe/helix-publish/commit/fb5041ce3aacc1777adfc70027e7bdba877a9ce4))
+* **vcl:** one more percent sign to escape ([21786b5](https://github.com/adobe/helix-publish/commit/21786b5e277712da104de58f15452516fbe51dac))
+* **vcl-parser:** deal with comments al line end ([c4d441b](https://github.com/adobe/helix-publish/commit/c4d441bccbb96fd0e4330c331032a6eea1b4c803))
+
+
+### Features
+
+* **vcl:** block requests by URL pattern ([deb83e0](https://github.com/adobe/helix-publish/commit/deb83e082ec154f24223dc408344ecd03a3e1adc))
+
 # [5.12.0](https://github.com/adobe/helix-publish/compare/v5.11.0...v5.12.0) (2020-06-16)
 
 
