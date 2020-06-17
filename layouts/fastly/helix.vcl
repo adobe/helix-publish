@@ -208,6 +208,10 @@ sub hlx_deny {
 sub hlx_block_recv {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_block_recv";
 
+  if (req.url.path ~ "([^A-Za-z0-9-_./+%25]|\/\.\.|%252[^0]|%25[^2]|//etc/)") { # block baddies
+    error 955 "Forbidden";
+  }
+
   call hlx_deny;
   call hlx_allow;
 }
