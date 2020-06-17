@@ -20,12 +20,10 @@ console.log(re);
 
 describe('Test blocked paths', () => {
   const bads = fs.readFileSync(path.resolve(__dirname, 'fixtures/blocked-paths.txt')).toString().split('\n');
-  bads.forEach(bad => it(`deny ${bad}`, () => assert.ok(re.test(bad))));
+  bads.forEach((bad) => it(`deny ${bad}`, () => assert.ok(re.test(bad))));
 });
-
 
 describe('Test allowed paths', () => {
   const goods = fs.readFileSync(path.resolve(__dirname, 'fixtures/allowed-paths.txt')).toString().split('\n');
-  goods.forEach(good => it(`allow ${good}`, () => assert.ok(!re.test(good))));
+  goods.forEach((good) => it(`allow ${good}`, () => assert.ok(!re.test(good))));
 });
-
