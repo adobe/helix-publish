@@ -1,3 +1,11 @@
+## [5.13.1](https://github.com/adobe/helix-publish/compare/v5.13.0...v5.13.1) (2020-06-18)
+
+
+### Bug Fixes
+
+* **vcl:** keep last-activation-id around for epsagon ([59eb429](https://github.com/adobe/helix-publish/commit/59eb42903a6729d2be61657f1e4bf8acdf8c9343))
+* **vcl:** relax the block list a bit for ESI ([fc4b039](https://github.com/adobe/helix-publish/commit/fc4b0390af91bfa23c4a99d5cb60d2a47b2df48a))
+
 # [5.13.0](https://github.com/adobe/helix-publish/compare/v5.12.0...v5.13.0) (2020-06-17)
 
 
