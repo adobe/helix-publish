@@ -1,3 +1,10 @@
+## [5.13.2](https://github.com/adobe/helix-publish/compare/v5.13.1...v5.13.2) (2020-06-19)
+
+
+### Bug Fixes
+
+* **docs:** trigger re deploy ([1176e68](https://github.com/adobe/helix-publish/commit/1176e68fd919016c76d6e1ca775973cd132e1c71)), closes [#498](https://github.com/adobe/helix-publish/issues/498) [#500](https://github.com/adobe/helix-publish/issues/500)
+
 ## [5.13.1](https://github.com/adobe/helix-publish/compare/v5.13.0...v5.13.1) (2020-06-18)
 
 
