@@ -1692,7 +1692,6 @@ sub vcl_deliver {
     unset resp.http.Access-Control-Allow-Origin;
     unset resp.http.Content-Md5;
     unset resp.http.Fastly-Io-Info;
-    unset resp.http.Fastly-Stats;
     unset resp.http.Perf-Br-Resp-Out;
     unset resp.http.Server;
     unset resp.http.Server-Timing;
