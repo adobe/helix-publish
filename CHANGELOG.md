@@ -1,3 +1,11 @@
+## [5.13.3](https://github.com/adobe/helix-publish/compare/v5.13.2...v5.13.3) (2020-06-23)
+
+
+### Bug Fixes
+
+* **helix.vcl:** fastly-Stats header cannot be removed ([c3ff7bb](https://github.com/adobe/helix-publish/commit/c3ff7bb96631f3b2614f69628c40943283ac192b))
+* **helix.vcl:** remove chatty image headers ([da343c8](https://github.com/adobe/helix-publish/commit/da343c8bcef1b6d066d05ad65a0dac687580fd41)), closes [#502](https://github.com/adobe/helix-publish/issues/502)
+
 ## [5.13.2](https://github.com/adobe/helix-publish/compare/v5.13.1...v5.13.2) (2020-06-19)
 
 
