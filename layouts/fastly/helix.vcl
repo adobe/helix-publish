@@ -1690,6 +1690,9 @@ sub vcl_deliver {
     unset resp.http.Access-Control-Allow-Headers;
     unset resp.http.Access-Control-Allow-Methods;
     unset resp.http.Access-Control-Allow-Origin;
+    unset resp.http.Content-Md5;
+    unset resp.http.Fastly-Io-Info;
+    unset resp.http.Fastly-Stats;
     unset resp.http.Perf-Br-Resp-Out;
     unset resp.http.Server;
     unset resp.http.Server-Timing;
@@ -1699,7 +1702,6 @@ sub vcl_deliver {
     unset resp.http.X-Cache-Hits;
     unset resp.http.X-Cache;
     unset resp.http.X-CDN-Request-ID;
-    unset resp.http.X-Request-ID;
     unset resp.http.X-CDN-URL;
     unset resp.http.X-Content-Type-Options;
     unset resp.http.X-Content-Type;
@@ -1712,7 +1714,8 @@ sub vcl_deliver {
     unset resp.http.X-GW-Cache;
     unset resp.http.x-openwhisk-activation-id;
     unset resp.http.x-last-activation-id;
-    unset resp.http.X-Request-Id;
+    unset resp.http.X-Ms-Meta-Name;
+    unset resp.http.X-Request-ID;
     unset resp.http.X-Served-By;
     unset resp.http.X-Static;
     unset resp.http.X-Sticky;
