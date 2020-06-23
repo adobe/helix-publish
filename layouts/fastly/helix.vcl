@@ -1706,7 +1706,6 @@ sub vcl_deliver {
     unset resp.http.X-Content-Type;
     unset resp.http.X-ESI;
     unset resp.http.X-Fastly-Request-ID;
-    unset resp.http.X-Frame-Options;
     unset resp.http.X-FullDirname;
     unset resp.http.X-Geo-Block-List;
     unset resp.http.X-GitHub-Request-Id;
@@ -1726,6 +1725,9 @@ sub vcl_deliver {
   } else {
     set resp.http.X-Trace = req.http.X-Trace;
   }
+
+  set resp.http.X-Frame-Options = "DENY";
+
   return(deliver);
 }
 
