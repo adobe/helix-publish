@@ -1,3 +1,10 @@
+## [5.13.4](https://github.com/adobe/helix-publish/compare/v5.13.3...v5.13.4) (2020-06-24)
+
+
+### Bug Fixes
+
+* **frames:** deny usage in frames ([ca77b11](https://github.com/adobe/helix-publish/commit/ca77b11569bed70664131621964256b7ad630630))
+
 ## [5.13.3](https://github.com/adobe/helix-publish/compare/v5.13.2...v5.13.3) (2020-06-23)
 
 
