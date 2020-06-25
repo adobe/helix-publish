@@ -1,3 +1,10 @@
+## [5.13.7](https://github.com/adobe/helix-publish/compare/v5.13.6...v5.13.7) (2020-06-25)
+
+
+### Bug Fixes
+
+* **vcl:** Vary on XFH ([be38a96](https://github.com/adobe/helix-publish/commit/be38a96bdd86b9a4eba116a5825b64b0cbed2798))
+
 ## [5.13.6](https://github.com/adobe/helix-publish/compare/v5.13.5...v5.13.6) (2020-06-25)
 
 
