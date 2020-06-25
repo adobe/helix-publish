@@ -1474,6 +1474,12 @@ sub vcl_fetch {
     set beresp.http.Vary = beresp.http.Vary + ",X-Request-Type";
   }
 
+  # Vary on XFH, to avoid cache poisoning
+  # https://github.com/adobe/project-helix/issues/460
+  if (beresp.http.Vary !~ "X-Forwarded-Host") {
+    set beresp.http.Vary = beresp.http.Vary + ",X-Forwarded-Host";
+  }
+
   # TODO: Add Surrogate-Keys, based on req.url/X-Orig-URL
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
