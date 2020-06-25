@@ -1730,7 +1730,11 @@ sub vcl_deliver {
     unset resp.http.x-xss-protection;
   } else {
     set resp.http.X-Trace = req.http.X-Trace;
+    set resp.http.X-Age = resp.http.Age;
   }
+
+  // see https://github.com/adobe/helix-publish/issues/506
+  unset resp.http.Age;
 
   set resp.http.X-Frame-Options = "DENY";
 
