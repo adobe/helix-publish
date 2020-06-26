@@ -1736,7 +1736,9 @@ sub vcl_deliver {
   // see https://github.com/adobe/helix-publish/issues/506
   unset resp.http.Age;
 
-  set resp.http.X-Frame-Options = "DENY";
+  if (!resp.http.Content-Security-Policy) {
+    set resp.http.Content-Security-Policy = "frame-ancestors 'self'";
+  }
 
   return(deliver);
 }
