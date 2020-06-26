@@ -1,3 +1,10 @@
+## [5.13.9](https://github.com/adobe/helix-publish/compare/v5.13.8...v5.13.9) (2020-06-26)
+
+
+### Bug Fixes
+
+* **vcl:** suppress Age header ([82c13e5](https://github.com/adobe/helix-publish/commit/82c13e5ee0c816f23ad6920591ada115d2598b52)), closes [#506](https://github.com/adobe/helix-publish/issues/506)
+
 ## [5.13.8](https://github.com/adobe/helix-publish/compare/v5.13.7...v5.13.8) (2020-06-26)
 
 
