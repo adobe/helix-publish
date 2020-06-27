@@ -1,3 +1,10 @@
+## [5.13.11](https://github.com/adobe/helix-publish/compare/v5.13.10...v5.13.11) (2020-06-27)
+
+
+### Bug Fixes
+
+* **vcl:** allow frames on same domain ([3ca6b45](https://github.com/adobe/helix-publish/commit/3ca6b45d83667fdf7e7cf07042f7b9d4b11a8944))
+
 ## [5.13.10](https://github.com/adobe/helix-publish/compare/v5.13.9...v5.13.10) (2020-06-26)
 
 
