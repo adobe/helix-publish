@@ -1,3 +1,10 @@
+## [5.13.13](https://github.com/adobe/helix-publish/compare/v5.13.12...v5.13.13) (2020-06-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v4.2.3 ([d58a118](https://github.com/adobe/helix-publish/commit/d58a118c50135366a089917f546411beb61af140))
+
 ## [5.13.12](https://github.com/adobe/helix-publish/compare/v5.13.11...v5.13.12) (2020-06-27)
 
 
