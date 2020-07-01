@@ -57,7 +57,7 @@ function reportError(e) {
  * @param {string} epsagonToken Epsagon Token for tracing
  * @param {string} epsagonAppName Epsagon Application name for tracing
  */
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v3', log = console, iconfig, algoliaappid, epsagonToken, epsagonAppName) {
+async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v4', log = console, iconfig, algoliaappid, epsagonToken, epsagonAppName) {
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
