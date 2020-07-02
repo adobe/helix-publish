@@ -1,3 +1,10 @@
+## [5.13.16](https://github.com/adobe/helix-publish/compare/v5.13.15...v5.13.16) (2020-07-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v8.1.0 ([#524](https://github.com/adobe/helix-publish/issues/524)) ([7d54b53](https://github.com/adobe/helix-publish/commit/7d54b53dab833201b24e8ed06aa480fa129827f4))
+
 ## [5.13.15](https://github.com/adobe/helix-publish/compare/v5.13.14...v5.13.15) (2020-07-02)
 
 
