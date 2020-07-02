@@ -1,3 +1,15 @@
+# [6.0.0](https://github.com/adobe/helix-publish/compare/v5.13.17...v6.0.0) (2020-07-02)
+
+
+### Bug Fixes
+
+* **dispatch:** use new dispatch version ([ff1e8f9](https://github.com/adobe/helix-publish/commit/ff1e8f9d3be8e5941980cc20d0d67278d2a7528d)), closes [#519](https://github.com/adobe/helix-publish/issues/519)
+
+
+### BREAKING CHANGES
+
+* **dispatch:** uses the new dispatch version that removes dynamic defaults and the README.html directory index
+
 ## [5.13.17](https://github.com/adobe/helix-publish/compare/v5.13.16...v5.13.17) (2020-07-02)
 
 
