@@ -1,3 +1,10 @@
+## [5.13.17](https://github.com/adobe/helix-publish/compare/v5.13.16...v5.13.17) (2020-07-02)
+
+
+### Bug Fixes
+
+* URLs with valid UTF-8 escaped characters are rejected ([#523](https://github.com/adobe/helix-publish/issues/523)) ([fdbffdf](https://github.com/adobe/helix-publish/commit/fdbffdf374f28b339a2a09e8209770a05caef18f))
+
 ## [5.13.16](https://github.com/adobe/helix-publish/compare/v5.13.15...v5.13.16) (2020-07-02)
 
 
