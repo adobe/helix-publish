@@ -11,11 +11,15 @@
  */
 const path = require('path');
 const assert = require('assert');
-const request = require('request-promise-native');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
 const { main } = require('../src/index');
+
+chai.use(chaiHttp);
+const { expect } = chai;
 
 /* eslint-env mocha */
 
@@ -233,6 +237,20 @@ describe('Integration Test', () => {
       statusCode: 200,
     });
 
+    await chai
+      .request('https://api.fastly.com/')
+      .get(`/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`)
+      .set('Fastly-Key', HLX_FASTLY_AUTH)
+      .set('Accept', 'application/json')
+      .then((response) => {
+        expect(response).to.have.status(200);
+        // eslint-disable-next-line no-unused-expressions
+        expect(response).to.be.json;
+
+        console.log(response);
+      });
+
+    /*
     const valid = await request.get(
       `https://api.fastly.com/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`,
       {
@@ -246,6 +264,7 @@ describe('Integration Test', () => {
     assert.deepStrictEqual(valid, {
       status: 'ok', errors: [], messages: [], warnings: [], msg: null,
     });
+    */
   }).timeout(60000);
 
   it('Test publish function with invalid configuration', async () => {
