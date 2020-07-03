@@ -246,27 +246,18 @@ describe('Integration Test', () => {
       .set('Accept', 'application/json')
       .then((response) => {
         expect(response).to.have.status(200);
-        // eslint-disable-next-line no-unused-expressions
+        /* eslint-disable no-unused-expressions */
         expect(response).to.be.json;
-
-        console.log(response.data, response.text, response.json);
+        const json = JSON.parse(response.text);
+        expect(json.status).to.equal('ok');
+        expect(json.errors).to.be.an('array');
+        expect(json.errors).to.be.empty;
+        expect(json.warnings).to.be.an('array');
+        expect(json.warnings).to.be.empty;
+        expect(json.messages).to.be.an('array');
+        expect(json.messages).to.be.empty;
+        /* eslint-enable no-unused-expressions */
       });
-
-    /*
-    const valid = await request.get(
-      `https://api.fastly.com/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`,
-      {
-        headers: {
-          'Fastly-Key': HLX_FASTLY_AUTH,
-          accept: 'application/json',
-        },
-        json: true,
-      },
-    );
-    assert.deepStrictEqual(valid, {
-      status: 'ok', errors: [], messages: [], warnings: [], msg: null,
-    });
-    */
   }).timeout(60000);
 
   it('Test publish function with invalid configuration', async () => {
