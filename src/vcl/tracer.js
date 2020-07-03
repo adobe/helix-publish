@@ -88,9 +88,6 @@ function addEpsagonTraces(txt, {
     a: str(epsagonAppName || 'Helix Fastly Epsagon'),
     r: {
       h: vcl`req.http.Host`,
-      u: vcl`req.url`,
-      t: vcl`req.topurl`,
-      m: vcl`req.request`,
     },
     f: {
       // https://developer.fastly.com/reference/vcl/variables/miscellaneous/fastly-info-state/
@@ -104,6 +101,24 @@ function addEpsagonTraces(txt, {
     },
   };
 
+  const fiddle = {
+    vcl_recv: {
+      u: vcl`req.url`, // URL
+      m: vcl`req.request`, // method
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      r: vcl`req.restarts`, // restarts
+      p: vcl`fastly_info.h2.is_push`, // is push
+      h: vcl`fastly_info.is_h2`, // is HTTP/2
+      b: vcl`regsub(req.backend, ".*--", "")`, // backend
+      i: vcl`req.hash_ignore_busy`, // ignoreBusy
+      a: vcl`req.hash_always_miss`, // alwaysMiss
+    }
+  };
+
+  function extraInfo(sub) {
+    return fiddle[sub] ? { x: fiddle[sub] } : {};
+  }
+
   const PATTERN = /^vcl_/;
   /**
    * Entering a subroutine, data is empty because no vars have been set yet
@@ -111,6 +126,7 @@ function addEpsagonTraces(txt, {
   function tracesubentry({ name }) {
     return PATTERN.test(name) ? formatLog({
       ...minimal,
+      ...extraInfo(name),
       enter: str(name),
       d: {},
     }) : '';
