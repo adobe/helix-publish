@@ -237,8 +237,10 @@ describe('Integration Test', () => {
       statusCode: 200,
     });
 
+    console.log('https://api.fastly.com', `/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`);
+
     await chai
-      .request('https://api.fastly.com/')
+      .request('https://api.fastly.com')
       .get(`/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`)
       .set('Fastly-Key', HLX_FASTLY_AUTH)
       .set('Accept', 'application/json')
