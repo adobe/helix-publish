@@ -249,7 +249,7 @@ describe('Integration Test', () => {
         // eslint-disable-next-line no-unused-expressions
         expect(response).to.be.json;
 
-        console.log(response);
+        console.log(response.data, response.text, response.json);
       });
 
     /*
