@@ -128,7 +128,7 @@ function addEpsagonTraces(txt, {
       e: vcl`req.topurl`, // isESI if set (URL of parent request)
       h: vcl`obj.hits`, // hits
       i: vcl`fastly_info.state`, // state
-      s: vcl`response.status`, // status
+      s: vcl`resp.status`, // status
     },
     vcl_miss: {
       u: vcl`req.url`, // URL
@@ -145,6 +145,10 @@ function addEpsagonTraces(txt, {
       s: vcl`stale.exists`, // staleExists
       b: vcl`regsub(req.backend, ".*--", "")`, // backend
       d: vcl`req.digest`, // digest
+    },
+    vcl_error: {
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      s: vcl`obj.status`, // status
     },
   };
 
