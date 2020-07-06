@@ -112,7 +112,7 @@ function addEpsagonTraces(txt, {
       b: vcl`regsub(req.backend, ".*--", "")`, // backend
       i: vcl`req.hash_ignore_busy`, // ignoreBusy
       a: vcl`req.hash_always_miss`, // alwaysMiss
-    }
+    },
   };
 
   function extraInfo(sub) {
