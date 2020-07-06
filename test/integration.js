@@ -11,11 +11,15 @@
  */
 const path = require('path');
 const assert = require('assert');
-const request = require('request-promise-native');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
 const { main } = require('../src/index');
+
+chai.use(chaiHttp);
+const { expect } = chai;
 
 /* eslint-env mocha */
 
@@ -233,19 +237,27 @@ describe('Integration Test', () => {
       statusCode: 200,
     });
 
-    const valid = await request.get(
-      `https://api.fastly.com/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`,
-      {
-        headers: {
-          'Fastly-Key': HLX_FASTLY_AUTH,
-          accept: 'application/json',
-        },
-        json: true,
-      },
-    );
-    assert.deepStrictEqual(valid, {
-      status: 'ok', errors: [], messages: [], warnings: [], msg: null,
-    });
+    console.log('https://api.fastly.com', `/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`);
+
+    await chai
+      .request('https://api.fastly.com')
+      .get(`/service/${HLX_FASTLY_NAMESPACE}/version/${VERSION_NUM}/validate`)
+      .set('Fastly-Key', HLX_FASTLY_AUTH)
+      .set('Accept', 'application/json')
+      .then((response) => {
+        expect(response).to.have.status(200);
+        /* eslint-disable no-unused-expressions */
+        expect(response).to.be.json;
+        const json = JSON.parse(response.text);
+        expect(json.status).to.equal('ok');
+        expect(json.errors).to.be.an('array');
+        expect(json.errors).to.be.empty;
+        expect(json.warnings).to.be.an('array');
+        expect(json.warnings).to.be.empty;
+        expect(json.messages).to.be.an('array');
+        expect(json.messages).to.be.empty;
+        /* eslint-enable no-unused-expressions */
+      });
   }).timeout(60000);
 
   it('Test publish function with invalid configuration', async () => {
