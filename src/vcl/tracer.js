@@ -116,6 +116,16 @@ function addEpsagonTraces(txt, {
     vcl_hash: {
       e: vcl`req.topurl`, // isESI if set (URL of parent request)
     },
+    vcl_hit: {
+      u: vcl`req.url`, // URL
+      l: vcl`obj.lastuse`, // lastUse
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      p: vcl`obj.is_pci`, // isPCI
+      a: vcl`obj.age`, // age
+      h: vcl`obj.hits`, // hits
+      t: vcl`obj.ttl`, // ttl
+      d: vcl`req.digest`, // digest
+    },
   };
 
   function extraInfo(sub) {
