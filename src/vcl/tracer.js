@@ -90,8 +90,6 @@ function addEpsagonTraces(txt, {
       h: vcl`req.http.Host`,
     },
     f: {
-      // https://developer.fastly.com/reference/vcl/variables/miscellaneous/fastly-info-state/
-      i: vcl`fastly_info.state`,
       // https://developer.fastly.com/reference/vcl/variables/miscellaneous/fastly-error/
       e: vcl`fastly.error`,
       // https://developer.fastly.com/reference/vcl/variables/miscellaneous/req-vcl/
@@ -125,6 +123,12 @@ function addEpsagonTraces(txt, {
       h: vcl`obj.hits`, // hits
       t: vcl`obj.ttl`, // ttl
       d: vcl`req.digest`, // digest
+    },
+    vcl_deliver: {
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      h: vcl`obj.hits`, // hits
+      i: vcl`fastly_info.state`, // state
+      s: vcl`response.status`, // status
     },
   };
 
