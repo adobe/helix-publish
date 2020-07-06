@@ -138,6 +138,14 @@ function addEpsagonTraces(txt, {
       b: vcl`regsub(req.backend, ".*--", "")`, // backend
       d: vcl`req.digest`, // digest
     },
+    vcl_pass: {
+      u: vcl`req.url`, // URL
+      m: vcl`req.request`, // method
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      s: vcl`stale.exists`, // staleExists
+      b: vcl`regsub(req.backend, ".*--", "")`, // backend
+      d: vcl`req.digest`, // digest
+    },
   };
 
   function extraInfo(sub) {
