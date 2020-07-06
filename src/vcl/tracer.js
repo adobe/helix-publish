@@ -113,6 +113,9 @@ function addEpsagonTraces(txt, {
       i: vcl`req.hash_ignore_busy`, // ignoreBusy
       a: vcl`req.hash_always_miss`, // alwaysMiss
     },
+    vcl_hash: {
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+    },
   };
 
   function extraInfo(sub) {
