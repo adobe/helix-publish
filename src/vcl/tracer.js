@@ -88,13 +88,8 @@ function addEpsagonTraces(txt, {
     a: str(epsagonAppName || 'Helix Fastly Epsagon'),
     r: {
       h: vcl`req.http.Host`,
-      u: vcl`req.url`,
-      t: vcl`req.topurl`,
-      m: vcl`req.request`,
     },
     f: {
-      // https://developer.fastly.com/reference/vcl/variables/miscellaneous/fastly-info-state/
-      i: vcl`fastly_info.state`,
       // https://developer.fastly.com/reference/vcl/variables/miscellaneous/fastly-error/
       e: vcl`fastly.error`,
       // https://developer.fastly.com/reference/vcl/variables/miscellaneous/req-vcl/
@@ -104,6 +99,63 @@ function addEpsagonTraces(txt, {
     },
   };
 
+  const fiddle = {
+    vcl_recv: {
+      u: vcl`req.url`, // URL
+      m: vcl`req.request`, // method
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      r: vcl`req.restarts`, // restarts
+      p: vcl`fastly_info.h2.is_push`, // is push
+      h: vcl`fastly_info.is_h2`, // is HTTP/2
+      b: vcl`regsub(req.backend, ".*--", "")`, // backend
+      i: vcl`req.hash_ignore_busy`, // ignoreBusy
+      a: vcl`req.hash_always_miss`, // alwaysMiss
+    },
+    vcl_hash: {
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+    },
+    vcl_hit: {
+      u: vcl`req.url`, // URL
+      l: vcl`obj.lastuse`, // lastUse
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      p: vcl`obj.is_pci`, // isPCI
+      a: vcl`obj.age`, // age
+      h: vcl`obj.hits`, // hits
+      t: vcl`obj.ttl`, // ttl
+      d: vcl`req.digest`, // digest
+    },
+    vcl_deliver: {
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      h: vcl`obj.hits`, // hits
+      i: vcl`fastly_info.state`, // state
+      s: vcl`resp.status`, // status
+    },
+    vcl_miss: {
+      u: vcl`req.url`, // URL
+      m: vcl`req.request`, // method
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      s: vcl`stale.exists`, // staleExists
+      b: vcl`regsub(req.backend, ".*--", "")`, // backend
+      d: vcl`req.digest`, // digest
+    },
+    vcl_pass: {
+      u: vcl`req.url`, // URL
+      m: vcl`req.request`, // method
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      s: vcl`stale.exists`, // staleExists
+      b: vcl`regsub(req.backend, ".*--", "")`, // backend
+      d: vcl`req.digest`, // digest
+    },
+    vcl_error: {
+      e: vcl`req.topurl`, // isESI if set (URL of parent request)
+      s: vcl`obj.status`, // status
+    },
+  };
+
+  function extraInfo(sub) {
+    return fiddle[sub] ? { x: fiddle[sub] } : {};
+  }
+
   const PATTERN = /^vcl_/;
   /**
    * Entering a subroutine, data is empty because no vars have been set yet
@@ -111,6 +163,7 @@ function addEpsagonTraces(txt, {
   function tracesubentry({ name }) {
     return PATTERN.test(name) ? formatLog({
       ...minimal,
+      ...extraInfo(name),
       enter: str(name),
       d: {},
     }) : '';
