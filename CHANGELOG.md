@@ -1,3 +1,16 @@
+# [6.1.0](https://github.com/adobe/helix-publish/compare/v6.0.2...v6.1.0) (2020-07-07)
+
+
+### Features
+
+* **epsagon:** add fiddle to vcl_error ([26a48a0](https://github.com/adobe/helix-publish/commit/26a48a0524889bf5d0c0f0fe1a6b3c5d31aa22db))
+* **epsagon:** add fiddle tracing to vcl_miss ([b893e8f](https://github.com/adobe/helix-publish/commit/b893e8ff71e0fcd56450a2fdd7267fd01d73edb7))
+* **epsagon:** add fiddle vars to vcl_deliver ([dd0db69](https://github.com/adobe/helix-publish/commit/dd0db69e91b3183460de3d7cee98af3ded5ef184))
+* **epsagon:** add fiddle vars to vcl_pass ([6fe56ed](https://github.com/adobe/helix-publish/commit/6fe56ede21b5ad940c987d15c2c272179117d3cb))
+* **epsagon:** add fiddle-like tracing to vcl_hash ([009516a](https://github.com/adobe/helix-publish/commit/009516a8a7316d3d0513ae2689fae644420169cf))
+* **epsagon:** add fiddle-like tracing to vcl_hit ([0c79a1e](https://github.com/adobe/helix-publish/commit/0c79a1eeb22bee9fea4adf306fba615fbb3bc132))
+* **epsagon:** add new tracing vars from fastly fiddle to vcl_recv ([a032cb7](https://github.com/adobe/helix-publish/commit/a032cb7a080e436ec4bd0c91e76a89b8101e9a1f))
+
 ## [6.0.2](https://github.com/adobe/helix-publish/compare/v6.0.1...v6.0.2) (2020-07-02)
 
 
