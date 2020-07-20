@@ -1,3 +1,10 @@
+## [6.1.3](https://github.com/adobe/helix-publish/compare/v6.1.2...v6.1.3) (2020-07-20)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) fixes ([3ad09c5](https://github.com/adobe/helix-publish/commit/3ad09c56149067687be3942aaaac0fd0595a0399))
+
 ## [6.1.2](https://github.com/adobe/helix-publish/compare/v6.1.1...v6.1.2) (2020-07-13)
 
 
