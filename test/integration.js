@@ -9,6 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
+
 const path = require('path');
 const assert = require('assert');
 const chai = require('chai');

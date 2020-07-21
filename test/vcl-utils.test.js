@@ -9,14 +9,15 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+/* eslint-env mocha */
+process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
+
 const fs = require('fs-extra');
 const assert = require('assert');
 const path = require('path');
 const { HelixConfig } = require('@adobe/helix-shared');
 const utils = require('../src/fastly/vcl-utils');
 const { backends } = require('../src/fastly/backends');
-
-/* eslint-env mocha */
 
 describe('Testing vcl-utils.js', () => {
   it('#regexp', () => {
