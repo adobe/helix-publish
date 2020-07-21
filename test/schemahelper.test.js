@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-env mocha */
+process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 
 const assert = require('assert');
 const { toString, vcl, str } = require('../src/vcl/schemahelper');
