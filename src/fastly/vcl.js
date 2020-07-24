@@ -42,7 +42,13 @@ async function init(fastly, version, options) {
       epsagonAppName: options.appName,
     })
     : include(vclfile);
-  await writevcl(fastly, version, content, 'helix.vcl');
+  return writevcl(fastly, version, content, 'helix.vcl');
+}
+
+async function finish(fastly, version) {
+  // called when all custom vcl scripts have been updated,
+  // now it's safe to set the main script
+  // https://github.com/adobe/helix-publish/issues/549
   return fastly.setMainVCL(version, 'helix.vcl');
 }
 
@@ -81,6 +87,7 @@ function queries(fastly, version, indexconfig) {
 
 module.exports = {
   init,
+  finish,
   updatestrains,
   extensions,
   dynamic,
