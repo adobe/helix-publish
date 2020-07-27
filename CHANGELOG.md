@@ -1,3 +1,11 @@
+## [6.1.8](https://github.com/adobe/helix-publish/compare/v6.1.7...v6.1.8) (2020-07-27)
+
+
+### Bug Fixes
+
+* make sure "helix/vcl" ends up being the "main" script ([25f408f](https://github.com/adobe/helix-publish/commit/25f408f3e117b25e2195b98cc288d28ce5837e0a)), closes [#549](https://github.com/adobe/helix-publish/issues/549)
+* make sure "helix/vcl" ends up being the "main" script ([bb2cd59](https://github.com/adobe/helix-publish/commit/bb2cd590bc64df86120520e61f64fb49af4ce0e9)), closes [#549](https://github.com/adobe/helix-publish/issues/549)
+
 ## [6.1.7](https://github.com/adobe/helix-publish/compare/v6.1.6...v6.1.7) (2020-07-23)
 
 
