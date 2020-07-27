@@ -109,12 +109,13 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       publishtasks.push(epsagon.init(fastly, version, 'helix-epsagon', epsagonToken));
     }
     return Promise.all(publishtasks)
-      .then((tasks) => {
-        log.info(`completed ${tasks.length} tasks.`);
+      .then(() => vcl.finish(fastly, version))
+      .then(() => {
+        log.info(`completed ${publishtasks.length + 1} tasks.`);
         return {
           body: {
             status: 'published',
-            completed: tasks.length,
+            completed: publishtasks.length + 1,
           },
           statusCode: 200,
         };
