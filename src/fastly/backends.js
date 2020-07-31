@@ -34,7 +34,7 @@ const backends = {
     first_byte_timeout: 60000,
     weight: 100,
     address: 'adobeioruntime.net',
-    connect_timeout: 1000,
+    connect_timeout: 5000,
     name: 'AdobeRuntime',
     port: 443,
     between_bytes_timeout: 10000,
