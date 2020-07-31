@@ -37,7 +37,7 @@ const backends = {
     connect_timeout: 5000,
     name: 'AdobeRuntime',
     port: 443,
-    between_bytes_timeout: 5000,
+    between_bytes_timeout: 10000,
     shield: 'bwi-va-us',
     ssl_cert_hostname: 'adobeioruntime.net',
     max_conn: 200,
