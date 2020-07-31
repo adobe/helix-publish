@@ -1,3 +1,12 @@
+## [6.1.10](https://github.com/adobe/helix-publish/compare/v6.1.9...v6.1.10) (2020-07-31)
+
+
+### Bug Fixes
+
+* **backends:** increase Fastly timeouts ([55a2ad5](https://github.com/adobe/helix-publish/commit/55a2ad54b016a000ea86c296f7b080f86cd4a795))
+* **backends:** return to default between bytes timeout ([50d3135](https://github.com/adobe/helix-publish/commit/50d31359b4da7c4d2b208ec05e3b56fe6260d2bf))
+* **backends:** use 5 second timeouts ([a4de1d6](https://github.com/adobe/helix-publish/commit/a4de1d66637df2f1aeb78114763e29a2a8eda790))
+
 ## [6.1.9](https://github.com/adobe/helix-publish/compare/v6.1.8...v6.1.9) (2020-07-29)
 
 
