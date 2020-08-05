@@ -1,3 +1,11 @@
+## [6.1.13](https://github.com/adobe/helix-publish/compare/v6.1.12...v6.1.13) (2020-08-05)
+
+
+### Bug Fixes
+
+* **vcl:** block more typical scanning target URLs ([f1ae281](https://github.com/adobe/helix-publish/commit/f1ae281226d49cf7df88bea3841862bbba33983d))
+* **vcl:** do not use lookbehind regex ([5ed4179](https://github.com/adobe/helix-publish/commit/5ed4179e4f1189deef28e2b5eaf817e437028707))
+
 ## [6.1.12](https://github.com/adobe/helix-publish/compare/v6.1.11...v6.1.12) (2020-08-03)
 
 
