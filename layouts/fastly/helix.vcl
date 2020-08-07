@@ -116,11 +116,14 @@ sub hlx_recv_init {
   if (!req.http.X-Debug) {
     # Make sure clients can't change request flow
     # X-Strain is currently settable by Cookie, not worth unsetting for now
-    unset req.http.X-Backend-URL;
     unset req.http.X-Dirname;
-    unset req.http.X-Request-Type;
     unset req.http.X-Static-Content-Type;
     unset req.http.X-Sticky;
+    # Allow Redirect Requests for Helix Static
+    if (req.http.X-Request-Type != "Static/Redirect") {
+      unset req.http.X-Backend-URL;
+      unset req.http.X-Request-Type;
+    }
     # Allow through from another Fastly POP as well as from debugger
     if (!req.http.X-From-Edge) {
       unset req.http.X-CDN-Request-ID;
@@ -843,6 +846,12 @@ sub hlx_fetch_static {
     // - filter out GitHub-headers
 
     set beresp.http.Content-Type = req.http.X-Static-Content-Type;
+    set beresp.http.Vary = bereq.http.Vary + ",X-Backend-URL";
+    // full sha in URL, response immutable
+    if (req.http.X-Backend-URL ~ "^\/[^\/]+\/[^\/]+\/([0-9a-f]{40})\/.*$") {
+      set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the client;
+      set beresp.http.Surrogate-Control = "max-age=31622400,immutable"; # and in the CDN cache in case GH is down
+    }
     unset beresp.http.X-Content-Type-Options;
     unset beresp.http.X-Frame-Options;
     unset beresp.http.X-XSS-Protection;
