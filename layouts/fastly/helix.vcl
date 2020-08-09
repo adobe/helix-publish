@@ -630,16 +630,18 @@ sub hlx_type_blob {
 
   declare local var.sha STRING;
   declare local var.ext STRING;
+  declare local var.sas STRING;
 
   if (req.url.path ~ "^/hlx_(([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
     set var.sha = re.group.1;
     set var.ext = req.url.ext;
+    set var.sas = table.lookup(secrets, "AZURE_BLOB_SAS_RO", "");
 
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
 
-  set req.http.X-Backend-URL = "/external/" + var.sha;
+  set req.http.X-Backend-URL = "/external/" + var.sha + var.sas;
 }
 
 sub hlx_type_query {
