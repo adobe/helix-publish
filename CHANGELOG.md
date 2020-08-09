@@ -1,3 +1,10 @@
+# [6.2.0](https://github.com/adobe/helix-publish/compare/v6.1.14...v6.2.0) (2020-08-09)
+
+
+### Features
+
+* **blobs:** include SAS token for fetching blobs if configured ([9eeb94b](https://github.com/adobe/helix-publish/commit/9eeb94b6b0e1bf27b29d6eeb95cfd307ddf36633)), closes [#556](https://github.com/adobe/helix-publish/issues/556)
+
 ## [6.1.14](https://github.com/adobe/helix-publish/compare/v6.1.13...v6.1.14) (2020-08-08)
 
 
