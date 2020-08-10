@@ -1,3 +1,10 @@
+# [6.3.0](https://github.com/adobe/helix-publish/compare/v6.2.0...v6.3.0) (2020-08-10)
+
+
+### Features
+
+* **static:** allow redirect requests from the outside ([373c016](https://github.com/adobe/helix-publish/commit/373c016292ccfa88a3c035b430577c8eb1a3412e)), closes [#563](https://github.com/adobe/helix-publish/issues/563)
+
 # [6.2.0](https://github.com/adobe/helix-publish/compare/v6.1.14...v6.2.0) (2020-08-09)
 
 
