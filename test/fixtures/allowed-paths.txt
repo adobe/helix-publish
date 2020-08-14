@@ -1061,3 +1061,4 @@
 /en/publish/2016/03/10/a-behind-the-brush-look-at-kyle-t-websters-photoshop-mastery.html
 /en/publish/2016/04/12/facebook-instant-articles-adobe-analytics.html
 /cgi-bin/test.php
+/update-for-enterprise-adobe-flash-player/
