@@ -848,7 +848,7 @@ sub hlx_fetch_static {
     // - filter out GitHub-headers
 
     set beresp.http.Content-Type = req.http.X-Static-Content-Type;
-    set beresp.http.Vary = bereq.http.Vary + ",X-Backend-URL";
+    set beresp.http.Vary:X-Backend-URL = "";
     // full sha in URL, response immutable
     if (req.http.X-Backend-URL ~ "^\/[^\/]+\/[^\/]+\/([0-9a-f]{40})\/.*$") {
       set beresp.http.Cache-Control = "max-age=31622400,immutable"; # keep it for a year in the client;
@@ -1459,37 +1459,26 @@ sub vcl_fetch {
   call hlx_fetch_errors;
 
   unset beresp.http.Set-Cookie;
-  unset beresp.http.Vary;
   unset beresp.http.Expires;
 
   # We Vary on X-Debug, so that it's automatically a cache-miss, and we go to
   # origin. Origin will raise the log level for such requests too. So all roung
   # convenience.
-  if (beresp.http.Vary !~ "X-Debug") {
-    if (beresp.http.Vary) {
-      set beresp.http.Vary = beresp.http.Vary + ",X-Debug";
-    } else {
-      set beresp.http.Vary = "X-Debug";
-    }
-  }
+  set beresp.http.Vary:X-Debug = "";
+  
   # Vary on Strain for pipeline and static, since we're sending strain in the
   # backend URL.
-  if (beresp.http.Vary !~ "X-Strain") {
-    # Vary is already set above
-    set beresp.http.Vary = beresp.http.Vary + ",X-Strain";
-  }
+  set beresp.http.Vary:X-Strain = "";
 
   # Vary on Request-Type, so that static requests don't interfere with
   # dynamic requests: https://github.com/adobe/helix-publish/issues/45
-  if (beresp.http.Vary !~ "X-Request-Type") {
-    set beresp.http.Vary = beresp.http.Vary + ",X-Request-Type";
-  }
+  set beresp.http.Vary:X-Request-Type = "";
 
   # Vary on XFH, to avoid cache poisoning
   # https://github.com/adobe/project-helix/issues/460
-  if (beresp.http.Vary !~ "X-Forwarded-Host") {
-    set beresp.http.Vary = beresp.http.Vary + ",X-Forwarded-Host";
-  }
+  set beresp.http.Vary:X-Forwarded-Host = "";
+
+  
 
   # TODO: Add Surrogate-Keys, based on req.url/X-Orig-URL
 
