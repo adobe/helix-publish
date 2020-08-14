@@ -596,8 +596,6 @@ sub hlx_type_static {
 
 sub hlx_type_purge {
   declare local var.namespace STRING;
-  declare local var.package STRING;
-  declare local var.script STRING;
 
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
   # This is a purge request.
@@ -607,22 +605,16 @@ sub hlx_type_purge {
   # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
   set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
-  set var.package = "helix-services"
-
-  # Load important information from edge dicts
-  call hlx_owner;
-  call hlx_repo;
-  call hlx_ref;
-
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace
-    + "/" + var.package
-    // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
-    + "/purge" + var.script
+    + "/helix-services"
+    + "/purge@v1"
     + "?host=" + urlencode(req.http.X-Orig-Host)
     + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
     + "&path=" + urlencode(req.http.X-Orig-Url);
+
+  set req.request = "POST";
 }
 
 sub hlx_type_cgi {
