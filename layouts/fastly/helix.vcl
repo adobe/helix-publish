@@ -1472,11 +1472,11 @@ sub vcl_fetch {
 
   # Vary on Request-Type, so that static requests don't interfere with
   # dynamic requests: https://github.com/adobe/helix-publish/issues/45
-  set beresp.http.Vary:X-Debug = X-Request-Type;
+  set beresp.http.Vary:X-Request-Type = "";
 
   # Vary on XFH, to avoid cache poisoning
   # https://github.com/adobe/project-helix/issues/460
-  set beresp.http.Vary:X-Debug = X-Forwarded-Host;
+  set beresp.http.Vary:X-Forwarded-Host = "";
 
   
 
