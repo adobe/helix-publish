@@ -353,6 +353,7 @@ sub hlx_headers_fetch {
   # Add Surrogate-Key headers for soft purges
   declare local var.urlkey STRING; # surrogate key from url
   declare local var.repokey STRING; # surrogate key from repo
+  declare local var.refkey STRING; # surrogate key from repo & ref
   
   set var.urlkey = digest.hmac_sha256_base64("helix", "https://" + req.http.X-Orig-Host + req.http.X-Orig-Url);
   set var.urlkey = regsub(var.urlkey, "(.{16}).*", "\1");
@@ -360,10 +361,13 @@ sub hlx_headers_fetch {
   set var.repokey = digest.hmac_sha256_base64("helix", "https://github.com/" + req.http.X-Owner + "/" + req.http.X-Repo);
   set var.repokey = regsub(var.repokey, "(.{16}).*", "\1");
 
+  set var.refkey = digest.hmac_sha256_base64("helix", "https://github.com/" + req.http.X-Owner + "/" + req.http.X-Repo + "/tree/" + req.http.X-Ref);
+  set var.refkey = regsub(var.refkey, "(.{16}).*", "\1");
+
   if (!beresp.http.Surrogate-Key) {
-    set beresp.http.Surrogate-Key = "all " + var.urlkey + " " + var.repokey;
+    set beresp.http.Surrogate-Key = "all " + var.urlkey + " " + var.repokey + " " + var.refkey;
   } else {
-    set beresp.http.Surrogate-Key = "all " + var.urlkey + " " + var.repokey + " " + beresp.http.Surrogate-Key;
+    set beresp.http.Surrogate-Key = "all " + var.urlkey + " " + var.repokey + " " + var.refkey + " " + beresp.http.Surrogate-Key;
   }
 
   # Only do this when X-Debug is present, since `Vary: X-Debug` will cause
