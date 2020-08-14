@@ -1,3 +1,10 @@
+## [6.3.3](https://github.com/adobe/helix-publish/compare/v6.3.2...v6.3.3) (2020-08-14)
+
+
+### Bug Fixes
+
+* **blocklist:** allow more paths ([9065a52](https://github.com/adobe/helix-publish/commit/9065a5203e76f8aa5eb443fd9f91c7d6b7ce41c4))
+
 ## [6.3.2](https://github.com/adobe/helix-publish/compare/v6.3.1...v6.3.2) (2020-08-11)
 
 
