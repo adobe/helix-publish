@@ -351,10 +351,19 @@ sub hlx_headers_fetch {
   }
 
   # Add Surrogate-Key headers for soft purges
+  declare local var.urlkey STRING; # surrogate key from url
+  declare local var.repokey STRING; # surrogate key from repo
+  
+  set var.urlkey = digest.hmac_sha256_base64("helix", "https://" + req.http.X-Orig-Host + req.http.X-Orig-Url);
+  set var.urlkey = regsub(var.urlkey, "(.{16}).*", "\1");
+
+  set var.repokey = digest.hmac_sha256_base64("helix", "https://github.com/" + req.http.X-Owner + "/" + req.http.X-Repo);
+  set var.repokey = regsub(var.repokey, "(.{16}).*", "\1");
+
   if (!beresp.http.Surrogate-Key) {
-    set beresp.http.Surrogate-Key = "all";
-  } else{
-    set beresp.http.Surrogate-Key = "all " + beresp.http.Surrogate-Key;
+    set beresp.http.Surrogate-Key = "all " + var.urlkey + " " + var.repokey;
+  } else {
+    set beresp.http.Surrogate-Key = "all " + var.urlkey + " " + var.repokey + " " + beresp.http.Surrogate-Key;
   }
 
   # Only do this when X-Debug is present, since `Vary: X-Debug` will cause
@@ -1490,8 +1499,6 @@ sub vcl_fetch {
   if (beresp.http.Vary !~ "X-Forwarded-Host") {
     set beresp.http.Vary = beresp.http.Vary + ",X-Forwarded-Host";
   }
-
-  # TODO: Add Surrogate-Keys, based on req.url/X-Orig-URL
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
     # Use TTL from origin
