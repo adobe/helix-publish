@@ -1,3 +1,11 @@
+# [6.4.0](https://github.com/adobe/helix-publish/compare/v6.3.3...v6.4.0) (2020-08-17)
+
+
+### Features
+
+* **vcl:** add surrogate key for ref ([7f6780d](https://github.com/adobe/helix-publish/commit/7f6780de4a6ae2a56b239a19ded1357982dfbb8f))
+* **vcl:** add surrogate keys for repo and url ([43508a4](https://github.com/adobe/helix-publish/commit/43508a4a155f69437b1f4752c6867c1a20f97d25)), closes [#569](https://github.com/adobe/helix-publish/issues/569)
+
 ## [6.3.3](https://github.com/adobe/helix-publish/compare/v6.3.2...v6.3.3) (2020-08-14)
 
 
