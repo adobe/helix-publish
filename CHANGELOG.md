@@ -1,3 +1,10 @@
+## [6.4.1](https://github.com/adobe/helix-publish/compare/v6.4.0...v6.4.1) (2020-08-19)
+
+
+### Bug Fixes
+
+* block requests ending in %2 ([#579](https://github.com/adobe/helix-publish/issues/579)) ([43e5d5e](https://github.com/adobe/helix-publish/commit/43e5d5e2b3330554322c3eed70c13a2210c8de89))
+
 # [6.4.0](https://github.com/adobe/helix-publish/compare/v6.3.3...v6.4.0) (2020-08-17)
 
 
