@@ -211,7 +211,7 @@ sub hlx_deny {
 sub hlx_block_recv {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_block_recv";
 
-  if (!req.http.x-topurl && req.url.path ~ "([^A-Za-z0-9-_./+%25]|\/\.\.|%25[^2-7a-fA-F][^0-9a-fA-F]|%25(2[26]|3([aA]|[dD])|5[cC]|7[cC])|//etc/|^(\/|\/(?!cgi-bin).*)[^\/]+\.php$|/tiny_?mce|^/tmp|^/TMP|/(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|[Ww]eb)[aA]dmin|wiz.*)|$/[Uu]ser|/etc/passwd|/zimbra|/wp-(app|admin|config|contents?|includes|login|rss.*|register)|/[Ww]ord[Pp]ress|/WebSphere|/wwwroot|^/(www|web)\....$|.swf$|/[Ww][Ss]_|^/[Uu]ser|^/[Uu]pload|^/typo3|^/[Tt]umb|^/Warehouse|^/wiki|^/VERSION|^/[Vv]ersion|^/.login|^/[Ww][eE][bB](dav|db|grind|mail|master|[Ss]ervice|shell|site|sql|stat|-INF)|^/vtiger|^/var/|^/web[.-]|^/[Tt]humb|^/vb\.|^/vor[ou]d|^/[Ww][Pp](\.*)?|[Tt]hank.*\.txt$|^/[Vv]agrant|^/v1|^/yoneti|^/[Uu]pgrade|^/UPGRADE|^/[Uu]pdate([^-]|$)|^/UPDATE|/fckeditor|^/uddi|^/x[ms]l|/umbraco|^/TODO|^/vendor/|^/usuario|^/tests/phpunit_report\.xml$|^/testweb$|^/theme$|^/themes$|^/Thorfile$|^/thread$|^/threads$|^/tiki/doc/stable\.version$|^/tips$|^/title$|^/tn$|^/tools$|^/tools/_backups/$|^/top$|^/topic$|^/topics$|^/trace$|^/Trace\.axd$|^/trackback$|^/tradetheme$|^/training$|^/trans$|^/transfer$|^/travel$|^/trivia/$|^/tst$|^/tsweb$|^/tsweb/$|^/tutorials$|^/tv$|^/txt/$|^/types$|^/ui$|^/ui/$|^/uk$|^/unattend\.txt$|^/UniversityServlet$|^/upstream_conf$|^/uri$|^/url$|^/us$|^/usage/$|^/usagedata/$|^/usebean\.jsp$|^/usr-bin/$|^/usr/$|^/utf8$|^/utility_login/$|^/utils$|^/uvpanel/$|^/v$|^/var$|^/variables\.1\.marketing\.adobe\.com\.txt$|^/view-source$|^/vpn/$|^/vtund\.conf$|^/wcx_ftp\.ini$|^/Web\.config$|^/Webalizer/$|^/webmin/$|^/WebShell\.cgi$|^/wenzhang$|^/Wishlist\.1\.marketing\.adobe\.com\.txt$|^/WLDummyInitJVMIDs$|^/WSsamples$|^/wstats$|^/wvdial\.conf$|^/www-error\.log$|^/www\.tar\.gz$|^/wwwboard/passwd\.txt$|^/wwwstats\.htm$|^/xferlog$|^/xls/$|^/xphperrors\.log$|^/xsql/lib/XSQLConfig\.xml$|^/XSQLConfig\.xml$|^/yaml_cron\.log$|^/yaml\.log$|^/yum\.log$|^/zabbix/$|^/zebra\.conf") { # block baddies
+  if (!req.http.x-topurl && req.url.path ~ "([^A-Za-z0-9-_./+%25]|\/\.\.|%25[^2-7a-fA-F][^0-9a-fA-F]|%25(2[26]|3([aA]|[dD])|5[cC]|7[cC])|//etc/|^(\/|\/(?!cgi-bin).*)[^\/]+\.php$|/tiny_?mce|^/tmp|^/TMP|/(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|[Ww]eb)[aA]dmin|wiz.*)|$/[Uu]ser|/etc/passwd|/zimbra|/wp-(app|admin|config|contents?|includes|login|rss.*|register)|/[Ww]ord[Pp]ress|/WebSphere|/wwwroot|^/(www|web)\....$|.swf$|/[Ww][Ss]_|^/[Uu]ser|^/[Uu]pload|^/typo3|^/[Tt]umb|^/Warehouse|^/wiki|^/VERSION|^/[Vv]ersion|^/.login|^/[Ww][eE][bB](dav|db|grind|mail|master|[Ss]ervice|shell|site|sql|stat|-INF)|^/vtiger|^/var/|^/web[.-]|^/[Tt]humb|^/vb\.|^/vor[ou]d|^/[Ww][Pp](\.*)?|[Tt]hank.*\.txt$|^/[Vv]agrant|^/v1|^/yoneti|^/[Uu]pgrade|^/UPGRADE|^/[Uu]pdate([^-]|$)|^/UPDATE|/fckeditor|^/uddi|^/x[ms]l|/umbraco|^/TODO|^/vendor/|^/usuario|^/tests/phpunit_report\.xml$|^/testweb$|^/theme$|^/themes$|^/Thorfile$|^/thread$|^/threads$|^/tiki/doc/stable\.version$|^/tips$|^/title$|^/tn$|^/tools$|^/tools/_backups/$|^/top$|^/topic$|^/topics$|^/trace$|^/Trace\.axd$|^/trackback$|^/tradetheme$|^/training$|^/trans$|^/transfer$|^/travel$|^/trivia/$|^/tst$|^/tsweb$|^/tsweb/$|^/tutorials$|^/tv$|^/txt/$|^/types$|^/ui$|^/ui/$|^/uk$|^/unattend\.txt$|^/UniversityServlet$|^/upstream_conf$|^/uri$|^/url$|^/us$|^/usage/$|^/usagedata/$|^/usebean\.jsp$|^/usr-bin/$|^/usr/$|^/utf8$|^/utility_login/$|^/utils$|^/uvpanel/$|^/v$|^/var$|^/variables\.1\.marketing\.adobe\.com\.txt$|^/view-source$|^/vpn/$|^/vtund\.conf$|^/wcx_ftp\.ini$|^/Web\.config$|^/Webalizer/$|^/webmin/$|^/WebShell\.cgi$|^/wenzhang$|^/Wishlist\.1\.marketing\.adobe\.com\.txt$|^/WLDummyInitJVMIDs$|^/WSsamples$|^/wstats$|^/wvdial\.conf$|^/www-error\.log$|^/www\.tar\.gz$|^/wwwboard/passwd\.txt$|^/wwwstats\.htm$|^/xferlog$|^/xls/$|^/xphperrors\.log$|^/xsql/lib/XSQLConfig\.xml$|^/XSQLConfig\.xml$|^/yaml_cron\.log$|^/yaml\.log$|^/yum\.log$|^/zabbix/$|^/zebra\.conf|^.*%2$") { # block baddies
     error 955 "Forbidden";
   }
 
@@ -354,7 +354,7 @@ sub hlx_headers_fetch {
   declare local var.urlkey STRING; # surrogate key from url
   declare local var.repokey STRING; # surrogate key from repo
   declare local var.refkey STRING; # surrogate key from repo & ref
-  
+
   set var.urlkey = digest.hmac_sha256_base64("helix", "https://" + req.http.X-Orig-Host + req.http.X-Orig-Url);
   set var.urlkey = regsub(var.urlkey, "(.{16}).*", "\1");
 
@@ -1478,7 +1478,7 @@ sub vcl_fetch {
   # origin. Origin will raise the log level for such requests too. So all roung
   # convenience.
   set beresp.http.Vary:X-Debug = "";
-  
+
   # Vary on Strain for pipeline and static, since we're sending strain in the
   # backend URL.
   set beresp.http.Vary:X-Strain = "";
@@ -1491,7 +1491,7 @@ sub vcl_fetch {
   # https://github.com/adobe/project-helix/issues/460
   set beresp.http.Vary:X-Forwarded-Host = "";
 
-  
+
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
     # Use TTL from origin
