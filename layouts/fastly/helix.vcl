@@ -420,6 +420,13 @@ sub hlx_headers_deliver {
 
 sub hlx_determine_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
+  
+  if (req.request ~ "[A-Z]+PURGE" || req.http.x-method-override ~ "[A-Z]+PURGE") {
+    set req.http.X-Trace = req.http.X-Trace + "(hlx-purge)";
+    set req.http.X-Request-Type = "Helix-Purge";
+    return;
+  }
+  
   // TODO check for topurl
   if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
@@ -598,6 +605,29 @@ sub hlx_type_static {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
+}
+
+sub hlx_type_purge {
+  declare local var.namespace STRING;
+
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
+  # This is a purge request.
+
+  set req.backend = F_AdobeRuntime;
+
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  call hlx_action_root;
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace
+    + "/helix-services"
+    + "/purge@v1"
+    + "?host=" + urlencode(req.http.X-Orig-Host)
+    + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
+    + "&path=" + urlencode(req.http.X-Orig-Url);
+
+  set req.request = "POST";
 }
 
 sub hlx_type_cgi {
@@ -1273,6 +1303,10 @@ sub vcl_recv {
     // all other request types are for GET only, but cgi-bin allows all
     // HTTP methods
     return(lookup);
+  } elsif (req.http.X-Request-Type == "Helix-Purge") {
+    call hlx_type_purge;
+    // we pass here, as the purge is not cachable
+    return(pass);
   } elsif (req.http.X-Request-Type == "Query") {
     call hlx_type_query;
   } elsif (req.http.X-Request-Type == "Static/Redirect") {
