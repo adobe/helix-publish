@@ -1,3 +1,11 @@
+# [6.5.0](https://github.com/adobe/helix-publish/compare/v6.4.1...v6.5.0) (2020-08-19)
+
+
+### Features
+
+* **vcl:** allow alternative http methods for purges ([57bca0f](https://github.com/adobe/helix-publish/commit/57bca0f702a7a01200cf2fd418b956aacaa13964))
+* **vcl:** enable deep purges ([62e67b8](https://github.com/adobe/helix-publish/commit/62e67b892c2d46b04925a9c2c87f1b3fa249abab))
+
 ## [6.4.1](https://github.com/adobe/helix-publish/compare/v6.4.0...v6.4.1) (2020-08-19)
 
 
