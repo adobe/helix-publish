@@ -1,3 +1,10 @@
+## [6.5.1](https://github.com/adobe/helix-publish/compare/v6.5.0...v6.5.1) (2020-08-20)
+
+
+### Bug Fixes
+
+* **purge:** avoid endless loops ([e723383](https://github.com/adobe/helix-publish/commit/e7233836626b886665d17ca38352b137c061f308))
+
 # [6.5.0](https://github.com/adobe/helix-publish/compare/v6.4.1...v6.5.0) (2020-08-19)
 
 
