@@ -1,3 +1,10 @@
+## [6.5.2](https://github.com/adobe/helix-publish/compare/v6.5.1...v6.5.2) (2020-08-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.10.1 ([776687c](https://github.com/adobe/helix-publish/commit/776687c0d228f7369dfa951b182bacfaa75938f3))
+
 ## [6.5.1](https://github.com/adobe/helix-publish/compare/v6.5.0...v6.5.1) (2020-08-20)
 
 
