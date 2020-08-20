@@ -421,7 +421,7 @@ sub hlx_headers_deliver {
 sub hlx_determine_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
   
-  if (req.request ~ "[A-Z]+PURGE" || req.http.x-method-override ~ "[A-Z]+PURGE") {
+  if (req.request == "HLXPURGE" || req.http.x-method-override == "HLXPURGE") {
     set req.http.X-Trace = req.http.X-Trace + "(hlx-purge)";
     set req.http.X-Request-Type = "Helix-Purge";
     return;
