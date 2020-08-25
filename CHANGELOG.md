@@ -1,3 +1,10 @@
+## [6.5.4](https://github.com/adobe/helix-publish/compare/v6.5.3...v6.5.4) (2020-08-25)
+
+
+### Bug Fixes
+
+* **check:** use html/_status_check instead of hlx--static ([#586](https://github.com/adobe/helix-publish/issues/586)) ([f3e2374](https://github.com/adobe/helix-publish/commit/f3e23740871569db4439968bba1106a18f3cfe0d)), closes [#585](https://github.com/adobe/helix-publish/issues/585)
+
 ## [6.5.3](https://github.com/adobe/helix-publish/compare/v6.5.2...v6.5.3) (2020-08-24)
 
 
