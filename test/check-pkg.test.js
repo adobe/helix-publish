@@ -13,28 +13,56 @@
 /* eslint-env mocha */
 process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 
-const { HelixConfig } = require('@adobe/helix-shared');
 const assert = require('assert');
 const path = require('path');
+const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
+const { setupMocha: setupPolly } = require('@pollyjs/core');
+const FSPersister = require('@pollyjs/persister-fs');
+const { HelixConfig } = require('@adobe/helix-shared');
 const checkPkgs = require('../src/check-pkgs');
 
 describe('test check_pkgs', () => {
-  it('checkPkgs works successfully', async () => {
+  setupPolly({
+    recordIfMissing: false,
+    adapters: [NodeHttpAdapter],
+    persister: FSPersister,
+    persisterOptions: {
+      fs: {
+        recordingsDir: path.resolve(__dirname, 'fixtures/recordings'),
+      },
+    },
+  });
+
+  it('checkPkgs works successfully', async function test() {
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/mrosier/d90a42b1babf33d430450e05cbd3dc1edc6b7135/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/mrosier/c4763cd3420bf015454e2e1f2ce2ecd1dd1ca942/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/mrosier/9d723ce487448cc132cd240a484b65772b201241/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/pass.yaml'))
       .init();
     await checkPkgs(config);
   });
 
-  it('checkPkgs fails if one check fails', async () => {
+  it('checkPkgs fails if one check fails', async function test() {
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/fake/d90a42b1babf33d430450e05cbd3dc1edc6b7135dafa/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/fake/c4763cd3420bf015454e2e1f2ce2ecd1dd1ca942/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/fake/9d723ce487448cc132cd240a484b65772b201241/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.sendStatus(404));
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/fail.yaml'))
       .init();
-    try {
-      await checkPkgs(config);
-      assert.fail('test should have failed');
-    } catch (e) {
-      assert.ok('checkPkg failed properly');
-    }
+
+    await assert.rejects(async () => checkPkgs(config));
   });
 });
