@@ -354,7 +354,7 @@ sub hlx_headers_fetch {
   declare local var.urlkey STRING; # surrogate key from url
   declare local var.repokey STRING; # surrogate key from repo
   declare local var.refkey STRING; # surrogate key from repo & ref
-  
+
   set var.urlkey = digest.hmac_sha256_base64("helix", "https://" + req.http.X-Orig-Host + req.http.X-Orig-Url);
   set var.urlkey = regsub(var.urlkey, "(.{16}).*", "\1");
 
@@ -420,6 +420,13 @@ sub hlx_headers_deliver {
 
 sub hlx_determine_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
+  
+  if (req.request == "HLXPURGE" || req.http.x-method-override == "HLXPURGE") {
+    set req.http.X-Trace = req.http.X-Trace + "(hlx-purge)";
+    set req.http.X-Request-Type = "Helix-Purge";
+    return;
+  }
+  
   // TODO check for topurl
   if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
@@ -598,6 +605,29 @@ sub hlx_type_static {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
+}
+
+sub hlx_type_purge {
+  declare local var.namespace STRING;
+
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
+  # This is a purge request.
+
+  set req.backend = F_AdobeRuntime;
+
+  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  call hlx_action_root;
+  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+
+  set req.http.X-Backend-URL = "/api/v1/web"
+    + "/" + var.namespace
+    + "/helix-services"
+    + "/purge@v1"
+    + "?host=" + urlencode(req.http.X-Orig-Host)
+    + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
+    + "&path=" + urlencode(req.http.X-Orig-Url);
+
+  set req.request = "POST";
 }
 
 sub hlx_type_cgi {
@@ -1273,6 +1303,10 @@ sub vcl_recv {
     // all other request types are for GET only, but cgi-bin allows all
     // HTTP methods
     return(lookup);
+  } elsif (req.http.X-Request-Type == "Helix-Purge") {
+    call hlx_type_purge;
+    // we pass here, as the purge is not cachable
+    return(pass);
   } elsif (req.http.X-Request-Type == "Query") {
     call hlx_type_query;
   } elsif (req.http.X-Request-Type == "Static/Redirect") {
@@ -1478,7 +1512,7 @@ sub vcl_fetch {
   # origin. Origin will raise the log level for such requests too. So all roung
   # convenience.
   set beresp.http.Vary:X-Debug = "";
-  
+
   # Vary on Strain for pipeline and static, since we're sending strain in the
   # backend URL.
   set beresp.http.Vary:X-Strain = "";
@@ -1491,7 +1525,7 @@ sub vcl_fetch {
   # https://github.com/adobe/project-helix/issues/460
   set beresp.http.Vary:X-Forwarded-Host = "";
 
-  
+
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
     # Use TTL from origin

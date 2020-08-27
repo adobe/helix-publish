@@ -144,6 +144,11 @@ const VERSION_NUM = process.env.VERSION_NUM || 247;
 const ALGOLIA_APP_ID = process.env.ALGOLIA_APP_ID || 'A8PL9E4TZT';
 const EPSAGON_TOKEN = process.env.EPSAGON_TOKEN || 'fake-token';
 
+if (HLX_FASTLY_NAMESPACE.startsWith('1McG')) {
+  console.error('Do not use helix-pages for testing');
+  process.exit(2);
+}
+
 describe('Integration Test', () => {
   setupPolly({
     recordFailedRequests: true,
@@ -201,6 +206,9 @@ describe('Integration Test', () => {
         res.sendStatus(500);
       });
     }
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/mrosier/9d723ce487448cc132cd240a484b65772b201241/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
 
     const params = {
       service: HLX_FASTLY_NAMESPACE,
@@ -219,6 +227,9 @@ describe('Integration Test', () => {
         res.sendStatus(200);
       });
     }
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/mrosier/9d723ce487448cc132cd240a484b65772b201241/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
 
     const params = {
       service: HLX_FASTLY_NAMESPACE,

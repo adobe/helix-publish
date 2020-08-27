@@ -15,11 +15,12 @@ const { fetch } = require('@adobe/helix-fetch');
 /**
  * This function takes strains and sends requests
  * to ensure the corresponding action is deployed.
- * @param {object} strains array of strains from HelixConfig
+ * @param {object} strain strain from HelixConfig
  * @param {object} log logger
  */
 async function checkStrains(strain, log = console) {
-  const result = await fetch(`https://adobeioruntime.net/api/v1/web/${strain.package}/hlx--static/_status_check/healthcheck.json`);
+  // for now we assume that all helix projects have a html action...
+  const result = await fetch(`https://adobeioruntime.net/api/v1/web/${strain.package}/html/_status_check/healthcheck.json`);
   if (!result.ok) {
     log.error(`fetch call failed for url ${result.url}`);
     throw new Error(await result.text());

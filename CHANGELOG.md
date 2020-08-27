@@ -1,3 +1,53 @@
+## [6.5.5](https://github.com/adobe/helix-publish/compare/v6.5.4...v6.5.5) (2020-08-26)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) fixes ([3a0f1c6](https://github.com/adobe/helix-publish/commit/3a0f1c6ab7a26412f3c49d1c37153de3edde50fe))
+
+## [6.5.4](https://github.com/adobe/helix-publish/compare/v6.5.3...v6.5.4) (2020-08-25)
+
+
+### Bug Fixes
+
+* **check:** use html/_status_check instead of hlx--static ([#586](https://github.com/adobe/helix-publish/issues/586)) ([f3e2374](https://github.com/adobe/helix-publish/commit/f3e23740871569db4439968bba1106a18f3cfe0d)), closes [#585](https://github.com/adobe/helix-publish/issues/585)
+
+## [6.5.3](https://github.com/adobe/helix-publish/compare/v6.5.2...v6.5.3) (2020-08-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.4.0 ([6d7ce06](https://github.com/adobe/helix-publish/commit/6d7ce0664b600cb4a02f04f11bfa228ed0d009bb))
+
+## [6.5.2](https://github.com/adobe/helix-publish/compare/v6.5.1...v6.5.2) (2020-08-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.10.1 ([776687c](https://github.com/adobe/helix-publish/commit/776687c0d228f7369dfa951b182bacfaa75938f3))
+
+## [6.5.1](https://github.com/adobe/helix-publish/compare/v6.5.0...v6.5.1) (2020-08-20)
+
+
+### Bug Fixes
+
+* **purge:** avoid endless loops ([e723383](https://github.com/adobe/helix-publish/commit/e7233836626b886665d17ca38352b137c061f308))
+
+# [6.5.0](https://github.com/adobe/helix-publish/compare/v6.4.1...v6.5.0) (2020-08-19)
+
+
+### Features
+
+* **vcl:** allow alternative http methods for purges ([57bca0f](https://github.com/adobe/helix-publish/commit/57bca0f702a7a01200cf2fd418b956aacaa13964))
+* **vcl:** enable deep purges ([62e67b8](https://github.com/adobe/helix-publish/commit/62e67b892c2d46b04925a9c2c87f1b3fa249abab))
+
+## [6.4.1](https://github.com/adobe/helix-publish/compare/v6.4.0...v6.4.1) (2020-08-19)
+
+
+### Bug Fixes
+
+* block requests ending in %2 ([#579](https://github.com/adobe/helix-publish/issues/579)) ([43e5d5e](https://github.com/adobe/helix-publish/commit/43e5d5e2b3330554322c3eed70c13a2210c8de89))
+
 # [6.4.0](https://github.com/adobe/helix-publish/compare/v6.3.3...v6.4.0) (2020-08-17)
 
 
