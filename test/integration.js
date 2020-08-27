@@ -144,6 +144,11 @@ const VERSION_NUM = process.env.VERSION_NUM || 247;
 const ALGOLIA_APP_ID = process.env.ALGOLIA_APP_ID || 'A8PL9E4TZT';
 const EPSAGON_TOKEN = process.env.EPSAGON_TOKEN || 'fake-token';
 
+if (HLX_FASTLY_NAMESPACE.startsWith('1McG')) {
+  console.error('Do not use helix-pages for testing');
+  process.exit(2);
+}
+
 describe('Integration Test', () => {
   setupPolly({
     recordFailedRequests: true,
