@@ -355,7 +355,7 @@ sub hlx_headers_fetch {
   declare local var.repokey STRING; # surrogate key from repo
   declare local var.refkey STRING; # surrogate key from repo & ref
 
-  set var.urlkey = digest.hmac_sha256_base64("helix", "https://" + req.http.X-Orig-Host + req.http.X-Orig-Url);
+  set var.urlkey = digest.hmac_sha256_base64("helix", "https://" + req.http.X-Orig-Host + regsuball(req.http.X-Orig-Url, "\?.*$", ""));
   set var.urlkey = regsub(var.urlkey, "(.{16}).*", "\1");
 
   set var.repokey = digest.hmac_sha256_base64("helix", "https://github.com/" + req.http.X-Owner + "/" + req.http.X-Repo);
@@ -625,7 +625,7 @@ sub hlx_type_purge {
     + "/purge@v1"
     + "?host=" + urlencode(req.http.X-Orig-Host)
     + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
-    + "&path=" + urlencode(req.http.X-Orig-Url);
+    + "&path=" + urlencode(regsuball(req.http.X-Orig-Url, "\?.*$", ""));
 
   set req.request = "POST";
 }
