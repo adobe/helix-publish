@@ -11,7 +11,7 @@
 /umbraco
 /wp-(app|admin|config|contents?|includes|login|rss.*|register)
 /zimbra
-%25(2[26]|3([aA]|[dD])|5[cC]|7[cC])
+%25(2[26]|3([aA]|[dD])|5[cC]|7[cC])  # note that the %25 is an encoded percent sign
 ^.*%252$
 ^(\/(?!cgi-bin).*)[^\/]+\.php$
 ^/.login|^/[Ww][eE][bB](dav|db|grind|mail|master|[Ss]ervice|shell|site|sql|stat|-INF)
