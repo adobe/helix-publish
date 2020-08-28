@@ -1,5 +1,5 @@
 .+\.axd
-[()'"]                              # braces and escapes
+[()'\"]                             # braces and escapes
 [Tt]hank.*\.txt$
 /(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|wiz.*|[Ww]eb)([aA]dmin|wiz.*)
 /[Ww][Ss]_
