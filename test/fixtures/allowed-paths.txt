@@ -1030,7 +1030,6 @@
 /en/publish/2018/05/23/contributor-spotlight-tom-sarraipo.html
 /en/publish/2018/07/25/lights-camera-action-adobe-opens-new-office-for-post-production-professionals-in-los-angeles.html
 /en/publish/2018/07/11/bridging-the-gap-the-creative-team-as-a-strategic-partner.html
-/en/publish/2020/02/26/www.adobe.com/experience-cloud/use-cases/content-personalization.html
 /en/publish/2017/07/11/visual-effects-master-rob-legato-designs-oscar-winning-effects-with-adobe-creative-cloud.html
 /en/publish/2017/09/12/enhancing-the-business-of-creativity.html
 /en/publish/2016/05/18/creativeimpact-with-imani-love.html
@@ -1042,7 +1041,6 @@
 /en/publish/2016/09/21/rabbit-hole-anatomy-experience-led-business.html
 /en/authors/sheena-lyonnais.html
 /en/publish/2017/05/02/how-the-design-process-has-evolved.html
-/en/2017/02/23/www.adobe.com/customer-showcase/story/adobe-experience-cloud.html
 /en/publish/2020/06/16/adobe-stock-launches-audio.html
 /en/authors/sid-shah.html
 /en/publish/2017/08/10/designing-for-generation-z-how-to-engage-todays-super-savvy-kids-and-teens.html

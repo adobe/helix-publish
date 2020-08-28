@@ -1,17 +1,23 @@
-\.swf$
-/[Ww][Ss]_
 [^A-Za-z0-9-_./+%25]|\/\.\.
 [Tt]hank.*\.txt$
 /(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|wiz.*|[Ww]eb)([aA]dmin|wiz.*)
+/[Ww][Ss]_
 /[Ww]ord[Pp]ress|/WebSphere|/wwwroot
+//                                  # double slashes
 //etc/
+/\.env
 /etc/passwd
 /fckeditor
 /tiny_?mce
 /umbraco
 /wp-(app|admin|config|contents?|includes|login|rss.*|register)
 /zimbra
+\.\.                                # do not go a directory up
+\.swf$
 %25(2[26]|3([aA]|[dD])|5[cC]|7[cC])  # note that the %25 is an encoded percent sign
+%252e%252e                          # a.k.a ..
+%2540                               # @ sign 
+%25uff0e                            # FULLWIDTH FULL STOP' (U+FF0E)
 ^.*%252$
 ^(\/(?!cgi-bin).*)[^\/]+\.php$
 ^/.login|^/[Ww][eE][bB](dav|db|grind|mail|master|[Ss]ervice|shell|site|sql|stat|-INF)
@@ -23,6 +29,8 @@
 ^/[Uu]ser
 ^/[Vv]agrant
 ^/[Vv]ersion
+^/admin/includes                    # no includes
+^/sling/$                           # wrong decade, my friend
 ^/tests/phpunit_report\.xml$
 ^/testweb$
 ^/theme$
@@ -123,3 +131,5 @@
 ^/yum\.log$
 ^/zabbix/$
 ^/zebra\.conf
+debug\.xml                          # debug info       
+www\.[^/]+\.com                     # potential broken link

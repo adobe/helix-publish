@@ -687,7 +687,6 @@
 /zimbra/
 /zone-h.php
 /august-photography-releases%2
-cdn.request.url
 /.env
 //2018/wp-includes/wlwmanifest.xml
 //2019/wp-includes/wlwmanifest.xml
@@ -1142,8 +1141,6 @@ cdn.request.url
 /site/wp-admin/setup-config.php
 /sling/
 /test/wp-admin/setup-config.php
-/truck1.html
-/turn-user-research-smart-design-decisions/%E6%9C%AC%E6%96%87%E7%94%B1
 /uploads/.env
 /v1/.env
 /vendor/phpunit/phpunit/build.xml
