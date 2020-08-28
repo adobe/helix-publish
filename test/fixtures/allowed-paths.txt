@@ -1062,3 +1062,6 @@
 /en/publish/2016/04/12/facebook-instant-articles-adobe-analytics.html
 /cgi-bin/test.php
 /update-for-enterprise-adobe-flash-player/
+/en/publish/2010/12/16/%eb%b3%b4%ea%b3%a0%ec%99%80-%eb%b6%84%ec%84%9d%ec%9d%80-%eb%ac%b4%ec%97%87%ec%9d%b4-%eb%8b%a4%eb%a5%bc%ea%b9%8c%ec%9a%94.html
+/en/publish/2016/06/08/want-to-get%e2%80%8a-%e2%80%8aand-keep%e2%80%8a-%e2%80%8athat-great-hire-think-technology-first.html
+/en/publish/2019/04/01/k%d3%93rcher-cleans-up-software-licensing-with-an-adobe-etla-mobilizing-for-growth.html
