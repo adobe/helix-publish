@@ -16,15 +16,40 @@ const assert = require('assert');
 const path = require('path');
 const fs = require('fs-extra');
 
-const re = new RegExp(fs.readFileSync(path.resolve(__dirname, '../layouts/fastly/helix.vcl')).toString().match(/"(.*)".* # block baddies/)[1].replace(/%25/g, '%'));
-console.log(re);
+const name = path.resolve('src/rgx/block.rgx');
+const res = fs.readFileSync(name)
+  .toString()
+  .split('\n')
+  .map((l) => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
+  .map((l) => l.replace(/%25/, decodeURIComponent)) // vcl uses url encoding in regexps
+  .filter((l) => !!l.trim())
+  .map((l) => new RegExp(l));
+
+const globalhits = {};
 
 describe('Test blocked paths', () => {
   const bads = fs.readFileSync(path.resolve(__dirname, 'fixtures/blocked-paths.txt')).toString().split('\n');
-  bads.forEach((bad) => it(`deny ${bad}`, () => assert.ok(re.test(bad))));
+  bads.forEach((bad) => it(`deny ${bad}`, () => {
+    const hits = res.filter((re) => {
+      const hit = !!re.test(bad);
+      if (hit) {
+        globalhits[re] = globalhits[re] ? globalhits[re] + 1 : 1;
+        return true;
+      }
+      return false;
+    });
+    assert.ok(hits.length);
+  }));
 });
 
 describe('Test allowed paths', () => {
   const goods = fs.readFileSync(path.resolve(__dirname, 'fixtures/allowed-paths.txt')).toString().split('\n');
-  goods.forEach((good) => it(`allow ${good}`, () => assert.ok(!re.test(good))));
+  goods.forEach((good) => it(`allow ${good}`, () => {
+    const hits = res.filter((re) => !!re.test(good));
+    assert.equal(hits.length, 0, `${hits.length} false match for ${hits}`);
+  }));
+});
+
+describe('No useless expressions', () => {
+  res.forEach((re) => it(`${re} is useful`, () => assert.ok(globalhits[re])));
 });

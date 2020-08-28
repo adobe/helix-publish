@@ -13,6 +13,19 @@
 const fs = require('fs-extra');
 const path = require('path');
 
+function regex(content, filePath) {
+  return content.replace(/\{"regex:block.rgx"\}/g, () => {
+    const name = path.resolve(filePath);
+    const c = fs.readFileSync(name)
+      .toString()
+      .split('\n')
+      .map((l) => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
+      .filter((l) => !!l.trim())
+      .join('|');
+    return `"${c}"`;
+  });
+}
+
 function synthetize(content, filePath) {
   return content.replace(/(synthetic \{"include:.*"\};)/g, (m) => {
     const ref = m.replace(/^synthetic \{"include:/, '').replace(/"};$/, '');
@@ -31,3 +44,4 @@ function include(srcfile, tracer, opts) {
 
 module.exports.include = include;
 module.exports.synthetize = synthetize;
+module.exports.regex = regex;

@@ -1,3 +1,18 @@
+# [6.6.0](https://github.com/adobe/helix-publish/compare/v6.5.6...v6.6.0) (2020-08-28)
+
+
+### Bug Fixes
+
+* **block:** be less rigid ([6c0b34a](https://github.com/adobe/helix-publish/commit/6c0b34a2fbbd28ec56e6634a23ca079874eeac13))
+* **block:** remove empty lines ([fb5373f](https://github.com/adobe/helix-publish/commit/fb5373f8487825eb35743adb1c992f0709643089))
+* **blocklist:** add paths that returned 403 in the past ([c3f0846](https://github.com/adobe/helix-publish/commit/c3f08460b3b4ede0e69e3867002041a3e4acbd3b))
+* **vcl.js:** make regex management easier ([439e267](https://github.com/adobe/helix-publish/commit/439e267180af6de4a090f2a67e025236466733f2)), closes [#576](https://github.com/adobe/helix-publish/issues/576)
+
+
+### Features
+
+* **block:** allow comments ([a61f636](https://github.com/adobe/helix-publish/commit/a61f6366f4467b92780feee82bf573c98cbbd7fe))
+
 ## [6.5.6](https://github.com/adobe/helix-publish/compare/v6.5.5...v6.5.6) (2020-08-28)
 
 

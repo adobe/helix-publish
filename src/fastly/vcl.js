@@ -13,6 +13,7 @@ const path = require('path');
 const {
   include,
   synthetize,
+  regex,
 } = require('./include-util');
 const {
   resolve,
@@ -34,7 +35,7 @@ function basedir() {
 
 async function init(fastly, version, options) {
   const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
-  const content = options
+  let content = options
     ? include(vclfile, addEpsagonTraces, {
       serviceId: options.serviceid,
       loggerName: options.logname,
@@ -42,6 +43,7 @@ async function init(fastly, version, options) {
       epsagonAppName: options.appName,
     })
     : include(vclfile);
+  content = regex(content, 'src/rgx/block.rgx');
   return writevcl(fastly, version, content, 'helix.vcl');
 }
 
