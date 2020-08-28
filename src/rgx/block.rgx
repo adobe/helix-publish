@@ -1,4 +1,5 @@
-[^A-Za-z0-9-_./+%25]|\/\.\.
+.+\.axd
+[()'"]                              # braces and escapes
 [Tt]hank.*\.txt$
 /(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|wiz.*|[Ww]eb)([aA]dmin|wiz.*)
 /[Ww][Ss]_
@@ -14,12 +15,15 @@
 /zimbra
 \.\.                                # do not go a directory up
 \.swf$
+\/\.\.
 %25(2[26]|3([aA]|[dD])|5[cC]|7[cC])  # note that the %25 is an encoded percent sign
 %252e%252e                          # a.k.a ..
 %2540                               # @ sign 
+%257b                               # %7b = {
 %25uff0e                            # FULLWIDTH FULL STOP' (U+FF0E)
 ^.*%252$
 ^(\/(?!cgi-bin).*)[^\/]+\.php$
+^(\/(?!cgi-bin).*)\?.{49,}$         # excessively long URL parameters
 ^/.login|^/[Ww][eE][bB](dav|db|grind|mail|master|[Ss]ervice|shell|site|sql|stat|-INF)
 ^/(www|web)\....$
 ^/[Tt]humb
@@ -131,5 +135,6 @@
 ^/yum\.log$
 ^/zabbix/$
 ^/zebra\.conf
+~                                   # user Directory
 debug\.xml                          # debug info       
 www\.[^/]+\.com                     # potential broken link
