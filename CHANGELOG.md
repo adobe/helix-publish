@@ -1,3 +1,11 @@
+## [6.5.6](https://github.com/adobe/helix-publish/compare/v6.5.5...v6.5.6) (2020-08-28)
+
+
+### Bug Fixes
+
+* **purge:** ignore url params for hlxpurge ([f82e263](https://github.com/adobe/helix-publish/commit/f82e263742548895e08d17c8dace4971739323fb)), closes [#589](https://github.com/adobe/helix-publish/issues/589)
+* **vcl:** pass entire url ([0dc4e38](https://github.com/adobe/helix-publish/commit/0dc4e389105bc4446bd08f6472cdc6992cd03eae))
+
 ## [6.5.5](https://github.com/adobe/helix-publish/compare/v6.5.4...v6.5.5) (2020-08-26)
 
 
