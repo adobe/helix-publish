@@ -5,4 +5,4 @@
 ^/admloginuser\.db$|^/2019\.zip$|^/member/login\.json$|^/admin\.cgi$|^/panel-administracion/index\.aspx$|^/modules/admin/$|^/moderator/login\.sql$|^/addadmin\.sql$|^/inc/tinymce/$|^/backend_dev/$|
 ^/SaveForLater\.json$|^/libraries$|^/database\.csv$|^/asp/$|^/admin_paylog\.txt$|^/phpMyAdmin-3\.1\.2/$|^/phpMyAds/$|^/admin_userdet\.conf$|^/killer\.php$|^/WEB-INF/components\.xml$|^/isapi/$|^/download/history\.csv$|
 ^/actions_admin\.aspx$|^/SaveForLater\.db$|^/user\.asp$|^/ad_admin\.sql$|^/l0gs\.txt$|^/\.checkignore$|^/ids_log\.aspx$|^/vb\.rar$|^/orasso$|^/members/login\.json$|^/_webalizer/$|^/exchange/logon\.aspx$|^/admin_censoring\.conf$|
-^/adminlist\.php$|^/wp-admin/post.php$
+^/adminlist\.php$|^/wp-admin/post.php$   # that's all
