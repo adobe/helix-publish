@@ -2,7 +2,7 @@
 /[Ww][Ss]_
 [^A-Za-z0-9-_./+%25]|\/\.\.
 [Tt]hank.*\.txt$
-/(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|[Ww]eb)[aA]dmin|wiz.*)
+/(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|wiz.*|[Ww]eb)([aA]dmin|wiz.*)
 /[Ww]ord[Pp]ress|/WebSphere|/wwwroot
 //etc/
 /etc/passwd
@@ -14,11 +14,10 @@
 %25(2[26]|3([aA]|[dD])|5[cC]|7[cC])
 %25[^2-7a-fA-F][^0-9a-fA-F]
 ^.*%252$
-^(\/\/(?!cgi-bin).*)[^\/]+\.php$  # allow php in cgi-bin
+^(\/(?!cgi-bin).*)[^\/]+\.php$
 ^/.login|^/[Ww][eE][bB](dav|db|grind|mail|master|[Ss]ervice|shell|site|sql|stat|-INF)
 ^/(www|web)\....$
 ^/[Tt]humb
-^/[Tt]umb
 ^/[Uu]pdate([^-]|$)
 ^/[Uu]pgrade
 ^/[Uu]pload
@@ -125,4 +124,3 @@
 ^/yum\.log$
 ^/zabbix/$
 ^/zebra\.conf
-$/[Uu]ser

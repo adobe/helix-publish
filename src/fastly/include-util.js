@@ -19,7 +19,7 @@ function regex(content, filePath) {
     const c = fs.readFileSync(name)
       .toString()
       .split('\n')
-      .map(l => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
+      .map((l) => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
       .join('|');
     return `"${c}"`;
   });
