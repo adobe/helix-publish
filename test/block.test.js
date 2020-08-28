@@ -22,6 +22,7 @@ const res = fs.readFileSync(name)
   .split('\n')
   .map((l) => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
   .map((l) => l.replace(/%25/, decodeURIComponent)) // vcl uses url encoding in regexps
+  .filter(l => !!l.trim()) 
   .map((l) => new RegExp(l));
 
 const globalhits = {};

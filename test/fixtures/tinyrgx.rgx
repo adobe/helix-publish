@@ -44,6 +44,7 @@
 ^/admloginuser\.db$
 ^/2019\.zip$
 ^/member/login\.json$
+
 ^/admin\.cgi$
 ^/panel-administracion/index\.aspx$
 ^/modules/admin/$

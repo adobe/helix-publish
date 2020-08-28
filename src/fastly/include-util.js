@@ -20,6 +20,7 @@ function regex(content, filePath) {
       .toString()
       .split('\n')
       .map((l) => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
+      .filter(l => !!l.trim())
       .join('|');
     return `"${c}"`;
   });
