@@ -16,7 +16,11 @@ const path = require('path');
 function regex(content, filePath) {
   return content.replace(/\{"regex:block.rgx"\}/g, () => {
     const name = path.resolve(filePath);
-    const c = fs.readFileSync(name).toString().split('\n').join('');
+    const c = fs.readFileSync(name)
+      .toString()
+      .split('\n')
+      .map(l => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
+      .join('|');
     return `"${c}"`;
   });
 }
