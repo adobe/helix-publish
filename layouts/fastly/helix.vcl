@@ -625,7 +625,7 @@ sub hlx_type_purge {
     + "/purge@v1"
     + "?host=" + urlencode(req.http.X-Orig-Host)
     + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
-    + "&path=" + urlencode(regsuball(req.http.X-Orig-Url, "\?.*$", ""));
+    + "&path=" + urlencode(req.http.X-Orig-Url);
 
   set req.request = "POST";
 }
