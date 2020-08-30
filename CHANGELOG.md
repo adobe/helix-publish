@@ -1,3 +1,36 @@
+## [6.6.1](https://github.com/adobe/helix-publish/compare/v6.6.0...v6.6.1) (2020-08-29)
+
+
+### Bug Fixes
+
+* **block:** block more forgotten paths ([4f585d1](https://github.com/adobe/helix-publish/commit/4f585d13a88133df38f1e29a77f15b7a0605b4dc))
+* **block:** block more urls ([80bcc4f](https://github.com/adobe/helix-publish/commit/80bcc4f98fc07996cb7c7f9ed00d54cd26c88764))
+* **block:** escape " ([226db30](https://github.com/adobe/helix-publish/commit/226db302966ca433d567c914d597f061c0ec9e11))
+* **block:** properly escape " ([539d04e](https://github.com/adobe/helix-publish/commit/539d04e7948794cff01c6a1c58611a6660d3afb7))
+
+# [6.6.0](https://github.com/adobe/helix-publish/compare/v6.5.6...v6.6.0) (2020-08-28)
+
+
+### Bug Fixes
+
+* **block:** be less rigid ([6c0b34a](https://github.com/adobe/helix-publish/commit/6c0b34a2fbbd28ec56e6634a23ca079874eeac13))
+* **block:** remove empty lines ([fb5373f](https://github.com/adobe/helix-publish/commit/fb5373f8487825eb35743adb1c992f0709643089))
+* **blocklist:** add paths that returned 403 in the past ([c3f0846](https://github.com/adobe/helix-publish/commit/c3f08460b3b4ede0e69e3867002041a3e4acbd3b))
+* **vcl.js:** make regex management easier ([439e267](https://github.com/adobe/helix-publish/commit/439e267180af6de4a090f2a67e025236466733f2)), closes [#576](https://github.com/adobe/helix-publish/issues/576)
+
+
+### Features
+
+* **block:** allow comments ([a61f636](https://github.com/adobe/helix-publish/commit/a61f6366f4467b92780feee82bf573c98cbbd7fe))
+
+## [6.5.6](https://github.com/adobe/helix-publish/compare/v6.5.5...v6.5.6) (2020-08-28)
+
+
+### Bug Fixes
+
+* **purge:** ignore url params for hlxpurge ([f82e263](https://github.com/adobe/helix-publish/commit/f82e263742548895e08d17c8dace4971739323fb)), closes [#589](https://github.com/adobe/helix-publish/issues/589)
+* **vcl:** pass entire url ([0dc4e38](https://github.com/adobe/helix-publish/commit/0dc4e389105bc4446bd08f6472cdc6992cd03eae))
+
 ## [6.5.5](https://github.com/adobe/helix-publish/compare/v6.5.4...v6.5.5) (2020-08-26)
 
 
