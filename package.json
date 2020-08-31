@@ -23,6 +23,7 @@
   "wsk": {
     "name": "helix-services/publish@${version}",
     "static": [
+      "./src/rgx/block.rgx",
       "./layouts/fastly/helix.vcl",
       "./layouts/fastly/extensions.vcl",
       "./layouts/fastly/403.html",
