@@ -1,3 +1,10 @@
+## [6.6.2](https://github.com/adobe/helix-publish/compare/v6.6.1...v6.6.2) (2020-08-31)
+
+
+### Bug Fixes
+
+* **regexp:** use JS regexp as source ([#597](https://github.com/adobe/helix-publish/issues/597)) ([bcbf5f4](https://github.com/adobe/helix-publish/commit/bcbf5f4e67a3062516c73e0c2bd1d4df938d1e3c)), closes [#596](https://github.com/adobe/helix-publish/issues/596)
+
 ## [6.6.1](https://github.com/adobe/helix-publish/compare/v6.6.0...v6.6.1) (2020-08-29)
 
 
