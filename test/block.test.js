@@ -15,22 +15,14 @@ process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs-extra');
-
-const name = path.resolve('src/rgx/block.rgx');
-const res = fs.readFileSync(name)
-  .toString()
-  .split('\n')
-  .map((l) => l.replace(/[ ]+#.*$/, '')) // enables comments at the end of the line
-  .map((l) => l.replace(/%25|%22/g, decodeURIComponent)) // vcl uses url encoding in regexps
-  .filter((l) => !!l.trim())
-  .map((l) => new RegExp(l));
+const blockRgx = require('../src/rgx/block.js');
 
 const globalhits = {};
 
 describe('Test blocked paths', () => {
   const bads = fs.readFileSync(path.resolve(__dirname, 'fixtures/blocked-paths.txt')).toString().split('\n');
   bads.forEach((bad) => it(`deny ${bad}`, () => {
-    const hits = res.filter((re) => {
+    const hits = blockRgx.filter((re) => {
       const hit = !!re.test(bad);
       if (hit) {
         globalhits[re] = globalhits[re] ? globalhits[re] + 1 : 1;
@@ -45,11 +37,11 @@ describe('Test blocked paths', () => {
 describe('Test allowed paths', () => {
   const goods = fs.readFileSync(path.resolve(__dirname, 'fixtures/allowed-paths.txt')).toString().split('\n');
   goods.forEach((good) => it(`allow ${good}`, () => {
-    const hits = res.filter((re) => !!re.test(good));
+    const hits = blockRgx.filter((re) => !!re.test(good));
     assert.equal(hits.length, 0, `${hits.length} false match for ${hits}`);
   }));
 });
 
 describe('No useless expressions', () => {
-  res.forEach((re) => it(`${re} is useful`, () => assert.ok(globalhits[re])));
+  blockRgx.forEach((re) => it(`${re} is useful`, () => assert.ok(globalhits[re])));
 });
