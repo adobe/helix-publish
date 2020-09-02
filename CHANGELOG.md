@@ -1,3 +1,10 @@
+## [6.6.4](https://github.com/adobe/helix-publish/compare/v6.6.3...v6.6.4) (2020-09-02)
+
+
+### Bug Fixes
+
+* **block:** block more URLs ([996ac8f](https://github.com/adobe/helix-publish/commit/996ac8fa287eddf591573df9a870445331c8d30a))
+
 ## [6.6.3](https://github.com/adobe/helix-publish/compare/v6.6.2...v6.6.3) (2020-09-02)
 
 
