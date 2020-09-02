@@ -212,7 +212,7 @@ sub hlx_block_recv {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_block_recv";
 
   if (!req.http.x-topurl && req.url.path ~ {"regex:block.rgx"}) { # block baddies
-    error 955 "Forbidden";
+    error 951 "Not Found";
   }
 
   call hlx_deny;
