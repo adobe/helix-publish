@@ -19,9 +19,17 @@ const blockRgx = require('../src/rgx/block.js');
 
 const globalhits = {};
 
+function decode(path) {
+  try {
+    return `(${decodeURIComponent(path)})`
+ } catch {
+   return '';
+ }
+}
+
 describe('Test blocked paths', () => {
   const bads = fs.readFileSync(path.resolve(__dirname, 'fixtures/blocked-paths.txt')).toString().split('\n');
-  bads.forEach((bad) => it(`deny ${bad}`, () => {
+  bads.forEach((bad) => it(`deny ${bad} ${decode(bad)}`, () => {
     const hits = blockRgx.filter((re) => {
       const hit = !!re.test(bad);
       if (hit) {

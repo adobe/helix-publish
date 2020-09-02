@@ -10,33 +10,69 @@
  * governing permissions and limitations under the License.
  */
 module.exports = [
+  /_debugbar/,
   /.+\.axd/,
+  /.+\.log$/,
+  /(?!\/\.well-known)\/\./,
+  /(Homestead|circle|_?config)\.ya?ml$/,
   /[()'"]/, // braces and escapes
   /[Tt]hank.*\.txt$/,
+  /\.\./, // do not go a directory up
+  /\.gitignore/,
+  /\.htaccess/,
+  /\.htpasswd/,
+  /\.swf$/,
+  /\/_?debug/,
   /\/(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|wiz.*|[Ww]eb)([aA]dmin|wiz.*)/,
+  /\/(bower|config|\.[-_\w]+|app|\w+404)\.json/, // a bunch of json files, leftover from development
+  /\/(plugins?)\/.*(servlet|metrics)/,
+  /\/(solr|jira|confluence|jenkins|servicedesk|app)\/.*(config|plugins|user|kibana)/,
   /\/[Ww][Ss]_/,
   /\/[Ww]ord[Pp]ress|\/WebSphere|\/wwwroot/,
+  /\/@/,
+  /\/\??%2[AaEe]/, // escaped . and *
+  /\/\.\./,
+  /\/\.env/,
   /\/\//, // double slashes
   /\/\/etc\//,
-  /\/\.env/,
+  /\/\$%7[bB]/,
+  /\/%24%7[bB]/,
+  /\/%252e/,
+  /\/%C2%B0/,
+  /\/App_Data\//,
+  /\/autoconfig/,
+  /\/cloudfoundryapplication/,
+  /\/CVS\/Entries/,
   /\/etc\/passwd/,
   /\/fckeditor/,
+  /\/ipython\/tree/,
+  /\/irj\/go\//,
+  /\/jkstatus$/,
+  /\/jolokia/,
+  /\/logfile/,
+  /\/nginx.*conf$/,
   /\/tiny_?mce/,
   /\/umbraco/,
+  /\/v[1-9]\/_catalog/,
   /\/wp-(app|admin|config|contents?|includes|login|rss.*|register)/,
   /\/zimbra/,
-  /\.\./, // do not go a directory up
-  /\.swf$/,
-  /\/\.\./,
   /%(2[26]|3([aA]|[dD])|5[cC]|7[cC])/, // note that the % is an encoded percent sign
+  /%0[a-fA-F0-9]/,
+  /%23/, // %23 = #
   /%2e%2e/, // a.k.a ..
   /%40/, // @ sign
+  /%60/, // %60 = `
   /%7b/, // %7b = {
+  /%ff/,
   /%uff0e/, // FULLWIDTH FULL STOP' (U+FF0E)
   /^.*%2$/,
+  /^(\/(?!cgi-bin).*)[^/]+\.jsp/,
   /^(\/(?!cgi-bin).*)[^/]+\.php$/,
+  /^(\/(?!cgi-bin).*)[^/]+\.sh/,
   /^(\/(?!cgi-bin).*)\?.{49,}$/, // excessively long URL parameters
+  /^\/_search/,
   /^\/.login|^\/[Ww][eE][bB](dav|db|grind|mail|master|[Ss]ervice|shell|site|sql|stat|-INF)/,
+  /^\/(heap)?[Dd]ump(\.rdb)?$/,
   /^\/(www|web)\....$/,
   /^\/[Tt]humb/,
   /^\/[Uu]pdate([^-]|$)/,
@@ -45,7 +81,16 @@ module.exports = [
   /^\/[Uu]ser/,
   /^\/[Vv]agrant/,
   /^\/[Vv]ersion/,
+  /^\/actuator/,
   /^\/admin\/includes/, // no includes
+  /^\/admin$/,
+  /^\/api\//,
+  /^\/aspnet_client/,
+  /^\/cluster\/list\.query$/,
+  /^\/configprops$/,
+  /^\/health$/,
+  /^\/httptrace$/,
+  /^\/liquibase$/,
   /^\/sling\/$/, // wrong decade, my friend
   /^\/tests\/phpunit_report\.xml$/,
   /^\/testweb$/,
@@ -128,6 +173,7 @@ module.exports = [
   /^\/wiki/,
   /^\/Wishlist\.1\.marketing\.adobe\.com\.txt$/,
   /^\/WLDummyInitJVMIDs$/,
+  /^\/ws\/v[1-9]/,
   /^\/WSsamples$/,
   /^\/wstats$/,
   /^\/wvdial\.conf$/,
@@ -148,6 +194,12 @@ module.exports = [
   /^\/zabbix\/$/,
   /^\/zebra\.conf/,
   /~/, // user Directory
+  /applications\.pinpoint/,
+  /build\.xml/,
   /debug\.xml/, // debug info
+  /descriptorByName\/AuditTrailPlugin/,
+  /G(runt|ulp|em)file\.(js|coffee|lock)/,
+  /nohup\.out$/,
+  /splunkd\/__raw/,
   /www\.[^/]+\.com/, // potential broken link
 ];
