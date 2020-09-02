@@ -19,12 +19,12 @@ const blockRgx = require('../src/rgx/block.js');
 
 const globalhits = {};
 
-function decode(path) {
+function decode(urlfragment) {
   try {
-    return `(${decodeURIComponent(path)})`
- } catch {
-   return '';
- }
+    return `(${decodeURIComponent(urlfragment)})`;
+  } catch {
+    return '';
+  }
 }
 
 describe('Test blocked paths', () => {
