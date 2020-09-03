@@ -29,7 +29,7 @@ const addEpsagonTraces = require('../vcl/tracer');
 
 const package = require('../../package.json');
 
-const urlFilters = require('../rgx/block.js');
+const urlFilters = require('../rgx/allow.js');
 
 function basedir() {
   return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');

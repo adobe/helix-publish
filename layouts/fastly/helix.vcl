@@ -211,7 +211,7 @@ sub hlx_deny {
 sub hlx_block_recv {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_block_recv";
 
-  if (!req.http.x-topurl && req.url.path ~ {"regex:block.rgx"}) { # block baddies
+  if (!req.http.x-topurl && !(req.url.path ~ {"regex:allow.rgx"})) { # block baddies
     error 955 "Forbidden";
   }
 
@@ -420,13 +420,13 @@ sub hlx_headers_deliver {
 
 sub hlx_determine_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
-  
+
   if (req.request == "HLXPURGE" || req.http.x-method-override == "HLXPURGE") {
     set req.http.X-Trace = req.http.X-Trace + "(hlx-purge)";
     set req.http.X-Request-Type = "Helix-Purge";
     return;
   }
-  
+
   // TODO check for topurl
   if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";

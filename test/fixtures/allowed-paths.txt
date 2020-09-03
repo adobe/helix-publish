@@ -124,7 +124,6 @@
 /hlx_4cd1fa793726ea2c9c4e774ac17a7c2df93832c4.png
 /hlx_61e63b51050ecf987fd02267734d950c13adeaa0.png
 /hlx_94ad80654852da676df3713581826c61fabb0071.jpeg
-/README.html
 /ms/authors/javier-angel.html
 /hlx_589a4fd0d38eaea8c13dbd1cd4dc2d0a438f0dc3.jpeg
 /hlx_cdc0502a70ea7c548df5a5677003290d914d1d96.png
@@ -155,8 +154,6 @@
 /hlx_a667e325681ea61da53f9992155f03d38c05fedb.jpg
 /ms/archive/posts/2020/adobe-unveils-comprehensive-report-analyzing-effectiveness-of-premium-versus-non-premium-media.html
 /assets/images/florango-logo.svg
-/styles/fonts/Montserrat-Bold.ttf
-/styles/fonts/Montserrat-Regular.ttf
 /hlx_7eb2b6e2a0fbedf9af1c70ffb6641d2874331bf6.jpg
 /hlx_a667e325681ea61da53f9992155f03d38c05fedb.jpg
 /module-sequence.html
@@ -189,12 +186,9 @@
 /cone-builder/cone-front.png
 /cone-builder/cookiedoughbits-topping.png
 /cone-builder/peanutbrittle-topping.png
-/styles/fonts/SourceCodePro-Light.ttf
 /cone-builder/notopping-topping.png
-/styles/fonts/SourceCodePro-Regular.ttf
 /blm-fundraiser.html
 /hlx_4880b712377cf63478998f6a0681b7136c4343ae.png
-/module-trait-Trait.html
 /
 /hlx_e6a33b3507b03e1a09c533ab055490a878fc23d0.jpeg
 /hlx_7c86707dea584c9937d990f7ef0e8b50b061aec7.jpeg
@@ -268,7 +262,6 @@
 /hlx_d364429ad3ab6d057003b795f24d10323583735b.jpeg
 /icons/document-cloud.svg
 /hlx_fonts/af/e09494/00000000000000003b9aee45/27/l
-/module-stdtraits-Deepclone.html
 /hlx_f72fa73641da2f920243265e9c59fdb55d8365b9.jpg
 /
 /hlx_fe969af275bfd29b7b47470316bc0796c1d0d329.jpeg
@@ -278,31 +271,22 @@
 /hlx_40854c8d31459e339a4bb5c60b93b6ac02a312e8.jpg
 /hlx_fonts/af/b0c5f5/00000000000000003b9b3f85/27/l
 /hlx_0e618e43eb2d873e65385bbf169e2d7c4f77776e.jpg
-/module-stdtraits-Immutable.html
-/module-stdtraits-Equals.html
 /robynne-292082-unsplash.jpg
 /ms/authors/suresh-vittal.html
 /posts/remove-the-mapping-misery-and-keep-the-creativity.html
 /icons/sign.svg
 /module-trait.html
-/module-stdtraits-Size.html
 /helix_logo.png
-/module-stdtraits-Setdefault.html
 /cone-builder/cup-front.png
 /global.html
 /decks/theblog-vs-helix.html
 /cone-builder/cup-back.png
-/module-sequence-Sequence.html
-/module-trait-TraitNotImplemented.html
 /hlx_c6a805411d4dce3de8c6e8787506de6bec5ba23a.jpg
 /hlx_3e71d41e852a20f9153ff89a12592bcd58f7f4b7.jpeg
-/module-sequence-Into.html
-/module-stdtraits-Get.html
 /cone-builder/grapefruitcottoncandy-topping.png
 /icons/advertising-cloud.svg
 /icons/experience-manager.svg
 /cone-builder/limecottoncandy-topping.png
-/module-trait-HybridWeakMap.html
 /hlx_a3e4b930e5ef03d0afc3acef2ddcad43cffc885a.jpg
 /hlx_e34a64cdabd444792699c4e703495c377639307a.jpg
 /hlx_f4c6f1ffed1c997e56368bd02525e838e64e6180.jpg
@@ -311,20 +295,14 @@
 /hlx_f71c75b1b0c8cf3f1f8a21d36f324dc256345494.jpg
 /hlx_63e9125b22fab4fb33eee9461b53cff44d18847f.jpg
 /robots-prod.txt
-/module-stdtraits-Assign.html
 /hlx_7170c15ddb38622c41f0b515d293ce4ec8ee3b04.jpg
 /hlx_b1be21e1e03fa1b15d6b24b9710d0b49d8b06b7b.jpg
-/module-stdtraits-Replace.html
-/module-stdtraits-Shallowclone.html
 /authors/javier-angel.html
 /hackathons/8-psp.html
-/module-stdtraits-Has.html
 /sequence.js.html
 /hlx_fonts/af/97fbd1/00000000000000003b9b3f88/27/l
 /icons/experience-platform.svg
-/module-stdtraits-Delete.html
 /hlx_40854c8d31459e339a4bb5c60b93b6ac02a312e8.png
-/module-stdtraits-Pairs.html
 /ms/en/archive/2020/who-loves-you-red-monster-loves-you.html
 /hlx_3f217726f81941aad3ca8ce2827344b20f0118eb.png
 /hlx_369036c4f1894638825057d1257ea0d823eda028.jpg
@@ -398,7 +376,6 @@
 /icons/photoshop-lightroom.svg
 /hlx_0295d8d5fef20fca9e3fec5fe82386d1c0854d9e.jpg
 /hlx_e18208dd77ab69aceb3ec2c732c0998ed1a1bd08.jpg
-/hackathons/README.html
 /manifesto.html
 /ms/en/authors/adobe-enterprise-content-team.html
 /hlx_e6a33b3507b03e1a09c533ab055490a878fc23d0.jpg
@@ -459,7 +436,6 @@
 /hlx_be96d7f08b8a2c907a09572f8bae21b9b1d0d3a1.jpg
 /lessons/assets/focus-ring.png
 /lessons/welldone.html
-/README.html
 /hlx_90a91c75454b748f9cb369840ea07ee2fd62eeba.png
 /hlx_29b9ce6230563e1a518eafc848382cc0dfa76130.png
 /hlx_ec6f2ef20cedb2fdd524440ddd1c68395f563c9b.jpg
@@ -481,7 +457,6 @@
 /hlx_89707fe86def4d4298facdea380cc82142d989fa.jpeg
 /lessons/assets/use-template.png
 /lessons/assets/name-repo.png
-/CONTRIBUTING.html
 /cone-builder/strawberrycottoncandy-topping.png
 /icons/analytics.svg
 /hlx_423aeaaca3d6c7124c5cdd97850cb723f85ac86d.jpeg
@@ -536,7 +511,6 @@
 /hlx_102102b5f881f2891ef8d879d35e94040905f748.png
 /hlx_dcfae08977b56346f9fb8fb0e2ce941a1771adea.png
 /hlx_eea7b8e9c210a20cf1d96c3fdc93947e144e5b93.jpg
-/Homepage2.html
 /blm-fundraiser.json
 /hackathons/5-bsl.html
 /lessons/assets/localhost.png
@@ -592,7 +566,6 @@
 /hlx_d18f526d0ab1efd1573b71266f93bd9b5ed23e0f.jpeg
 /hlx_a7d1ca484845451ba78e58df6402d3bfa87a25a7.jpeg
 /dict.de.css
-/README.html
 /icons/magento.svg
 /en/drafts/migrated/2016/05/18/mysteries-of-the-bone-tool.html
 /hlx_04d86a4c00c3a3b5cca871fb9a020a96ae87d62f.jpg
@@ -723,10 +696,8 @@
 /hlx_e6db6c540a6c693f17b4611ffff718968a71f2f7.jpg
 /hlx_36bb89f368f4d70911cb0b8ab32f39b3ead2f9f2.jpg
 /lessons/requirements.html
-/README.html
 /en/drafts/migrated/2016/07/26/amc2016-through-the-eyes-of-marcia-guevara.html
 /icons/data-analytics-cloud.svg
-/README.html
 /hlx_eef16afb24ba8240f4c74006baaa632c924b3ee9.jpeg
 /hlx_cba596a2a8c1b9d6118aa70d1caba39c200b15a0.jpeg
 /hlx_ed2ed139faae4d137bd218ca79bf94ae02a817e6.jpg
@@ -772,7 +743,6 @@
 /hlx_0a3828ad07582bfc607883979bce215f9e19e1d5.png
 /hlx_912f94f2f16b5b899a26ee70a9e142622dd0c543.png
 /hlx_eb6fe77853e6add83972db7c8e4c6b5ec3640111.png
-/en/publish/2020/04/30/AG-Test.html
 /en/drafts/migrated/2016/07/15/stop-debating-death-organic-social-media.html
 /hlx_85485645c8ecdea305e5eb61a157ebae66f7fd9e.jpg
 /ms/en/authors/adobe-communications-team.html
@@ -786,7 +756,6 @@
 /en/drafts/migrated/2020/04/30/helping-banks-and-insurance-companies-adapt-in-challenging-times-with-adobe-document-cloud.html
 /en/drafts/migrated/2018/01/01/ready-aem-rockstar-2018.html
 /en/authors/rf-jurjevics.html
-/README.html
 /en/drafts/in-todays-digital-chaos-theres-hope.html
 /en/drafts/migrated/2020/05/29/how-tsb-bank-accelerated-its-digital-first-strategy-during-the-covid-19-pandemic.html
 /hlx_34488dfc4861fe53d496fdc1d88b8f82acf1ad9f.png
@@ -936,7 +905,6 @@
 /hlx_d2d68155506de3fcecf7fff634e5153a22867e94.jpeg
 /hlx_5d1c1bd405990d949239218e5720c21f2af5b46c.jpeg
 /lessons/lesson2.html
-/README.html
 /hlx_dd155ef529c05b5ab7c8b102a8a5e9595ba73486.jpg
 /hlx_e5e428cdf4723a2d4fedd4b943dffa1be2f43b09.jpg
 /hlx_ba32418ea00a84a7d618fb4df6f9c60cc60498b1.jpg
@@ -947,7 +915,6 @@
 /hlx_c7ea45c7441987b3c228059e87e2ba445dfd41b7.jpg
 /hlx_e34a64cdabd444792699c4e703495c377639307a.jpg
 /hackathons/3-sfo.html
-/docs/Helix%20Architecture.png
 /
 /hlx_53438d01d1e7d5a3b6f98843973944cd056c4b57.jpeg
 /hlx_ea73ae537b912326a705a2acab0887649478d555.jpg
@@ -986,7 +953,6 @@
 /hlx_e6db6c540a6c693f17b4611ffff718968a71f2f7.jpg
 /hlx_d3d0414c481aca47dd328fa565fabe28035256bc.jpg
 /lessons/requirements.html
-/README.html
 /lessons/lesson1.html
 /hlx_a9d592a9d0cb3b9ba3611d005d374e65d4261b20.jpeg
 /lessons/assets/logs.png
@@ -1022,7 +988,6 @@
 /hlx_e5dcc1db3f1f11bebf7fc35de9f6f199560076bc.jpeg
 /hlx_26909954f61aa359412f1e8f024678c2850116de.jpeg
 /hlx_ee505e436bf92041978210dc3082fc708e4837f7.jpg
-/office/%E6%97%A5%E6%9C%AC.html
 /en/publish/2017/10/04/5-questions-for-designer-author-and-max-speaker-kelli-anderson-2.html
 /en/publish/2019/02/01/visualizing-the-invisible.html
 /en/publish/2014/07/07/adobe-congratulates-the-2014-congressional-art-competition-winners-in-dc.html
@@ -1035,7 +1000,6 @@
 /en/publish/2016/05/18/creativeimpact-with-imani-love.html
 /en/publish/2012/05/11/big-data-digital-marketing-adobe-insight.html
 /en/publish/2019/06/25/creative-democracy-a-vote-for-pure-joy.html
-/globalilzation./2012/07/09/globalization%20-myth-3/
 /en/authors/al-mooney.html
 /en/publish/2019/02/11/valentines-in-color-free-color-fonts.html
 /en/publish/2016/09/21/rabbit-hole-anatomy-experience-led-business.html
@@ -1060,8 +1024,4 @@
 /en/publish/2016/04/12/facebook-instant-articles-adobe-analytics.html
 /cgi-bin/test.php
 /update-for-enterprise-adobe-flash-player/
-/en/publish/2010/12/16/%eb%b3%b4%ea%b3%a0%ec%99%80-%eb%b6%84%ec%84%9d%ec%9d%80-%eb%ac%b4%ec%97%87%ec%9d%b4-%eb%8b%a4%eb%a5%bc%ea%b9%8c%ec%9a%94.html
-/en/publish/2016/06/08/want-to-get%e2%80%8a-%e2%80%8aand-keep%e2%80%8a-%e2%80%8athat-great-hire-think-technology-first.html
-/en/publish/2019/04/01/k%d3%93rcher-cleans-up-software-licensing-with-an-adobe-etla-mobilizing-for-growth.html
-/cgi-bin/test.js?id=JJJ0QQQ&action=JJJ1QQQ&page=JJJ2QQQ&name=JJJ3QQQ&f=JJJ4QQQ&url=JJJ5QQQ&email=JJJ6QQQ&type=JJJ7QQQ&file=JJJ8QQQ&title=JJJ9QQQ&code=JJJ10QQQ&q=JJJ11QQQ&user=JJJ12QQQ&token=JJJ13QQQ&t=JJJ14QQQ&c=JJJ15QQQ&data=JJJ16QQQ&mode=JJJ17QQQ&order=JJJ18QQQ&lang=JJJ19QQQ&p=JJJ20QQQ&key=JJJ21QQQ&status=JJJ22QQQ&start=JJJ23QQQ&charset=JJJ24QQQ&s=JJJ25QQQ&post=JJJ26QQQ&login=JJJ27QQQ&search=JJJ28QQQ&content=JJJ29QQQ&comment=JJJ30QQQ&step=JJJ31QQQ&ajax=JJJ32QQQ&debug=JJJ33QQQ&state=JJJ34QQQ&query=JJJ35QQQ&error=JJJ36QQQ&save=JJJ37QQQ&sort=JJJ38QQQ&format=JJJ39QQQ&tab=JJJ40QQQ&offset=JJJ41QQQ&edit=JJJ42QQQ&preview=JJJ43QQQ&filter=JJJ44QQQ&from=JJJ45QQQ&view=JJJ46QQQ&a=JJJ47QQQ&limit=JJJ48QQQ&do=JJJ49QQQ&plugin=JJJ50QQQ&theme=JJJ51QQQ&text=JJJ52QQQ&test=JJJ53QQQ&path=JJJ54QQQ&pass=JJJ55QQQ&dir=JJJ56QQQ&show=JJJ57QQQ&h=JJJ58QQQ&value=JJJ59QQQ&filename=JJJ60QQQ&redirect=JJJ61QQQ&year=JJJ62QQQ&group=JJJ63QQQ&template=JJJ64QQQ&subject=JJJ65QQQ&m=JJJ66QQQ&u=JJJ67QQQ&dest=JJJ68QQQ&uri=JJJ69QQQ&continue=JJJ70QQQ&window=JJJ71QQQ&next=JJJ72QQQ&reference=JJJ73QQQ&site=JJJ74QQQ&&W0SrC=JJJ75QQQ&
 /.well-known/acme-challenge

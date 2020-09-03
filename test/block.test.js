@@ -15,9 +15,7 @@ process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs-extra');
-const blockRgx = require('../src/rgx/block.js');
-
-const globalhits = {};
+const allowRgx = require('../src/rgx/allow.js');
 
 function decode(urlfragment) {
   try {
@@ -28,28 +26,23 @@ function decode(urlfragment) {
 }
 
 describe('Test blocked paths', () => {
-  const bads = fs.readFileSync(path.resolve(__dirname, 'fixtures/blocked-paths.txt')).toString().split('\n');
+  const bads = fs.readFileSync(path.resolve(__dirname, 'fixtures/blocked-paths.txt'), 'utf-8')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter((s) => !!s);
   bads.forEach((bad) => it(`deny ${bad} ${decode(bad)}`, () => {
-    const hits = blockRgx.filter((re) => {
-      const hit = !!re.test(bad);
-      if (hit) {
-        globalhits[re] = globalhits[re] ? globalhits[re] + 1 : 1;
-        return true;
-      }
-      return false;
-    });
-    assert.ok(hits.length);
+    const allowed = allowRgx.filter((re) => re.test(bad));
+    assert.equal(allowed.length, 0);
   }));
 });
 
 describe('Test allowed paths', () => {
-  const goods = fs.readFileSync(path.resolve(__dirname, 'fixtures/allowed-paths.txt')).toString().split('\n');
+  const goods = fs.readFileSync(path.resolve(__dirname, 'fixtures/allowed-paths.txt'), 'utf-8')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter((s) => !!s);
   goods.forEach((good) => it(`allow ${good}`, () => {
-    const hits = blockRgx.filter((re) => !!re.test(good));
-    assert.equal(hits.length, 0, `${hits.length} false match for ${hits}`);
+    const allowed = allowRgx.filter((re) => re.test(good));
+    assert.notEqual(allowed.length, 0);
   }));
-});
-
-describe('No useless expressions', () => {
-  blockRgx.forEach((re) => it(`${re} is useful`, () => assert.ok(globalhits[re])));
 });

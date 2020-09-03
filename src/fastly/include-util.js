@@ -20,7 +20,7 @@ function regex(content, regexpArray) {
     .filter((l) => !!l.trim())
     .join('|');
 
-  return content.replace(/\{"regex:block.rgx"\}/g, () => `"${fastlyRegexp}"`);
+  return content.replace(/\{"regex:allow.rgx"\}/g, () => `"${fastlyRegexp}"`);
 }
 
 function synthetize(content, filePath) {
