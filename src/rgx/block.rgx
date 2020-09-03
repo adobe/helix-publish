@@ -1,1 +1,0 @@
-[^a-z0-9-_/\.]   # only lowercase letters, numbers, dashes as @uncled suggested. Also / and . because we're friendly

@@ -29,6 +29,8 @@ const addEpsagonTraces = require('../vcl/tracer');
 
 const package = require('../../package.json');
 
+const urlFilters = require('../rgx/block.js');
+
 function basedir() {
   return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
 }
@@ -43,7 +45,7 @@ async function init(fastly, version, options) {
       epsagonAppName: options.appName,
     })
     : include(vclfile);
-  content = regex(content, 'src/rgx/block.rgx');
+  content = regex(content, urlFilters);
   return writevcl(fastly, version, content, 'helix.vcl');
 }
 

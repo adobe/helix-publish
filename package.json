@@ -1,6 +1,6 @@
 {
   "name": "@adobe/helix-publish",
-  "version": "6.6.1",
+  "version": "6.6.4",
   "description": "A microservice (for Adobe I/O Runtime) that publishes Helix configurations to Fastly",
   "main": "src/index.js",
   "private": true,
@@ -83,7 +83,7 @@
   "dependencies": {
     "@adobe/fastly-native-promises": "1.17.3",
     "@adobe/helix-fetch": "1.9.1",
-    "@adobe/helix-epsagon": "1.5.0",
+    "@adobe/helix-epsagon": "1.5.1",
     "@adobe/helix-log": "4.5.1",
     "@adobe/helix-shared": "7.11.0",
     "@adobe/helix-status": "8.1.3",
