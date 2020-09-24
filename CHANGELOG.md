@@ -1,3 +1,10 @@
+## [6.6.9](https://github.com/adobe/helix-publish/compare/v6.6.8...v6.6.9) (2020-09-24)
+
+
+### Bug Fixes
+
+* **block:** relax block expression ([b3f5506](https://github.com/adobe/helix-publish/commit/b3f5506646ad56ecb0a2bdbf1e68fe10d222c48d))
+
 ## [6.6.8](https://github.com/adobe/helix-publish/compare/v6.6.7...v6.6.8) (2020-09-21)
 
 
