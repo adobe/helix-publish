@@ -1085,7 +1085,7 @@ sub hlx_type_content {
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/content-proxy@v1"
+    + "/helix-services/content-proxy@v2"
     + "?ref=" + var.ref
     + "&path=" + req.url.path
     // content repo
