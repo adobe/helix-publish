@@ -266,9 +266,9 @@ sub hlx_ref {
   if (!req.http.X-Ref) {
     set req.http.X-Ref = table.lookup(strain_refs, "default");
   }
-  # if default isn't set, use 'master'
+  # if default isn't set, use nothing and hope that helix-resolve-git-ref will pick the correct default branch
   if (!req.http.X-Ref) {
-    set req.http.X-Ref = "master";
+    set req.http.X-Ref = "";
   }
 
   call hlx_ref_after;
