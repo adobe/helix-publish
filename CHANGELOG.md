@@ -1,3 +1,10 @@
+## [6.6.12](https://github.com/adobe/helix-publish/compare/v6.6.11...v6.6.12) (2020-09-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v8.2.1 ([2554537](https://github.com/adobe/helix-publish/commit/255453774b99eeaf5e00300e4dfd48ef686a5396))
+
 ## [6.6.11](https://github.com/adobe/helix-publish/compare/v6.6.10...v6.6.11) (2020-09-29)
 
 
