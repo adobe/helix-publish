@@ -1,3 +1,22 @@
+# [7.0.0](https://github.com/adobe/helix-publish/compare/v6.6.12...v7.0.0) (2020-09-30)
+
+
+### Features
+
+* **deps:** use content-proxy v2 ([fe870d8](https://github.com/adobe/helix-publish/commit/fe870d84a4070a7316283f0aa7365f16506db191))
+
+
+### BREAKING CHANGES
+
+* **deps:** content proxy v2 uses new data embed and gdocs services.
+                 - requests to json now returns an object instead of and array [0]
+                 - gdocs2md now has a different table handling [1]
+                 - gdocs2md supports author friendly names [2]
+
+[0] https://github.com/adobe/helix-data-embed/commit/9d1e924acc3aa6488b464a3cdc4a3bf68e3843bc
+[1] https://github.com/adobe/helix-gdocs2md/commit/e4befdbaed4a5319b2cca4be8507f153bedcc68a
+[2] https://github.com/adobe/helix-gdocs2md/commit/3aca7b387bbee977f84e61ce823ff6271b1b0a8d
+
 ## [6.6.12](https://github.com/adobe/helix-publish/compare/v6.6.11...v6.6.12) (2020-09-30)
 
 
