@@ -50,7 +50,7 @@ commands:
                 --user ${<< parameters.token>>}: \
                 --header "Content-Type: application/json" \
                 --silent \
-                --data "{ \"branch\": \"<< parameters.remote_branch >>\", \"parameters\": {\"smoke_tests_only\": \"true\", \"publish_ci_version\": \"<< parameters.publish_ci_version>>\"}\"}" \
+                --data "{ \"branch\": \"<< parameters.remote_branch >>\", \"parameters\": {\"smoke_tests_only\": \"true\", \"publish_ci_version\": \"<< parameters.publish_ci_version>>\"}}" \
                 --request POST "https://circleci.com/api/v2/project/github/adobe/helix-pages/pipeline" > run_tests_cmd_job.json
     - run:
         name: Wait for helix-pages smoke tests job to complete and report status
