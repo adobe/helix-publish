@@ -181,7 +181,8 @@ sub hlx_strain {
   }
 
   # we don't need cookies for anything else, but Proxy strains might
-  if (req.http.X-Request-Type != "Proxy") {
+  # and Preflight requests often do
+  if (req.http.X-Request-Type != "Proxy" && req.http.X-Request-Type != "Preflight") {
     unset req.http.Cookie;
   }
 }
@@ -922,6 +923,9 @@ sub hlx_deliver_type {
   if (req.http.X-Request-Type == "Query") {
     call hlx_deliver_query;
   }
+  if (req.http.X-Request-Type == "Preflight") {
+    call hlx_deliver_preflight;
+  }  
 }
 
 /**
@@ -999,6 +1003,23 @@ sub hlx_deliver_static {
     #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     #restart;
   }
+}
+
+/**
+ * Process preflight response by copying relevant headers back to the
+ * request and restart.
+ */
+sub hlx_deliver_preflight {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_preflight";
+  if (resp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    include "preflight.vcl";
+  } else {
+    # any other error, ignore
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
+  }
+  unset req.http.X-Request-Type;
+  restart;
 }
 
 sub hlx_deliver_query {
@@ -1096,6 +1117,23 @@ sub hlx_type_content {
     + "&" + req.url.qs;
 }
 
+
+/**
+ * Handles preflight requests by forwarding the current 
+ * request to the preflight service.
+ *
+ *
+ *
+ *
+ */
+sub hlx_type_preflight {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_dispatch";
+
+  # get it from OpenWhisk (for now, we will support other backends later)
+  set req.backend = F_AdobeRuntime;
+
+  set req.http.X-Backend-URL = {"const:preflight"};
+}
 
 /**
  * Handles requests for the main Helix rendering pipeline.
@@ -1323,6 +1361,8 @@ sub vcl_recv {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Content/JSON") {
     call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Preflight") {
+    call hlx_type_preflight;
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
@@ -1640,8 +1680,10 @@ sub hlx_bereq {
   unset bereq.http.Accept-Encoding;
 
   # Clean up all temporary request headers, since origins might be 3rd parties
-  unset bereq.http.X-Orig-Url;
-  unset bereq.http.X-Orig-Host;
+  if (req.http.X-Request-Type != "Preflight") {
+    unset bereq.http.X-Orig-Url;
+    unset bereq.http.X-Orig-Host;
+  }
   unset bereq.http.X-Backend-URL;
   unset bereq.http.X-Request-Type;
   unset bereq.http.X-Static-Content-Type;

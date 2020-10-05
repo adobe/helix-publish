@@ -92,7 +92,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
         : undefined),
       vcl.dynamic(fastly, version, dispatchVersion),
       vcl.extensions(fastly, version, vclOverrides),
-      vcl.updatestrains(fastly, version, config.strains),
+      vcl.updatestrains(fastly, version, config.strains, config),
       vcl.queries(fastly, version, indexconfig),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
