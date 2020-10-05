@@ -42,6 +42,7 @@ commands:
         publish_ci_version:
             type: string
             description: the helix-publish ci version to use for the smoke tests
+    steps:
     - run:
         name: Call helix-pages smoke tests job
         command: |
