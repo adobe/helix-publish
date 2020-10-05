@@ -420,13 +420,13 @@ sub hlx_headers_deliver {
 
 sub hlx_determine_request_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
-  
+
   if (req.request == "HLXPURGE" || req.http.x-method-override == "HLXPURGE") {
     set req.http.X-Trace = req.http.X-Trace + "(hlx-purge)";
     set req.http.X-Request-Type = "Helix-Purge";
     return;
   }
-  
+
   // TODO check for topurl
   if (req.url.ext == "url") {
     set req.http.X-Trace = req.http.X-Trace + "(static-url)";
@@ -448,7 +448,7 @@ sub hlx_determine_request_type {
   }
 
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
-  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif|svg)$") {
+  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).([0-9a-z]+)$") {
     set req.http.X-Trace = req.http.X-Trace + "(blob)";
     set req.http.X-Request-Type = "Blob";
     unset req.http.Accept-Encoding;
@@ -678,7 +678,7 @@ sub hlx_type_blob {
   declare local var.ext STRING;
   declare local var.sas STRING;
 
-  if (req.url.path ~ "^/hlx_(([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.path ~ "^/hlx_(([0-9a-f]){40}).([0-9a-z]+)$") {
     set var.sha = re.group.1;
     set var.ext = req.url.ext;
     set var.sas = table.lookup(secrets, "AZURE_BLOB_SAS_RO", "");
