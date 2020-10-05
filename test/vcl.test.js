@@ -90,11 +90,29 @@ describe('Testing vcl.js', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
       .init();
 
-    assert.ok(await updatestrains(fastly, 1, config.strains));
+    assert.ok(await updatestrains(fastly, 1, config.strains, config));
 
-    assert.ok(fastly.writeVCL.calledTwice);
+    assert.ok(fastly.writeVCL.calledThrice);
     assert.ok(fastly.writeVCL.calledWith(1, 'strains.vcl'));
     assert.ok(fastly.writeVCL.calledWith(1, 'params.vcl'));
+    assert.ok(fastly.writeVCL.calledWith(1, 'preflight.vcl'));
+  });
+
+  it('#updatestrains/preflight', async () => {
+    const fastly = {
+      writeVCL: sinon.fake(),
+    };
+
+    const config = await new HelixConfig()
+      .withConfigPath(path.resolve(__dirname, 'fixtures/preflight.yaml'))
+      .init();
+
+    assert.ok(await updatestrains(fastly, 1, config.strains, config));
+
+    assert.ok(fastly.writeVCL.calledThrice);
+    assert.ok(fastly.writeVCL.calledWith(1, 'strains.vcl'));
+    assert.ok(fastly.writeVCL.calledWith(1, 'params.vcl'));
+    assert.ok(fastly.writeVCL.calledWith(1, 'preflight.vcl'));
   });
 
   it('#dynamic', async () => {
