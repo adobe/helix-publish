@@ -37,7 +37,7 @@ function basedir() {
   return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
 }
 
-async function init(fastly, version, options) {
+async function init(fastly, version, options, config) {
   const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
   let content = options
     ? include(vclfile, addEpsagonTraces, {
@@ -49,7 +49,7 @@ async function init(fastly, version, options) {
     : include(vclfile);
   content = regex(content, urlFilters);
   content = injectConsts(content, {
-
+    preflight: config.preflight,
   });
   return writevcl(fastly, version, content, 'helix.vcl');
 }
