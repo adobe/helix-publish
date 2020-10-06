@@ -1,3 +1,43 @@
+# [7.1.0](https://github.com/adobe/helix-publish/compare/v7.0.2...v7.1.0) (2020-10-06)
+
+
+### Features
+
+* **blobs:** allow all extenions for azure blobs ([#623](https://github.com/adobe/helix-publish/issues/623)) ([b96c952](https://github.com/adobe/helix-publish/commit/b96c952ffc1588c33768ef8942e2ac644f4e3e06))
+
+## [7.0.2](https://github.com/adobe/helix-publish/compare/v7.0.1...v7.0.2) (2020-10-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.16.0 ([ff0fb2a](https://github.com/adobe/helix-publish/commit/ff0fb2a20e4ace93f9c57e880743f5038a1ff723))
+
+## [7.0.1](https://github.com/adobe/helix-publish/compare/v7.0.0...v7.0.1) (2020-10-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.15.0 ([73e2f59](https://github.com/adobe/helix-publish/commit/73e2f59d79517f536d399639967ce7694c452857))
+
+# [7.0.0](https://github.com/adobe/helix-publish/compare/v6.6.12...v7.0.0) (2020-09-30)
+
+
+### Features
+
+* **deps:** use content-proxy v2 ([fe870d8](https://github.com/adobe/helix-publish/commit/fe870d84a4070a7316283f0aa7365f16506db191))
+
+
+### BREAKING CHANGES
+
+* **deps:** content proxy v2 uses new data embed and gdocs services.
+                 - requests to json now returns an object instead of and array [0]
+                 - gdocs2md now has a different table handling [1]
+                 - gdocs2md supports author friendly names [2]
+
+[0] https://github.com/adobe/helix-data-embed/commit/9d1e924acc3aa6488b464a3cdc4a3bf68e3843bc
+[1] https://github.com/adobe/helix-gdocs2md/commit/e4befdbaed4a5319b2cca4be8507f153bedcc68a
+[2] https://github.com/adobe/helix-gdocs2md/commit/3aca7b387bbee977f84e61ce823ff6271b1b0a8d
+
 ## [6.6.12](https://github.com/adobe/helix-publish/compare/v6.6.11...v6.6.12) (2020-09-30)
 
 
