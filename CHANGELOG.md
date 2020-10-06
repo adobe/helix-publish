@@ -1,3 +1,10 @@
+# [7.1.0](https://github.com/adobe/helix-publish/compare/v7.0.2...v7.1.0) (2020-10-06)
+
+
+### Features
+
+* **blobs:** allow all extenions for azure blobs ([#623](https://github.com/adobe/helix-publish/issues/623)) ([b96c952](https://github.com/adobe/helix-publish/commit/b96c952ffc1588c33768ef8942e2ac644f4e3e06))
+
 ## [7.0.2](https://github.com/adobe/helix-publish/compare/v7.0.1...v7.0.2) (2020-10-05)
 
 
