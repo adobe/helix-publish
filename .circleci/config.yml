@@ -168,8 +168,6 @@ jobs:
         command: npm run test-postdeploy
     
     - run-helix-pages-smoke-tests-cmd:
-        # TODO: remove first param
-        remote_branch: smoke-tests-for-publish
         publish_ci_version: ci$CIRCLE_BUILD_NUM
 
 workflows:
