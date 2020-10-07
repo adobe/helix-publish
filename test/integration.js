@@ -273,7 +273,7 @@ describe('Integration Test', () => {
       });
   }).timeout(60000);
 
-  it.only('Test publish function with invalid configuration', async () => {
+  it('Test publish function with invalid configuration', async () => {
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
