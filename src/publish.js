@@ -81,14 +81,24 @@ async function publish(configuration, service, token, version, vclOverrides = {}
 
     await checkPkgs(config, log);
     const fastly = await initfastly(token, service);
-    log.info('running publishing tasks...');
+    log.info('running publishing tasks…');
 
     let pretasks = 1;
-    await vcl.dynamic(fastly, version, dispatchVersion);
-    await vcl.extensions(fastly, version, vclOverrides);
-    await vcl.updatestrains(fastly, version, config.strains);
-    await vcl.queries(fastly, version, indexconfig);
-    pretasks += 4;
+
+    const handleError = (e) => {
+      log.error(`error executing tasks: ${e}, ${e.data}`, e);
+      return reportError(e);
+    };
+
+    try {
+      await vcl.dynamic(fastly, version, dispatchVersion);
+      await vcl.extensions(fastly, version, vclOverrides);
+      await vcl.updatestrains(fastly, version, config.strains);
+      await vcl.queries(fastly, version, indexconfig);
+      pretasks += 4;
+    } catch (e) {
+      return handleError(e);
+    }
 
     const publishtasks = [
       backends.init(fastly, version, algoliaappid),
@@ -124,10 +134,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
           statusCode: 200,
         };
       })
-      .catch((e) => {
-        log.error(`error executing tasks: ${e}, ${e.data}`, e);
-        return reportError(e);
-      });
+      .catch(handleError);
   } catch (e) {
     // invalid configuration
     log.error(e);
