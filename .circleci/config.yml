@@ -112,6 +112,8 @@ jobs:
     - store_test_results:
         path: junit
 
+    - run: ls junit
+
     - store_artifacts:
         path: junit
 
