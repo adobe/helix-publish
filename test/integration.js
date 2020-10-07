@@ -277,11 +277,10 @@ describe('Integration Test', () => {
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
-      version: VERSION_NUM,
+      version: VERSION_NUM - 1,
     };
 
     const res = await main(params);
-    console.log(res);
     assert.equal(res.statusCode, 400);
   }).timeout(60000);
 
