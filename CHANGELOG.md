@@ -1,3 +1,10 @@
+## [7.1.1](https://github.com/adobe/helix-publish/compare/v7.1.0...v7.1.1) (2020-10-07)
+
+
+### Bug Fixes
+
+* **publish:** reduce parallelism in updating vcl ([fd6bdc7](https://github.com/adobe/helix-publish/commit/fd6bdc7a0b08c353df8c08fc8f845cc92498db49)), closes [#628](https://github.com/adobe/helix-publish/issues/628)
+
 # [7.1.0](https://github.com/adobe/helix-publish/compare/v7.0.2...v7.1.0) (2020-10-06)
 
 
