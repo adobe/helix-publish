@@ -1,3 +1,10 @@
+## [7.1.2](https://github.com/adobe/helix-publish/compare/v7.1.1...v7.1.2) (2020-10-08)
+
+
+### Bug Fixes
+
+* allow table and sheet as parameters ([#631](https://github.com/adobe/helix-publish/issues/631)) ([1516b35](https://github.com/adobe/helix-publish/commit/1516b35ac13c2511d03ded36b55ee40692032fc9))
+
 ## [7.1.1](https://github.com/adobe/helix-publish/compare/v7.1.0...v7.1.1) (2020-10-07)
 
 
