@@ -96,6 +96,8 @@ commands:
             echo "export TEST_DOMAIN=$TEST_DOMAIN" >> env/TEST_DOMAIN
             cat env/TEST_DOMAIN >> $BASH_ENV
 
+            echo "Test Domain is" $TEST_DOMAIN
+
             exit_code=0
             if [[ ! $status =~ 'success' ]] && [[ ! $status =~ 'fixed' ]]
             then
