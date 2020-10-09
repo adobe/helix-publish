@@ -87,6 +87,15 @@ commands:
             done
             echo ""
             echo "Smoke tests https://circleci.com/workflow-run/${smoke_workflow_id} finished with status \"${status}\""
+
+            modulo=$(expr $(echo $smoke_workflow_id | sed -e "s/[a-f-]//g" | sed -e "s/................//") % 7 + 1)
+            name="TEST_DOMAIN_$modulo"
+            TEST_DOMAIN=${!name}
+            mkdir -p env
+            # "pass" the variable to the next steps...
+            echo "export TEST_DOMAIN=$TEST_DOMAIN" >> env/TEST_DOMAIN
+            cat env/TEST_DOMAIN >> $BASH_ENV
+
             exit_code=0
             if [[ ! $status =~ 'success' ]] && [[ ! $status =~ 'fixed' ]]
             then
