@@ -165,12 +165,12 @@ jobs:
         name: Branch Deployment
         command: npm run deploy-ci
 
+    - run-helix-pages-smoke-tests-cmd:
+        publish_ci_version: ci$CIRCLE_BUILD_NUM
+
     - run:
         name: Post-Deployment Integration Test
         command: npm run test-postdeploy
-    
-    - run-helix-pages-smoke-tests-cmd:
-        publish_ci_version: ci$CIRCLE_BUILD_NUM
 
 workflows:
   version: 2
