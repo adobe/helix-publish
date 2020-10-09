@@ -14,7 +14,6 @@
 /* eslint-disable no-unused-expressions */
 
 const packjson = require('../package.json');
-const testcmd = require('../run_tests_cmd_job.json');
 
 function getbaseurl() {
   const namespace = 'helix';
@@ -28,7 +27,6 @@ function getbaseurl() {
 }
 
 function getbasedomain() {
-  console.log(testcmd);
   return process.env.TEST_DOMAIN;
 }
 
