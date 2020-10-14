@@ -1,3 +1,10 @@
+## [7.1.3](https://github.com/adobe/helix-publish/compare/v7.1.2...v7.1.3) (2020-10-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-logger to v2.2.1 ([#634](https://github.com/adobe/helix-publish/issues/634)) ([df7ae74](https://github.com/adobe/helix-publish/commit/df7ae74ebe479c32c6e14e0c549e3ff8ceca5748))
+
 ## [7.1.2](https://github.com/adobe/helix-publish/compare/v7.1.1...v7.1.2) (2020-10-08)
 
 
