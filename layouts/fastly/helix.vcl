@@ -1525,6 +1525,8 @@ sub vcl_fetch {
   # https://github.com/adobe/project-helix/issues/460
   set beresp.http.Vary:X-Forwarded-Host = "";
 
+  # Vary on x-ow-version-lock, to avoid caching of different versions
+  set beresp.http.Vary:X-OW-Version-Lock = "";
 
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
