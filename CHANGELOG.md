@@ -1,3 +1,10 @@
+# [7.2.0](https://github.com/adobe/helix-publish/compare/v7.1.3...v7.2.0) (2020-10-16)
+
+
+### Features
+
+* **vcl:** add very on version lock ([#635](https://github.com/adobe/helix-publish/issues/635)) ([024f199](https://github.com/adobe/helix-publish/commit/024f199761c136b7d6d4b7228be70ce14c176875))
+
 ## [7.1.3](https://github.com/adobe/helix-publish/compare/v7.1.2...v7.1.3) (2020-10-14)
 
 
