@@ -89,7 +89,7 @@ commands:
             echo "Smoke tests https://circleci.com/workflow-run/${smoke_workflow_id} finished with status \"${status}\""
 
             echo "==="
-            cat ${smoke_result_file}
+            cat ${smoke_result_file} | jq -r .pipeline_number
             echo "==="
             modulo=$(expr $(echo $smoke_workflow_id | sed -e "s/[a-f-]//g" | sed -e "s/................//") % 7 + 1)
             name="TEST_DOMAIN_$modulo"
