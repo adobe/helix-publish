@@ -88,12 +88,9 @@ commands:
             echo ""
             echo "Smoke tests https://circleci.com/workflow-run/${smoke_workflow_id} finished with status \"${status}\""
 
-            echo "==="
-            cat ${smoke_result_file} | jq -r .pipeline_number
-            echo "==="
-            modulo=$(expr $(echo $smoke_workflow_id | sed -e "s/[a-f-]//g" | sed -e "s/................//") % 7 + 1)
-            name="TEST_DOMAIN_$modulo"
-            TEST_DOMAIN=${!name}
+            pipeline_number=$(cat ${smoke_result_file} | jq -r .pipeline_number)
+            modulo=$(expr $pipeline_number % 7 + 1)
+            TEST_DOMAIN=hlx-${modulo}.page
             mkdir -p env
             # "pass" the variable to the next steps...
             echo "export TEST_DOMAIN=$TEST_DOMAIN" >> env/TEST_DOMAIN
