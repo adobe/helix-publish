@@ -26,10 +26,20 @@ function getbaseurl() {
   return `api/v1/web/${namespace}/${package}/${name}@${version}`;
 }
 
+function getbasedomain() {
+  return process.env.TEST_DOMAIN;
+}
+
 describe('Post-Deploy Tests', () => {
   it('Print Test Instructions', async () => {
     // eslint-disable-next-line no-console
     console.log(`Try it yourself:
 hlx publish --api-publish https://adobeioruntime.net/${getbaseurl()}`);
+  }).timeout(10000);
+
+  it('Print Test Instructions for Helix Pages', async () => {
+    // eslint-disable-next-line no-console
+    console.log(`Your Helix Pages Test Domain is:
+https://owner--repo.${getbasedomain()}`);
   }).timeout(10000);
 });
