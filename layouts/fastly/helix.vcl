@@ -1081,7 +1081,7 @@ sub hlx_type_content {
   }
 
   // clean up the query string
-  set req.url = querystring.regfilter_except(req.url, "^(limit|offset|hlx_.*)$");
+  set req.url = querystring.regfilter_except(req.url, "^(limit|offset|table|sheet|hlx_.*)$");
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
@@ -1525,6 +1525,8 @@ sub vcl_fetch {
   # https://github.com/adobe/project-helix/issues/460
   set beresp.http.Vary:X-Forwarded-Host = "";
 
+  # Vary on x-ow-version-lock, to avoid caching of different versions
+  set beresp.http.Vary:X-OW-Version-Lock = "";
 
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {

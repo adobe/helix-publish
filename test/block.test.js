@@ -21,7 +21,7 @@ const globalhits = {};
 
 function decode(urlfragment) {
   try {
-    return `(${decodeURIComponent(urlfragment)})`;
+    return `(${decodeURIComponent(urlfragment).replace('\x00', 'x00')})`;
   } catch {
     return '';
   }
