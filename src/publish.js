@@ -110,7 +110,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
           serviceid: service,
           epsagonAppName,
         }
-        : undefined),
+        : undefined, config),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
         fastly,
