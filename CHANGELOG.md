@@ -1,3 +1,31 @@
+# [7.2.0](https://github.com/adobe/helix-publish/compare/v7.1.3...v7.2.0) (2020-10-16)
+
+
+### Features
+
+* **vcl:** add very on version lock ([#635](https://github.com/adobe/helix-publish/issues/635)) ([024f199](https://github.com/adobe/helix-publish/commit/024f199761c136b7d6d4b7228be70ce14c176875))
+
+## [7.1.3](https://github.com/adobe/helix-publish/compare/v7.1.2...v7.1.3) (2020-10-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-logger to v2.2.1 ([#634](https://github.com/adobe/helix-publish/issues/634)) ([df7ae74](https://github.com/adobe/helix-publish/commit/df7ae74ebe479c32c6e14e0c549e3ff8ceca5748))
+
+## [7.1.2](https://github.com/adobe/helix-publish/compare/v7.1.1...v7.1.2) (2020-10-08)
+
+
+### Bug Fixes
+
+* allow table and sheet as parameters ([#631](https://github.com/adobe/helix-publish/issues/631)) ([1516b35](https://github.com/adobe/helix-publish/commit/1516b35ac13c2511d03ded36b55ee40692032fc9))
+
+## [7.1.1](https://github.com/adobe/helix-publish/compare/v7.1.0...v7.1.1) (2020-10-07)
+
+
+### Bug Fixes
+
+* **publish:** reduce parallelism in updating vcl ([fd6bdc7](https://github.com/adobe/helix-publish/commit/fd6bdc7a0b08c353df8c08fc8f845cc92498db49)), closes [#628](https://github.com/adobe/helix-publish/issues/628)
+
 # [7.1.0](https://github.com/adobe/helix-publish/compare/v7.0.2...v7.1.0) (2020-10-06)
 
 

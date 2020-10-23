@@ -87,6 +87,17 @@ commands:
             done
             echo ""
             echo "Smoke tests https://circleci.com/workflow-run/${smoke_workflow_id} finished with status \"${status}\""
+
+            pipeline_number=$(cat ${smoke_result_file} | jq -r .pipeline_number)
+            modulo=$(expr $pipeline_number % 7 + 1)
+            TEST_DOMAIN=hlx-${modulo}.page
+            mkdir -p env
+            # "pass" the variable to the next steps...
+            echo "export TEST_DOMAIN=$TEST_DOMAIN" >> env/TEST_DOMAIN
+            cat env/TEST_DOMAIN >> $BASH_ENV
+
+            echo "Test Domain is" $TEST_DOMAIN
+
             exit_code=0
             if [[ ! $status =~ 'success' ]] && [[ ! $status =~ 'fixed' ]]
             then
@@ -111,6 +122,8 @@ jobs:
 
     - store_test_results:
         path: junit
+
+    - run: ls junit
 
     - store_artifacts:
         path: junit
@@ -163,12 +176,12 @@ jobs:
         name: Branch Deployment
         command: npm run deploy-ci
 
+    - run-helix-pages-smoke-tests-cmd:
+        publish_ci_version: ci$CIRCLE_BUILD_NUM
+
     - run:
         name: Post-Deployment Integration Test
         command: npm run test-postdeploy
-    
-    - run-helix-pages-smoke-tests-cmd:
-        publish_ci_version: ci$CIRCLE_BUILD_NUM
 
 workflows:
   version: 2
