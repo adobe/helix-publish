@@ -40,6 +40,7 @@ const backends = {
     between_bytes_timeout: 10000,
     shield: 'bwi-va-us',
     ssl_cert_hostname: 'adobeioruntime.net',
+    ssl_sni_hostname: 'adobeioruntime.net',
     max_conn: 200,
     use_ssl: true,
   },

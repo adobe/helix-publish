@@ -10,7 +10,11 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable max-classes-per-file */
-const { fetch } = require('@adobe/helix-fetch');
+const { fetch } = require('@adobe/helix-fetch').context({
+  httpsProtocols:
+  /* istanbul ignore next */
+    process.env.HELIX_FETCH_FORCE_HTTP1 ? ['http1'] : ['http2', 'http1'],
+});
 
 /**
  * This function takes strains and sends requests
