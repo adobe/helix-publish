@@ -1,3 +1,11 @@
+## [7.2.1](https://github.com/adobe/helix-publish/compare/v7.2.0...v7.2.1) (2020-10-28)
+
+
+### Bug Fixes
+
+* **backends:** always set sni hostname for runtime ([cef3ad7](https://github.com/adobe/helix-publish/commit/cef3ad750313eab15a754e2fa33728e608127731))
+* **fetch:** disable http2 for tests so that polly can intercept ([1a96495](https://github.com/adobe/helix-publish/commit/1a96495bd456bfdafc0205781ec2b2c8609410e3))
+
 # [7.2.0](https://github.com/adobe/helix-publish/compare/v7.1.3...v7.2.0) (2020-10-16)
 
 
