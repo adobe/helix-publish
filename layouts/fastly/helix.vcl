@@ -961,7 +961,7 @@ sub hlx_fetch_error {
     error 965 "Too many requests";
   }
   # if (req.url.basename ~ "^([0-9][0-9][0-9])") {
-  #   set beresp.status = i.atoi(re.group.1);
+  #   set beresp.status = std.atoi(re.group.1);
   # } else {
   #   # this should never happen
   #   set beresp.status = 500;
