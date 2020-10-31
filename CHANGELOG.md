@@ -1,3 +1,10 @@
+# [7.3.0](https://github.com/adobe/helix-publish/compare/v7.2.1...v7.3.0) (2020-10-31)
+
+
+### Features
+
+* **helix.vcl:** conditional image optimization ([1101086](https://github.com/adobe/helix-publish/commit/11010865dd64dacc3f622c72a7d113479a604b36)), closes [#644](https://github.com/adobe/helix-publish/issues/644)
+
 ## [7.2.1](https://github.com/adobe/helix-publish/compare/v7.2.0...v7.2.1) (2020-10-28)
 
 
