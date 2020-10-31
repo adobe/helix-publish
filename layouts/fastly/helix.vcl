@@ -601,7 +601,7 @@ sub hlx_type_static {
     + "&deny=" urlencode(req.http.X-Deny)
     + "&root=" + req.http.X-Github-Static-Root;
 
-  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$" && std.strlen(req.url.qs) > 0) {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
@@ -683,8 +683,10 @@ sub hlx_type_blob {
     set var.ext = req.url.ext;
     set var.sas = table.lookup(secrets, "AZURE_BLOB_SAS_RO", "");
 
-    # request image optimization
-    set req.http.X-Fastly-Imageopto-Api = "fastly";
+    if (std.strlen(req.url.qs) > 0) {
+      # request image optimization
+      set req.http.X-Fastly-Imageopto-Api = "fastly";
+    }
   }
 
   set req.http.X-Backend-URL = "/external/" + var.sha + var.sas;
@@ -752,7 +754,7 @@ sub hlx_type_static_redirect {
   # - don't forget to override the Content-Type header
   set req.backend = F_GitHub;
 
-  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$" && std.strlen(req.url.qs) > 0) {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
@@ -1168,7 +1170,7 @@ sub hlx_type_dispatch {
       + "&params=" + req.http.X-Encoded-Params;
   }
 
-  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$" && std.strlen(req.url.qs) > 0) {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
