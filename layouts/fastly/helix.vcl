@@ -266,10 +266,6 @@ sub hlx_ref {
   if (!req.http.X-Ref) {
     set req.http.X-Ref = table.lookup(strain_refs, "default");
   }
-  # if default isn't set, use 'master'
-  if (!req.http.X-Ref) {
-    set req.http.X-Ref = "master";
-  }
 
   call hlx_ref_after;
 }
