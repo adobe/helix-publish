@@ -1013,14 +1013,18 @@ sub hlx_deliver_static {
  */
 sub hlx_deliver_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_preflight";
+  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip "\ntrace:" req.http.X-Trace;
   if (resp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip "\ntrace:" req.http.X-Trace;
     include "preflight.vcl";
   } else {
     # any other error, ignore
     set req.http.X-Trace = req.http.X-Trace + "(error)";
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip "\ntrace:" req.http.X-Trace;
   }
   unset req.http.X-Request-Type;
+  log "syslog " req.service_id " restarting";
   restart;
 }
 
@@ -1130,6 +1134,7 @@ sub hlx_type_content {
  */
 sub hlx_type_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
+  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip "\ntrace:" req.http.X-Trace;
 
   # get it from OpenWhisk (for now, we will support other backends later)
   set req.backend = F_AdobeRuntime;
