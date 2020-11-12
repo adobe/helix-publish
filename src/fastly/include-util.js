@@ -43,7 +43,7 @@ function injectConsts(content, constants) {
   return Object
     .entries(constants)
     .reduce((str, [key, value]) => str
-      .replace(`{"${key}"}`, `"${value}"`),
+      .replace(`{"const:${key}"}`, `"${value}"`),
     content);
 }
 
