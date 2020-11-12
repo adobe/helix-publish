@@ -1129,7 +1129,7 @@ sub hlx_type_content {
  *
  */
 sub hlx_type_preflight {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_dispatch";
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
 
   # get it from OpenWhisk (for now, we will support other backends later)
   set req.backend = F_AdobeRuntime;
