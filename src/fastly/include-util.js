@@ -42,6 +42,7 @@ function include(srcfile, tracer, opts) {
 function injectConsts(content, constants) {
   return Object
     .entries(constants)
+    .filter(([key, value]) => !!key && !!value)
     .reduce((str, [key, value]) => str
       .replace(`{"const:${key}"}`, `"${value}"`),
     content);

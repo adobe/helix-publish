@@ -49,7 +49,7 @@ async function init(fastly, version, options, config) {
     : include(vclfile);
   content = regex(content, urlFilters);
   content = injectConsts(content, {
-    preflight: config.preflight,
+    preflight: config.preflight ? config.preflight.replace('https://adobeioruntime.net', '') : undefined,
   });
   return writevcl(fastly, version, content, 'helix.vcl');
 }
