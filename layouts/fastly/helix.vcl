@@ -1021,11 +1021,6 @@ sub hlx_fetch_preflight {
     # Vary header exists, we add `,X-Restarts` to it. If it doesn't exist,
     # it will only contain `X-Restarts` after this statement.
     set beresp.http.Vary:X-Restarts = "";
-    
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_fetch_preflight(y)";
-  
-  } else {
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_fetch_preflight(n)";
   }
 }
 
@@ -1035,21 +1030,16 @@ sub hlx_fetch_preflight {
  */
 sub hlx_deliver_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_preflight";
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight";
   if (resp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:ok";
     include "preflight.vcl";
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " x-version=" req.http.x-preflight-site-version;
     set req.http.X-Trace = req.http.X-Trace + "(site-version=" resp.http.site-version "/" req.http.x-preflight-site-version ")";
   } else {
     # any other error, ignore
     set req.http.X-Trace = req.http.X-Trace + "(error)";
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:error";
   }
   unset req.http.X-Request-Type;
   unset req.http.X-Strain;
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:restarting";
   restart;
 }
 
@@ -1159,8 +1149,7 @@ sub hlx_type_content {
  */
 sub hlx_type_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_type_preflight";
-
+  
   # get it from OpenWhisk (for now, we will support other backends later)
   set req.backend = F_AdobeRuntime;
 
@@ -1557,7 +1546,6 @@ sub hlx_error_errors {
 }
 
 sub vcl_fetch {
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " vcl_fetch";
   # store trace information in backend response headers in order
   # to make them available in vcl_deliver
   set beresp.http.X-Trace = req.http.X-Trace;
@@ -1665,9 +1653,6 @@ sub hlx_bereq {
     set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
   }
 
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_bereq";
-  
-
   # If we're going to a shield (another Fastly POP) use the original URL and
   # Host header. If not a shield, we're going to origin; set the URL and Host
   # header as explained at the top of this file.
@@ -1675,10 +1660,7 @@ sub hlx_bereq {
     set bereq.url = req.http.X-Orig-Url;
     set bereq.http.Host = req.http.X-Orig-Host;
 
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " shield";
   } else {
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " origin";
-
     if (req.http.X-Backend-URL) {
       set bereq.url = req.http.X-Backend-URL;
     }
@@ -1744,8 +1726,6 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
   unset bereq.http.X-Restarts;
-
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " " + bereq.http.Host + " " + bereq.url;
 }
 
 sub vcl_miss {
@@ -1771,8 +1751,6 @@ sub vcl_pass {
 }
 
 sub vcl_deliver {
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " vcl_deliver";
-
   # reconstruct VCL trace from information stored in backend response headers
   if (resp.http.X-Trace) {
     set req.http.X-Trace = resp.http.X-Trace;
