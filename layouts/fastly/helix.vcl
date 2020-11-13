@@ -1008,9 +1008,25 @@ sub hlx_deliver_static {
 }
 
 sub hlx_fetch_preflight {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_preflight";
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_fetch_preflight";
+  # We're in the 'fetch' state where we temporarily store
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+  if (req.http.X-Request-Type == "Preflight") {
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_preflight";
+    # We're adding X-Restarts to the Vary here, so that we don't have to use
+    # req.hash_always_miss, which can cause a thundering herd. Since we only
+    # add to the Vary when we are restarting, and not on the final object, the
+    # final object will supersede the objects with the additional Vary. See
+    # https://vimeo.com/376921144 for the full explanation of how this works.
+    # The : after the header name is the subfield syntax. Basically, if the
+    # Vary header exists, we add `,X-Restarts` to it. If it doesn't exist,
+    # it will only contain `X-Restarts` after this statement.
+    set beresp.http.Vary:X-Restarts = "";
+    
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_fetch_preflight(y)";
   
+  } else {
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_fetch_preflight(n)";
+  }
 }
 
 /**
@@ -1022,15 +1038,15 @@ sub hlx_deliver_preflight {
   log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight";
   if (resp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " ok";
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:ok";
     include "preflight.vcl";
   } else {
     # any other error, ignore
     set req.http.X-Trace = req.http.X-Trace + "(error)";
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " error";
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:error";
   }
   unset req.http.X-Request-Type;
-  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " restarting";
+  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:restarting";
   restart;
 }
 
