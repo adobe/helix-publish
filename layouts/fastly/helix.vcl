@@ -1040,13 +1040,15 @@ sub hlx_deliver_preflight {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
     log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:ok";
     include "preflight.vcl";
-    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " x-version=" req.http.x-preflight-x-version;
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " x-version=" req.http.x-preflight-site-version;
+    set req.http.X-Trace = req.http.X-Trace + "(site-version=" resp.http.site-version "/" req.http.x-preflight-site-version ")";
   } else {
     # any other error, ignore
     set req.http.X-Trace = req.http.X-Trace + "(error)";
     log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:error";
   }
   unset req.http.X-Request-Type;
+  unset req.http.X-Strain;
   log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:restarting";
   restart;
 }
