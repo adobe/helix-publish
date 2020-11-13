@@ -1008,6 +1008,8 @@ sub hlx_deliver_static {
 }
 
 sub hlx_fetch_preflight {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_fetch_preflight";
+  log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_fetch_preflight";
   
 }
 
@@ -1554,6 +1556,8 @@ sub vcl_fetch {
   if (req.http.X-Request-Type == "Proxy") {
     return(pass);
   }
+
+  call hlx_fetch_preflight;
 
   call hlx_fetch_errors;
 
