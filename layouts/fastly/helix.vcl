@@ -1280,7 +1280,7 @@ sub hlx_check_debug_key {
   //X-Debug must be protected
   if (var.debugSecret && var.key == var.debugSecret) {
     set req.http.X-Debug = var.level;
-  } else {
+  } elseif (req.restarts == 0) {
     unset req.http.X-Debug;
   }
 }
