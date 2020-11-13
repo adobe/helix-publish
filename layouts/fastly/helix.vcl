@@ -1040,6 +1040,7 @@ sub hlx_deliver_preflight {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
     log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " hlx_deliver_preflight:ok";
     include "preflight.vcl";
+    log "syslog " req.service_id " helix-debug :: client_ip:" client.ip " x-version=" req.http.x-preflight-x-version;
   } else {
     # any other error, ignore
     set req.http.X-Trace = req.http.X-Trace + "(error)";
