@@ -1,3 +1,10 @@
+## [7.3.2](https://github.com/adobe/helix-publish/compare/v7.3.1...v7.3.2) (2020-11-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.5.4 ([#650](https://github.com/adobe/helix-publish/issues/650)) ([9d8f4c5](https://github.com/adobe/helix-publish/commit/9d8f4c5b10faaba338c452466af51e2817158fa0))
+
 ## [7.3.1](https://github.com/adobe/helix-publish/compare/v7.3.0...v7.3.1) (2020-11-03)
 
 
