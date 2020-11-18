@@ -1,3 +1,10 @@
+## [7.3.3](https://github.com/adobe/helix-publish/compare/v7.3.2...v7.3.3) (2020-11-18)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([f3eba6a](https://github.com/adobe/helix-publish/commit/f3eba6a54a38400af10d87fd80aa578c33c4e92e))
+
 ## [7.3.2](https://github.com/adobe/helix-publish/compare/v7.3.1...v7.3.2) (2020-11-13)
 
 
