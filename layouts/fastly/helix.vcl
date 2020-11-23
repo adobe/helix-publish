@@ -181,7 +181,8 @@ sub hlx_strain {
   }
 
   # we don't need cookies for anything else, but Proxy strains might
-  if (req.http.X-Request-Type != "Proxy") {
+  # and Preflight requests often do
+  if (req.http.X-Request-Type != "Proxy" && req.http.X-Request-Type != "Preflight") {
     unset req.http.Cookie;
   }
 }
@@ -924,6 +925,9 @@ sub hlx_deliver_type {
   if (req.http.X-Request-Type == "Query") {
     call hlx_deliver_query;
   }
+  if (req.http.X-Request-Type == "Preflight") {
+    call hlx_deliver_preflight;
+  }  
 }
 
 /**
@@ -1001,6 +1005,42 @@ sub hlx_deliver_static {
     #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     #restart;
   }
+}
+
+sub hlx_fetch_preflight {
+  # We're in the 'fetch' state where we temporarily store
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+  if (req.http.X-Request-Type == "Preflight") {
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_preflight";
+    # We're adding X-Restarts to the Vary here, so that we don't have to use
+    # req.hash_always_miss, which can cause a thundering herd. Since we only
+    # add to the Vary when we are restarting, and not on the final object, the
+    # final object will supersede the objects with the additional Vary. See
+    # https://vimeo.com/376921144 for the full explanation of how this works.
+    # The : after the header name is the subfield syntax. Basically, if the
+    # Vary header exists, we add `,X-Restarts` to it. If it doesn't exist,
+    # it will only contain `X-Restarts` after this statement.
+    set beresp.http.Vary:X-Restarts = "";
+  }
+}
+
+/**
+ * Process preflight response by copying relevant headers back to the
+ * request and restart.
+ */
+sub hlx_deliver_preflight {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_preflight";
+  if (resp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    include "preflight.vcl";
+    set req.http.X-Trace = req.http.X-Trace + "(site-version=" resp.http.site-version "/" req.http.x-preflight-site-version ")";
+  } else {
+    # any other error, ignore
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
+  }
+  unset req.http.X-Request-Type;
+  unset req.http.X-Strain;
+  restart;
 }
 
 sub hlx_deliver_query {
@@ -1098,6 +1138,23 @@ sub hlx_type_content {
     + "&" + req.url.qs;
 }
 
+
+/**
+ * Handles preflight requests by forwarding the current 
+ * request to the preflight service.
+ *
+ *
+ *
+ *
+ */
+sub hlx_type_preflight {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
+  
+  # get it from OpenWhisk (for now, we will support other backends later)
+  set req.backend = F_AdobeRuntime;
+
+  set req.http.X-Backend-URL = {"const:preflight"};
+}
 
 /**
  * Handles requests for the main Helix rendering pipeline.
@@ -1214,7 +1271,7 @@ sub hlx_check_debug_key {
   //X-Debug must be protected
   if (var.debugSecret && var.key == var.debugSecret) {
     set req.http.X-Debug = var.level;
-  } else {
+  } elseif (req.restarts == 0) {
     unset req.http.X-Debug;
   }
 }
@@ -1325,6 +1382,8 @@ sub vcl_recv {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Content/JSON") {
     call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Preflight") {
+    call hlx_type_preflight;
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
@@ -1505,6 +1564,8 @@ sub vcl_fetch {
     return(pass);
   }
 
+  call hlx_fetch_preflight;
+
   call hlx_fetch_errors;
 
   unset beresp.http.Set-Cookie;
@@ -1598,6 +1659,7 @@ sub hlx_bereq {
   if (req.backend.is_shield) {
     set bereq.url = req.http.X-Orig-Url;
     set bereq.http.Host = req.http.X-Orig-Host;
+
   } else {
     if (req.http.X-Backend-URL) {
       set bereq.url = req.http.X-Backend-URL;
@@ -1644,8 +1706,10 @@ sub hlx_bereq {
   unset bereq.http.Accept-Encoding;
 
   # Clean up all temporary request headers, since origins might be 3rd parties
-  unset bereq.http.X-Orig-Url;
-  unset bereq.http.X-Orig-Host;
+  if (req.http.X-Request-Type != "Preflight") {
+    unset bereq.http.X-Orig-Url;
+    unset bereq.http.X-Orig-Host;
+  }
   unset bereq.http.X-Backend-URL;
   unset bereq.http.X-Request-Type;
   unset bereq.http.X-Static-Content-Type;

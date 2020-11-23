@@ -114,9 +114,21 @@ function namebody([strain, vcl]) {
   return [strain, vcl];
 }
 
-function resolve(mystrains) {
+function resolve(mystrains, preflight) {
   const strains = Array.from(mystrains.values());
   let retvcl = '# This file handles the strain resolution\nset req.http.X-Root-Path = "";\n';
+
+  if (preflight) {
+    retvcl += `
+# Strain resolution depends on preflight completion. If the preflight request has
+# not been made, we need to start it now.
+
+if (req.restarts < 1) {
+  set req.http.X-Request-Type = "Preflight";
+} else {
+`;
+  }
+
   const strainconditions = strains
     .map((strain) => [strain, { body: vclbody() }])
     .map(conditions)
@@ -136,6 +148,13 @@ ${vcl.body.map((snippet) => snippet.split('\n').map((line) => `  ${line}`).join(
   } else {
     retvcl += 'set req.http.X-Strain = "default";\n';
   }
+
+  if (preflight) {
+    retvcl += `
+}
+`;
+  }
+
   return retvcl;
 }
 
@@ -252,6 +271,21 @@ function condition(pattern, strain) {
   return `req.http.X-Strain == "${strain}" && ${varname} ~ "${pattern}"`;
 }
 
+function preflightHeaders(config) {
+  return config.preflightHeaders.map((header) => `if (resp.http.${header}) {
+    set req.http.x-preflight-${header} = resp.http.${header};
+}`).join('\n');
+}
+
 module.exports = {
-  resolve, reset, parameters, xversion, regexp, writevcl, pattern2vcl, condition, reqHeader,
+  resolve,
+  reset,
+  parameters,
+  xversion,
+  regexp,
+  writevcl,
+  pattern2vcl,
+  condition,
+  reqHeader,
+  preflightHeaders,
 };

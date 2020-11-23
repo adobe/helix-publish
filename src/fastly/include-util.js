@@ -39,6 +39,16 @@ function include(srcfile, tracer, opts) {
   return synthetize(str, path.dirname(srcfile));
 }
 
+function injectConsts(content, constants) {
+  return Object
+    .entries(constants)
+    .filter(([key, value]) => !!key && !!value)
+    .reduce((str, [key, value]) => str
+      .replace(`{"const:${key}"}`, `"${value}"`),
+    content);
+}
+
 module.exports.include = include;
 module.exports.synthetize = synthetize;
 module.exports.regex = regex;
+module.exports.injectConsts = injectConsts;

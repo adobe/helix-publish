@@ -93,7 +93,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
     try {
       await vcl.dynamic(fastly, version, dispatchVersion);
       await vcl.extensions(fastly, version, vclOverrides);
-      await vcl.updatestrains(fastly, version, config.strains);
+      await vcl.updatestrains(fastly, version, config.strains, config);
       await vcl.queries(fastly, version, indexconfig);
       pretasks += 4;
     } catch (e) {
@@ -105,9 +105,12 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version, epsagonToken
         ? {
-          token: epsagonToken, logname: 'helix-epsagon', serviceid: service, epsagonAppName,
+          token: epsagonToken,
+          logname: 'helix-epsagon',
+          serviceid: service,
+          epsagonAppName,
         }
-        : undefined),
+        : undefined, config),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
         fastly,

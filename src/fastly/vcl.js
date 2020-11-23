@@ -14,6 +14,7 @@ const {
   include,
   synthetize,
   regex,
+  injectConsts,
 } = require('./include-util');
 const {
   resolve,
@@ -21,6 +22,7 @@ const {
   xversion,
   writevcl,
   reqHeader,
+  preflightHeaders,
 } = require('./vcl-utils');
 
 const { queryvcl } = require('./algolia');
@@ -35,7 +37,7 @@ function basedir() {
   return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
 }
 
-async function init(fastly, version, options) {
+async function init(fastly, version, options, config) {
   const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
   let content = options
     ? include(vclfile, addEpsagonTraces, {
@@ -46,6 +48,9 @@ async function init(fastly, version, options) {
     })
     : include(vclfile);
   content = regex(content, urlFilters);
+  content = injectConsts(content, {
+    preflight: config.preflight ? config.preflight.replace('https://adobeioruntime.net', '') : undefined,
+  });
   return writevcl(fastly, version, content, 'helix.vcl');
 }
 
@@ -68,10 +73,11 @@ async function extensions(fastly, version, vclOverride = {}) {
   return writevcl(fastly, version, content, 'extensions.vcl');
 }
 
-function updatestrains(fastly, version, strains) {
+function updatestrains(fastly, version, strains, config) {
   return Promise.all([
-    writevcl(fastly, version, resolve(strains), 'strains.vcl'),
+    writevcl(fastly, version, resolve(strains, config.preflight), 'strains.vcl'),
     writevcl(fastly, version, parameters(strains), 'params.vcl'),
+    writevcl(fastly, version, preflightHeaders(config), 'preflight.vcl'),
   ]);
 }
 
