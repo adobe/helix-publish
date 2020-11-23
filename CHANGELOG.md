@@ -1,3 +1,23 @@
+# [7.4.0](https://github.com/adobe/helix-publish/compare/v7.3.4...v7.4.0) (2020-11-23)
+
+
+### Bug Fixes
+
+* **preflight:** do not replace empty constants ([f63fd37](https://github.com/adobe/helix-publish/commit/f63fd37eb887e30deb1b1d7c463b34bb5638b5df))
+* **preflight:** fix const replacement ([a24615e](https://github.com/adobe/helix-publish/commit/a24615e099330b1d553bf9675be8c1abd66e1de0))
+* **preflight:** fix log statement ([691d523](https://github.com/adobe/helix-publish/commit/691d5237f027daaedcb2d9dd81d53ec7f49cb43d))
+* **preflight:** pass config for preflight ([a5dc56a](https://github.com/adobe/helix-publish/commit/a5dc56a943aed125aaab2d00f1c71cc62224c8cf))
+* **publish:** pass config to init ([b0a8f50](https://github.com/adobe/helix-publish/commit/b0a8f509ff93b60e547cb8dd417ea9f894d763e8))
+* **vcl:** call preflight fetch ([810955f](https://github.com/adobe/helix-publish/commit/810955fda8958748ffa7cb3f9519393540b54dcc))
+* **vcl:** guard debug header against accidential deletion after a restart ([73da884](https://github.com/adobe/helix-publish/commit/73da884c40b841f2b808df4a7316e8844bf65d4e))
+* **vcl:** unset strain header before a restart ([60119c4](https://github.com/adobe/helix-publish/commit/60119c462bd06364c3da3ea03163879d3805d7fb))
+
+
+### Features
+
+* **vcl:** more traces ([48660d3](https://github.com/adobe/helix-publish/commit/48660d3487d7904f39e17dcb8e04257c1d07401f))
+* **vcl:** support preflight conditions ([7a97da9](https://github.com/adobe/helix-publish/commit/7a97da9cde8e12fdb644704a36566edf98c1e5e3)), closes [#349](https://github.com/adobe/helix-publish/issues/349)
+
 ## [7.3.4](https://github.com/adobe/helix-publish/compare/v7.3.3...v7.3.4) (2020-11-19)
 
 
