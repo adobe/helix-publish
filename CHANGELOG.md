@@ -1,3 +1,10 @@
+## [7.5.1](https://github.com/adobe/helix-publish/compare/v7.5.0...v7.5.1) (2020-11-30)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([3df1a1d](https://github.com/adobe/helix-publish/commit/3df1a1d87ffa1a3bf4d340a21cb5b471c6b2846b))
+
 # [7.5.0](https://github.com/adobe/helix-publish/compare/v7.4.1...v7.5.0) (2020-11-30)
 
 
