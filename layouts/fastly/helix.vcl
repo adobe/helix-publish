@@ -921,6 +921,7 @@ sub hlx_deliver_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
   if (req.http.X-Request-Type == "Dispatch") {
     call hlx_deliver_static;
+    call hlx_deliver_redirects;
   }
   if (req.http.X-Request-Type == "Query") {
     call hlx_deliver_query;
@@ -1004,6 +1005,23 @@ sub hlx_deliver_static {
     #set req.http.X-Request-Type = "Error";
     #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     #restart;
+  }
+}
+
+/**
+ * Handle delivery of redirects. The most important thing is to re-
+ * add the query string from the original url.
+ */
+sub hlx_deliver_redirects {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_redirect";
+  // only do this if we are serving a redirect
+  if ((resp.status == 301 || resp.status == 302) && resp.http.Location) {
+    set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+    // and only if the original url had parameters while the target has none
+    if (resp.http.Location !~ "\?" && req.http.X-Orig-URL ~ "\?") {
+      // append url parameters from original url to redirect target
+      set resp.http.Location = resp.http.Location + regsub(req.http.X-Orig-URL, ".*\?", "?");
+    }
   }
 }
 
