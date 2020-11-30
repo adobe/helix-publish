@@ -1,3 +1,10 @@
+# [7.5.0](https://github.com/adobe/helix-publish/compare/v7.4.1...v7.5.0) (2020-11-30)
+
+
+### Features
+
+* **redirects:** carry over url parameters from original url when redirecting ([a82b9d2](https://github.com/adobe/helix-publish/commit/a82b9d291c3c0a73fd9a04f26b8042765d7a7609))
+
 ## [7.4.1](https://github.com/adobe/helix-publish/compare/v7.4.0...v7.4.1) (2020-11-26)
 
 
