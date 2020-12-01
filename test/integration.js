@@ -325,8 +325,6 @@ describe('Integration Test', () => {
         expect(json.status).to.equal('ok');
         expect(json.errors).to.be.an('array');
         expect(json.errors, `errors: ${JSON.stringify(json.errors)}`).to.be.empty;
-        expect(json.warnings).to.be.an('array');
-        expect(json.warnings, `warnings: ${JSON.stringify(json.warnings)}`).to.be.empty;
         expect(json.messages).to.be.an('array');
         expect(json.messages, `messages: ${JSON.stringify(json.messages)}`).to.be.empty;
         /* eslint-enable no-unused-expressions */
