@@ -107,6 +107,7 @@ commands:
                 exit_code=1
             fi
             exit $exit_code
+    - run: mv junit/junit.xml junit/results.xml
     - store_artifacts:
         path: junit
 
