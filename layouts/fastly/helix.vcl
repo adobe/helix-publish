@@ -327,6 +327,21 @@ sub hlx_github_static_root {
   set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root +  ")";
 }
 
+# Gets the dispatch version
+sub hlx_dispatch_version {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_dispatch_version";
+  declare local var.oldValue STRING;
+  set var.oldValue = req.http.X-Dispatch-Version;
+
+  set req.http.X-Dispatch-Version = table.lookup(strain_dispatch_version, req.http.X-Strain);
+  if (!req.http.X-Dispatch-Version) {
+    set req.http.X-Dispatch-Version = table.lookup(strain_dispatch_version, "default");
+  }
+  if (!req.http.X-Dispatch-Version) {
+    set req.http.X-Dispatch-Version = var.oldValue;
+  }
+}
+
 # Gets the github static ref
 sub hlx_github_static_ref {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_ref";
@@ -529,6 +544,7 @@ sub hlx_type_static_url {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
+  # TODO: get static version from dict
 
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
@@ -572,6 +588,7 @@ sub hlx_type_static {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
+  # TODO: get static version from dict
 
 
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
@@ -928,7 +945,7 @@ sub hlx_deliver_type {
   }
   if (req.http.X-Request-Type == "Preflight") {
     call hlx_deliver_preflight;
-  }  
+  }
 }
 
 /**
@@ -1158,7 +1175,7 @@ sub hlx_type_content {
 
 
 /**
- * Handles preflight requests by forwarding the current 
+ * Handles preflight requests by forwarding the current
  * request to the preflight service.
  *
  *
@@ -1167,7 +1184,7 @@ sub hlx_type_content {
  */
 sub hlx_type_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
-  
+
   # get it from OpenWhisk (for now, we will support other backends later)
   set req.backend = F_AdobeRuntime;
 
@@ -1204,7 +1221,7 @@ sub hlx_type_dispatch {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
-
+  call hlx_dispatch_version;
 
   # enable ESI
   # TODO: move to dispatch action

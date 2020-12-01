@@ -188,6 +188,7 @@ const indexconfig = {
 
 // give process.env values preference, so that we can test this on circleci w/o polly
 const usePolly = !process.env.HLX_FASTLY_NAMESPACE;
+// require('dotenv').config();
 const HLX_FASTLY_NAMESPACE = process.env.HLX_FASTLY_NAMESPACE || '54nWWFJicKgbdVHou26Y6a';
 const HLX_FASTLY_AUTH = process.env.HLX_FASTLY_AUTH || 'secret';
 const VERSION_NUM = process.env.VERSION_NUM || 247;

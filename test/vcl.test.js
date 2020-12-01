@@ -140,7 +140,9 @@ describe('Testing vcl.js', () => {
       writeVCL: sinon.fake(),
     };
 
-    assert.ok(await dynamic(fastly, 1, 1));
+    assert.ok(await dynamic(fastly, 1, {
+      dispatch: 'v4',
+    }));
 
     assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'dynamic.vcl'));

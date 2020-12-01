@@ -28,6 +28,7 @@ const dictionaries = [
   'strain_index_files',
   'strain_allow',
   'strain_deny',
+  'strain_dispatch_version',
 ];
 
 async function init(fastly, version) {
@@ -54,7 +55,7 @@ function upsertstrain(p, dict, key, value) {
   p[dict] = ops(p[dict], key, value);
 }
 
-async function updatestrains(fastly, version, strains) {
+async function updatestrains(fastly, version, strains, defaultVersions) {
   const runtimestrains = strains.getRuntimeStrains();
   const deployedstrains = runtimestrains.filter((strain) => !!strain.package);
   const strainoperations = deployedstrains.reduce((p, strain) => {
@@ -73,6 +74,9 @@ async function updatestrains(fastly, version, strains) {
     upsertstrain(p, 'strain_github_static_root', strain.name, strain.static.path);
     upsertstrain(p, 'strain_allow', strain.name, regexp(strain.static.allow));
     upsertstrain(p, 'strain_deny', strain.name, regexp(strain.static.deny));
+
+    const versions = { ...defaultVersions, ...strain.versionLock };
+    upsertstrain(p, 'strain_dispatch_version', strain.name, versions.dispatch);
 
     return p;
   }, {});

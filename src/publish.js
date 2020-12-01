@@ -18,6 +18,7 @@ const dictionaries = require('./fastly/dictionaries');
 const redirects = require('./fastly/redirects');
 const epsagon = require('./fastly/epsagon');
 const checkPkgs = require('./check-pkgs');
+const defaultVersions = require('./default-versions.js');
 
 function reportError(e) {
   if (e.cause && e.cause.code
@@ -90,8 +91,16 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       return reportError(e);
     };
 
+    let defVersions = defaultVersions;
+    if (dispatchVersion) {
+      defVersions = {
+        ...defaultVersions,
+        dispatch: dispatchVersion,
+      };
+    }
+
     try {
-      await vcl.dynamic(fastly, version, dispatchVersion);
+      await vcl.dynamic(fastly, version, defVersions);
       await vcl.extensions(fastly, version, vclOverrides);
       await vcl.updatestrains(fastly, version, config.strains, config);
       await vcl.queries(fastly, version, indexconfig);
@@ -120,6 +129,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
           fastly,
           version,
           config.strains,
+          defVersions,
         )),
     ];
     if (epsagonToken) {
