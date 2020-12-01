@@ -98,12 +98,16 @@ commands:
 
             echo "Test Domain is" $TEST_DOMAIN
 
+            npx @adobe/cci-test-aggregator ${pipeline_url}
+
             exit_code=0
             if [[ ! $status =~ 'success' ]] && [[ ! $status =~ 'fixed' ]]
             then
                 exit_code=1
             fi
             exit $exit_code
+    - store_artifacts:
+        path: junit
 
 jobs:
   build:
