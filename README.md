@@ -3,7 +3,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/adobe/helix-publish/badge.svg?targetFile=package.json)](https://snyk.io/test/github/adobe/helix-publish?targetFile=package.json)
 [![codecov](https://img.shields.io/codecov/c/github/adobe/helix-publish.svg)](https://codecov.io/gh/adobe/helix-publish)
 [![CircleCI](https://img.shields.io/circleci/project/github/adobe/helix-publish.svg)](https://circleci.com/gh/adobe/helix-publish)
-[![GitHub license](https://img.shields.io/github/license/adobe/helix-publish.svg)](https://github.com/adobe/helix-publish/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/adobe/helix-publish.svg)](https://github.com/adobe/helix-publish/blob/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/adobe/helix-publish.svg)](https://github.com/adobe/helix-publish/issues)
 
 > Microservice for publishing Project Helix Fastly service configurations
@@ -74,4 +74,4 @@ CircleCI will deploy successful builds (passing all tests) to publish https://ad
 
 Deploying Helix Publish requires the `wsk` command line client, authenticated to a namespace of your choice. For Project Helix, we use the `helix` namespace.
 
-Run `npm run deploy` to do a one-shot deploment of Helix Publish. All commits to master that pass the testing will be deployed automatically.
+Run `npm run deploy` to do a one-shot deploment of Helix Publish. All commits to main that pass the testing will be deployed automatically.
