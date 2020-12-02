@@ -59,7 +59,7 @@ async function init(fastly, version, options, config, versions) {
     ...defaultVersions,
     ...versions,
   };
-  Object.values(defVersions).forEach((k, v) => {
+  Object.entries(defVersions).forEach(([k, v]) => {
     constants[`${k}_version`] = v;
   });
   content = injectConsts(content, constants);
