@@ -16,20 +16,19 @@ const { epsagon } = require('@adobe/helix-epsagon');
 const publish = require('./publish');
 
 async function publishConfig(params) {
-  return publish(
-    params.configuration,
-    params.service,
-    params.token,
-    params.version,
-    params.vcl,
-    params.dispatchVersion,
+  return publish({
+    configuration: params.configuration,
+    service: params.service,
+    token: params.token,
+    version: params.version,
+    vclOverrides: params.vcl,
     // eslint-disable-next-line no-underscore-dangle
-    params.__ow_logger,
-    params.indexconfig,
-    params.algoliaappid,
-    params.epsagontoken,
-    params.epsagonapp,
-  );
+    log: params.__ow_logger,
+    iconfig: params.indexconfig,
+    algoliaappid: params.algoliaappid,
+    epsagonToken: params.epsagontoken,
+    epsagonAppName: params.epsagonapp,
+  });
 }
 
 /**

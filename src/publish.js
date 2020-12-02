@@ -44,20 +44,36 @@ function reportError(e) {
 }
 
 /**
- *
+ * @typedef PublishOptions
  * @param {object} configuration the Helix Strains configuration
  * @param {string} service the Fastly Service ID
  * @param {string} token the Fastly Auth token
  * @param {string} version the Helix CLI version
  * @param {object} vclOverrides the VCL overrides (extension points)
- * @param {string} dispatchVersion the helix-dispatch microservice version to use
  * @param {object} log a logger
  * @param {object} iconfig the IndexConfig from helix-shared
  * @param {string} algoliaappid Algolia App ID (not secret)
  * @param {string} epsagonToken Epsagon Token for tracing
  * @param {string} epsagonAppName Epsagon Application name for tracing
  */
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v4', log = console, iconfig, algoliaappid, epsagonToken, epsagonAppName) {
+
+/**
+ *
+ * @param {PublishOptions} options The options for publishing.
+ */
+async function publish(options) {
+  const {
+    configuration,
+    service,
+    token,
+    version,
+    vclOverrides = {},
+    log = console,
+    iconfig,
+    algoliaappid,
+    epsagonToken,
+    epsagonAppName,
+  } = options;
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
@@ -90,12 +106,6 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       return reportError(e);
     };
 
-    // the dispatch version parameter can override the default version
-    const defVersions = { };
-    if (dispatchVersion) {
-      defVersions.dispatch = dispatchVersion;
-    }
-
     try {
       await vcl.dynamic(fastly, version);
       await vcl.extensions(fastly, version, vclOverrides);
@@ -116,7 +126,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
           serviceid: service,
           epsagonAppName,
         }
-        : undefined, config, defVersions),
+        : undefined, config),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
         fastly,
