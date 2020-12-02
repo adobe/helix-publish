@@ -543,7 +543,6 @@ sub hlx_type_static_url {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
-  call hlx_version_lock;
 
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
@@ -594,7 +593,6 @@ sub hlx_type_static {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
-  call hlx_version_lock;
 
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
@@ -638,8 +636,6 @@ sub hlx_type_static {
 }
 
 sub hlx_type_purge {
-  call hlx_version_lock;
-
   declare local var.namespace STRING;
 
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
@@ -732,8 +728,6 @@ sub hlx_type_blob {
 }
 
 sub hlx_type_query {
-  call hlx_version_lock;
-
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query";
   # yes, it's a query request
 
@@ -1174,7 +1168,6 @@ sub hlx_type_content {
   call hlx_ref;
   call hlx_root_path;
   call hlx_index;
-  call hlx_version_lock;
 
   # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
@@ -1259,7 +1252,6 @@ sub hlx_type_dispatch {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
-  call hlx_version_lock;
 
   # enable ESI
   # TODO: move to dispatch action
@@ -1415,6 +1407,9 @@ sub vcl_recv {
 
   # Determine the current strain and execute strain-specific code
   call hlx_strain;
+
+  # set the version lock header based on the strain
+  call hlx_version_lock;
 
   # block bad requests – needs current strain and unchanged req.url
   call hlx_block_recv;
