@@ -37,7 +37,7 @@ commands:
             description: the CircleCI token to execute a CircleCI job on the smoke test repo
         remote_branch:
             type: string
-            default: main
+            default: master
             description: the branch of repo that hosts the smoke tests
         publish_ci_version:
             type: string
@@ -56,6 +56,7 @@ commands:
     - run:
         name: Wait for helix-pages smoke tests job to complete and report status
         command: |
+            cat run_tests_cmd_job.json
             # get pipeline from response
             smoke_pipeline_id=$(jq -r '.id' < run_tests_cmd_job.json)
             pipeline_url="https://circleci.com/api/v2/pipeline/${smoke_pipeline_id}/workflow"
@@ -98,12 +99,16 @@ commands:
 
             echo "Test Domain is" $TEST_DOMAIN
 
+            npx @adobe/cci-test-aggregator ${pipeline_url}
+
             exit_code=0
             if [[ ! $status =~ 'success' ]] && [[ ! $status =~ 'fixed' ]]
             then
                 exit_code=1
             fi
             exit $exit_code
+    - store_test_results:
+        path: junit
 
 jobs:
   build:

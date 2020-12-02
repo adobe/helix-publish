@@ -324,11 +324,9 @@ describe('Integration Test', () => {
         const json = JSON.parse(response.text);
         expect(json.status).to.equal('ok');
         expect(json.errors).to.be.an('array');
-        expect(json.errors).to.be.empty;
-        expect(json.warnings).to.be.an('array');
-        expect(json.warnings).to.be.empty;
+        expect(json.errors, `errors: ${JSON.stringify(json.errors)}`).to.be.empty;
         expect(json.messages).to.be.an('array');
-        expect(json.messages).to.be.empty;
+        expect(json.warnings).to.be.an('array');
         /* eslint-enable no-unused-expressions */
       });
   }).timeout(60000);
