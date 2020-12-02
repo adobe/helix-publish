@@ -327,19 +327,19 @@ sub hlx_github_static_root {
   set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root +  ")";
 }
 
-# Gets the dispatch version
-sub hlx_dispatch_version {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_dispatch_version";
-  declare local var.oldValue STRING;
-  set var.oldValue = req.http.X-Dispatch-Version;
+# Gets the version lock
+sub hlx_version_lock {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_version_lock";
+  if (req.http.X-OW-Version-Lock) {
+    set req.http.X-Trace = req.http.X-Trace + "(header)";
+    return;
+  }
 
-  set req.http.X-Dispatch-Version = table.lookup(strain_dispatch_version, req.http.X-Strain);
-  if (!req.http.X-Dispatch-Version) {
-    set req.http.X-Dispatch-Version = table.lookup(strain_dispatch_version, "default");
-  }
-  if (!req.http.X-Dispatch-Version) {
-    set req.http.X-Dispatch-Version = var.oldValue;
-  }
+  set req.http.X-OW-Version-Lock =
+    table.lookup(strain_version_lock, req.http.X-Strain, // fallback to the strain-defined version lock
+      table.lookup(strain_version_lock, "default", // fallback to the default strain
+        {"const:version_lock"}) // fallback to the constant
+    );
 }
 
 # Gets the github static ref
@@ -544,12 +544,19 @@ sub hlx_type_static_url {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
-  # TODO: get static version from dict
+  call hlx_version_lock;
 
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
+  # get static version
+  declare local var.static_version STRING;
+  set var.static_version = subfield(req.http.X-OW-Version-Lock, "static", "&");
+  if (!var.static_version) {
+    set var.static_version = {"const:static_version"};
+  }
+
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -588,8 +595,7 @@ sub hlx_type_static {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
-  # TODO: get static version from dict
-
+  call hlx_version_lock;
 
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
@@ -605,7 +611,14 @@ sub hlx_type_static {
   }
   set var.path = regsuball(var.path, "/+", "/");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
+  # get static version
+  declare local var.static_version STRING;
+  set var.static_version = subfield(req.http.X-OW-Version-Lock, "static", "&");
+  if (!var.static_version) {
+    set var.static_version = {"const:static_version"};
+  }
+
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -626,6 +639,8 @@ sub hlx_type_static {
 }
 
 sub hlx_type_purge {
+  call hlx_version_lock;
+
   declare local var.namespace STRING;
 
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
@@ -637,10 +652,17 @@ sub hlx_type_purge {
   call hlx_action_root;
   set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
 
+  # get purge version
+  declare local var.purge_version STRING;
+  set var.purge_version = subfield(req.http.X-OW-Version-Lock, "purge", "&");
+  if (!var.purge_version) {
+    set var.purge_version = {"const:purge_version"};
+  }
+
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace
     + "/helix-services"
-    + "/purge@v1"
+    + "/purge@" + var.purge_version
     + "?host=" + urlencode(req.http.X-Orig-Host)
     + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
     + "&path=" + urlencode(req.http.X-Orig-Url);
@@ -711,6 +733,8 @@ sub hlx_type_blob {
 }
 
 sub hlx_type_query {
+  call hlx_version_lock;
+
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query";
   # yes, it's a query request
 
@@ -722,10 +746,17 @@ sub hlx_type_query {
   call hlx_repo;
   call hlx_ref;
 
+  # get query-index version
+  declare local var.qindex_version STRING;
+  set var.qindex_version = subfield(req.http.X-OW-Version-Lock, "query-index", "&");
+  if (!var.qindex_version) {
+    set var.qindex_version = {"const:query-index_version"};
+  }
 
   if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
     # establish the fallback first
-    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@v1/" + re.group.1 + "/" + re.group.2
+    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@" + var.qindex_version
+    + "/" + re.group.1 + "/" + re.group.2
     + "?__hlx_owner=" + req.http.X-Owner
     + "&__hlx_repo=" + req.http.X-Repo
     + "&__hlx_ref=" + req.http.X-Ref
@@ -1144,6 +1175,7 @@ sub hlx_type_content {
   call hlx_ref;
   call hlx_root_path;
   call hlx_index;
+  call hlx_version_lock;
 
   # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
@@ -1160,9 +1192,16 @@ sub hlx_type_content {
   // clean up the query string
   set req.url = querystring.regfilter_except(req.url, "^(limit|offset|table|sheet|hlx_.*)$");
 
+  # get content-proxy version
+  declare local var.cproxy_version STRING;
+  set var.cproxy_version = subfield(req.http.X-OW-Version-Lock, "content-proxy", "&");
+  if (!var.cproxy_version) {
+    set var.cproxy_version = {"const:content-proxy_version"};
+  }
+
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/content-proxy@v2"
+    + "/helix-services/content-proxy@" + var.cproxy_version
     + "?ref=" + var.ref
     + "&path=" + req.url.path
     // content repo
@@ -1221,7 +1260,7 @@ sub hlx_type_dispatch {
   call hlx_github_static_repo;
   call hlx_github_static_ref;
   call hlx_github_static_root;
-  call hlx_dispatch_version;
+  call hlx_version_lock;
 
   # enable ESI
   # TODO: move to dispatch action
@@ -1237,9 +1276,16 @@ sub hlx_type_dispatch {
   # get (strain-specific) parameter allowlist
   include "params.vcl";
 
+  # get dispatch version
+  declare local var.dispatch_version STRING;
+  set var.dispatch_version = subfield(req.http.X-OW-Version-Lock, "dispatch", "&");
+  if (!var.dispatch_version) {
+    set var.dispatch_version = {"const:dispatch_version"};
+  }
+
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/dispatch@" + req.http.X-Dispatch-Version
+    + "/helix-services/dispatch@" + var.dispatch_version
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
     + "&static.repo=" + req.http.X-Github-Static-Repo

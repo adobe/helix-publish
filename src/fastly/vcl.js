@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 const path = require('path');
+const querystring = require('querystring');
 const {
   include,
   synthetize,
@@ -21,9 +22,9 @@ const {
   parameters,
   xversion,
   writevcl,
-  reqHeader,
   preflightHeaders,
 } = require('./vcl-utils');
+const defaultVersions = require('../default-versions.js');
 
 const { queryvcl } = require('./algolia');
 
@@ -37,7 +38,7 @@ function basedir() {
   return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
 }
 
-async function init(fastly, version, options, config) {
+async function init(fastly, version, options, config, versions) {
   const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
   let content = options
     ? include(vclfile, addEpsagonTraces, {
@@ -48,9 +49,22 @@ async function init(fastly, version, options, config) {
     })
     : include(vclfile);
   content = regex(content, urlFilters);
-  content = injectConsts(content, {
+
+  // create the constants object
+  const constants = {
     preflight: config.preflight ? config.preflight.replace('https://adobeioruntime.net', '') : undefined,
+  };
+
+  // define default version constants
+  const defVersions = {
+    ...defaultVersions,
+    ...versions,
+  };
+  Object.values(defVersions).forEach((k, v) => {
+    constants[`${k}_version`] = v;
   });
+  constants.version_lock = querystring.stringify(defaultVersions);
+  content = injectConsts(content, constants);
   return writevcl(fastly, version, content, 'helix.vcl');
 }
 
@@ -81,10 +95,9 @@ function updatestrains(fastly, version, strains, config) {
   ]);
 }
 
-function dynamic(fastly, version, defaultVersions) {
+function dynamic(fastly, version) {
   let content = '';
   content += xversion(version, package.version);
-  content += reqHeader('X-Dispatch-Version', defaultVersions.dispatch);
   // todo: all add other default versions
   return Promise.all([
     writevcl(fastly, version, content, 'dynamic.vcl'),

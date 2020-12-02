@@ -39,9 +39,7 @@ describe('Testing dictionaries.js', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
       .init();
 
-    assert.ok(await updatestrains(fastly, 1, config.strains, {
-      dispatch: 'v4',
-    }));
+    assert.ok(await updatestrains(fastly, 1, config.strains));
     assert.equal(fastly.bulkUpdateDictItems.getCalls().length, 13);
 
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_action_roots', { op: 'upsert', item_key: 'adhoc', item_value: 'fake/75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty' }));
@@ -58,6 +56,6 @@ describe('Testing dictionaries.js', () => {
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_github_static_root', { op: 'upsert', item_key: 'adhoc', item_value: '/htdocs' }));
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_allow', { op: 'upsert', item_key: 'adhoc', item_value: '' }));
     assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_deny', { op: 'upsert', item_key: 'adhoc', item_value: '' }));
-    assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_dispatch_version', { op: 'upsert', item_key: 'adhoc', item_value: '4.1.3' }));
+    assert.ok(fastly.bulkUpdateDictItems.calledWith(1, 'strain_version_lock', { op: 'upsert', item_key: 'adhoc', item_value: 'dispatch=4.1.3&word2md=3.3.4' }));
   });
 });

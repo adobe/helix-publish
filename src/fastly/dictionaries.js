@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+const querystring = require('querystring');
 const promiseLimit = require('p-limit');
 const { regexp } = require('./vcl-utils');
 
@@ -28,7 +29,7 @@ const dictionaries = [
   'strain_index_files',
   'strain_allow',
   'strain_deny',
-  'strain_dispatch_version',
+  'strain_version_lock',
 ];
 
 async function init(fastly, version) {
@@ -55,7 +56,7 @@ function upsertstrain(p, dict, key, value) {
   p[dict] = ops(p[dict], key, value);
 }
 
-async function updatestrains(fastly, version, strains, defaultVersions) {
+async function updatestrains(fastly, version, strains) {
   const runtimestrains = strains.getRuntimeStrains();
   const deployedstrains = runtimestrains.filter((strain) => !!strain.package);
   const strainoperations = deployedstrains.reduce((p, strain) => {
@@ -74,9 +75,7 @@ async function updatestrains(fastly, version, strains, defaultVersions) {
     upsertstrain(p, 'strain_github_static_root', strain.name, strain.static.path);
     upsertstrain(p, 'strain_allow', strain.name, regexp(strain.static.allow));
     upsertstrain(p, 'strain_deny', strain.name, regexp(strain.static.deny));
-
-    const versions = { ...defaultVersions, ...strain.versionLock };
-    upsertstrain(p, 'strain_dispatch_version', strain.name, versions.dispatch);
+    upsertstrain(p, 'strain_version_lock', strain.name, querystring.stringify(strain.versionLock || {}));
 
     return p;
   }, {});

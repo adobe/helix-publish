@@ -32,7 +32,7 @@ describe('Testing vcl.js', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
       .init();
 
-    assert.ok(await init(fastly, 1, {}, config));
+    assert.ok(await init(fastly, 1, {}, config, { dispatch: 'v4' }));
     assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'helix.vcl'));
     assert.ok(fastly.setMainVCL.notCalled);
@@ -48,7 +48,7 @@ describe('Testing vcl.js', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/preflight.yaml'))
       .init();
 
-    assert.ok(await init(fastly, 1, {}, config));
+    assert.ok(await init(fastly, 1, {}, config, { dispatch: 'v4' }));
     assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'helix.vcl'));
     assert.ok(fastly.setMainVCL.notCalled);
@@ -140,9 +140,7 @@ describe('Testing vcl.js', () => {
       writeVCL: sinon.fake(),
     };
 
-    assert.ok(await dynamic(fastly, 1, {
-      dispatch: 'v4',
-    }));
+    assert.ok(await dynamic(fastly, 1));
 
     assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'dynamic.vcl'));
