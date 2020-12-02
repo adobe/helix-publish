@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 const path = require('path');
-const querystring = require('querystring');
 const {
   include,
   synthetize,
@@ -63,7 +62,6 @@ async function init(fastly, version, options, config, versions) {
   Object.values(defVersions).forEach((k, v) => {
     constants[`${k}_version`] = v;
   });
-  constants.version_lock = querystring.stringify(defaultVersions);
   content = injectConsts(content, constants);
   return writevcl(fastly, version, content, 'helix.vcl');
 }
@@ -98,7 +96,6 @@ function updatestrains(fastly, version, strains, config) {
 function dynamic(fastly, version) {
   let content = '';
   content += xversion(version, package.version);
-  // todo: all add other default versions
   return Promise.all([
     writevcl(fastly, version, content, 'dynamic.vcl'),
   ]);

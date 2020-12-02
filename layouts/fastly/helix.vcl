@@ -337,8 +337,7 @@ sub hlx_version_lock {
 
   set req.http.X-OW-Version-Lock =
     table.lookup(strain_version_lock, req.http.X-Strain, // fallback to the strain-defined version lock
-      table.lookup(strain_version_lock, "default", // fallback to the default strain
-        {"const:version_lock"}) // fallback to the constant
+      table.lookup(strain_version_lock, "default") // fallback to the default strain
     );
 }
 
