@@ -550,7 +550,7 @@ sub hlx_type_static_url {
   # get static version
   declare local var.static_version STRING;
   set var.static_version = subfield(req.http.X-OW-Version-Lock, "static", "&");
-  if (!var.static_version) {
+  if (var.static_version == "") {
     set var.static_version = {"const:static_version"};
   }
 
@@ -611,7 +611,7 @@ sub hlx_type_static {
   # get static version
   declare local var.static_version STRING;
   set var.static_version = subfield(req.http.X-OW-Version-Lock, "static", "&");
-  if (!var.static_version) {
+  if (var.static_version == "") {
     set var.static_version = {"const:static_version"};
   }
 
@@ -650,7 +650,7 @@ sub hlx_type_purge {
   # get purge version
   declare local var.purge_version STRING;
   set var.purge_version = subfield(req.http.X-OW-Version-Lock, "purge", "&");
-  if (!var.purge_version) {
+  if (var.purge_version == "") {
     set var.purge_version = {"const:purge_version"};
   }
 
@@ -742,7 +742,7 @@ sub hlx_type_query {
   # get query-index version
   declare local var.qindex_version STRING;
   set var.qindex_version = subfield(req.http.X-OW-Version-Lock, "query-index", "&");
-  if (!var.qindex_version) {
+  if (var.qindex_version == "") {
     set var.qindex_version = {"const:query-index_version"};
   }
 
@@ -1187,7 +1187,7 @@ sub hlx_type_content {
   # get content-proxy version
   declare local var.cproxy_version STRING;
   set var.cproxy_version = subfield(req.http.X-OW-Version-Lock, "content-proxy", "&");
-  if (!var.cproxy_version) {
+  if (var.cproxy_version == "") {
     set var.cproxy_version = {"const:content-proxy_version"};
   }
 
@@ -1208,10 +1208,6 @@ sub hlx_type_content {
 /**
  * Handles preflight requests by forwarding the current
  * request to the preflight service.
- *
- *
- *
- *
  */
 sub hlx_type_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
@@ -1270,7 +1266,7 @@ sub hlx_type_dispatch {
   # get dispatch version
   declare local var.dispatch_version STRING;
   set var.dispatch_version = subfield(req.http.X-OW-Version-Lock, "dispatch", "&");
-  if (!var.dispatch_version) {
+  if (var.dispatch_version == "") {
     set var.dispatch_version = {"const:dispatch_version"};
   }
 
