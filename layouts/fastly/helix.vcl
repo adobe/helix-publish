@@ -335,10 +335,10 @@ sub hlx_version_lock {
     return;
   }
 
-  set req.http.X-OW-Version-Lock =
-    table.lookup(strain_version_lock, req.http.X-Strain, // fallback to the strain-defined version lock
-      table.lookup(strain_version_lock, "default") // fallback to the default strain
-    );
+  set req.http.X-OW-Version-Lock = table.lookup(strain_version_lock, req.http.X-Strain);
+  if (req.http.X-OW-Version-Lock == "") {
+    set req.http.X-OW-Version-Lock = table.lookup(strain_version_lock, "default");
+  }
 }
 
 # Gets the github static ref
