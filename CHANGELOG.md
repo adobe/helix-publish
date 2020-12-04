@@ -1,3 +1,15 @@
+# [8.0.0](https://github.com/adobe/helix-publish/compare/v7.6.1...v8.0.0) (2020-12-04)
+
+
+### Bug Fixes
+
+* **action:** remove dispatcher version parameter ([#665](https://github.com/adobe/helix-publish/issues/665)) ([b317e89](https://github.com/adobe/helix-publish/commit/b317e8986c284f5e068ceadf9053654472e0c985))
+
+
+### BREAKING CHANGES
+
+* **action:** the dispatchVersion action parameter is no longer honoured
+
 ## [7.6.1](https://github.com/adobe/helix-publish/compare/v7.6.0...v7.6.1) (2020-12-04)
 
 
