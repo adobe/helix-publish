@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+const querystring = require('querystring');
 const promiseLimit = require('p-limit');
 const { regexp } = require('./vcl-utils');
 
@@ -28,6 +29,7 @@ const dictionaries = [
   'strain_index_files',
   'strain_allow',
   'strain_deny',
+  'strain_version_lock',
 ];
 
 async function init(fastly, version) {
@@ -73,6 +75,7 @@ async function updatestrains(fastly, version, strains) {
     upsertstrain(p, 'strain_github_static_root', strain.name, strain.static.path);
     upsertstrain(p, 'strain_allow', strain.name, regexp(strain.static.allow));
     upsertstrain(p, 'strain_deny', strain.name, regexp(strain.static.deny));
+    upsertstrain(p, 'strain_version_lock', strain.name, querystring.stringify(strain.versionLock || {}));
 
     return p;
   }, {});

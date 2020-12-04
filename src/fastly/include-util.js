@@ -12,6 +12,7 @@
 
 const fs = require('fs-extra');
 const path = require('path');
+const escapeStringRegexp = require('escape-string-regexp');
 
 function regex(content, regexpArray) {
   const fastlyRegexp = regexpArray
@@ -44,7 +45,7 @@ function injectConsts(content, constants) {
     .entries(constants)
     .filter(([key, value]) => !!key && !!value)
     .reduce((str, [key, value]) => str
-      .replace(`{"const:${key}"}`, `"${value}"`),
+      .replace(new RegExp(escapeStringRegexp(`{"const:${key}"}`), 'g'), `"${value}"`),
     content);
 }
 

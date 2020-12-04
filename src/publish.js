@@ -90,8 +90,14 @@ async function publish(configuration, service, token, version, vclOverrides = {}
       return reportError(e);
     };
 
+    // the dispatch version parameter can override the default version
+    const defVersions = { };
+    if (dispatchVersion) {
+      defVersions.dispatch = dispatchVersion;
+    }
+
     try {
-      await vcl.dynamic(fastly, version, dispatchVersion);
+      await vcl.dynamic(fastly, version);
       await vcl.extensions(fastly, version, vclOverrides);
       await vcl.updatestrains(fastly, version, config.strains, config);
       await vcl.queries(fastly, version, indexconfig);
@@ -110,7 +116,7 @@ async function publish(configuration, service, token, version, vclOverrides = {}
           serviceid: service,
           epsagonAppName,
         }
-        : undefined, config),
+        : undefined, config, defVersions),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
         fastly,

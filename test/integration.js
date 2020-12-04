@@ -9,6 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+
+/* eslint-disable no-console */
 process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 
 const path = require('path');
@@ -188,9 +190,10 @@ const indexconfig = {
 
 // give process.env values preference, so that we can test this on circleci w/o polly
 const usePolly = !process.env.HLX_FASTLY_NAMESPACE;
+// require('dotenv').config();
 const HLX_FASTLY_NAMESPACE = process.env.HLX_FASTLY_NAMESPACE || '54nWWFJicKgbdVHou26Y6a';
 const HLX_FASTLY_AUTH = process.env.HLX_FASTLY_AUTH || 'secret';
-const VERSION_NUM = process.env.VERSION_NUM || 247;
+const VERSION_NUM = process.env.VERSION_NUM || 316;
 const ALGOLIA_APP_ID = process.env.ALGOLIA_APP_ID || 'A8PL9E4TZT';
 const EPSAGON_TOKEN = process.env.EPSAGON_TOKEN || 'fake-token';
 
