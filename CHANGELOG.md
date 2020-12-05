@@ -1,3 +1,10 @@
+## [8.0.1](https://github.com/adobe/helix-publish/compare/v8.0.0...v8.0.1) (2020-12-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v4.4.0 ([fdfb45f](https://github.com/adobe/helix-publish/commit/fdfb45f4ccf22810f0ff5bc00bc43057ef54f634))
+
 # [8.0.0](https://github.com/adobe/helix-publish/compare/v7.6.1...v8.0.0) (2020-12-04)
 
 
