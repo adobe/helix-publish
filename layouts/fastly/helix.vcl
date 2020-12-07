@@ -1213,10 +1213,17 @@ sub hlx_type_content {
 sub hlx_type_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
 
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+
   # get it from OpenWhisk (for now, we will support other backends later)
   set req.backend = F_AdobeRuntime;
 
-  set req.http.X-Backend-URL = {"const:preflight"};
+  set req.http.X-Backend-URL = {"const:preflight"}
+      + "?owner=" + req.http.X-Owner
+      + "&repo=" + req.http.X-Repo
+      + "&ref=" + req.http.X-Ref;
 }
 
 /**
