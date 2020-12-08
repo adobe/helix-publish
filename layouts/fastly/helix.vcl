@@ -330,7 +330,7 @@ sub hlx_github_static_root {
 # Gets the version lock
 sub hlx_version_lock {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_version_lock";
-  if (req.http.X-OW-Version-Lock) {
+  if (req.http.X-OW-Version-Lock && req.http.X-OW-Version-Lock != "") {
     set req.http.X-Trace = req.http.X-Trace + "(header)";
     return;
   }
