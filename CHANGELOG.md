@@ -1,3 +1,10 @@
+## [8.0.4](https://github.com/adobe/helix-publish/compare/v8.0.3...v8.0.4) (2020-12-08)
+
+
+### Bug Fixes
+
+* **preflight:** version lock is lost after preflight ([#674](https://github.com/adobe/helix-publish/issues/674)) ([e03bd82](https://github.com/adobe/helix-publish/commit/e03bd82ee4559e0d7398af8de358b309a0982d6d)), closes [#673](https://github.com/adobe/helix-publish/issues/673)
+
 ## [8.0.3](https://github.com/adobe/helix-publish/compare/v8.0.2...v8.0.3) (2020-12-07)
 
 
