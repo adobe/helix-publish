@@ -662,8 +662,10 @@ sub hlx_type_purge {
     + "?host=" + urlencode(req.http.X-Orig-Host)
     + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
     + "&path=" + urlencode(req.http.X-Orig-Url);
-
-  set req.request = "POST";
+  # yes, this should be a POST request, but:
+  # Azure Front Door rejects POST requests without a content-length header (because it can't determine body length)
+  # and VCL does not allow setting the content-lenght header (because it is calculated)
+  set req.request = "GET";
 }
 
 sub hlx_type_cgi {
