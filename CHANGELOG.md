@@ -1,3 +1,10 @@
+## [8.0.6](https://github.com/adobe/helix-publish/compare/v8.0.5...v8.0.6) (2020-12-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-fetch to v1.9.2 ([2f42b94](https://github.com/adobe/helix-publish/commit/2f42b94769a1902526bbca5685ee2b204cb8c627))
+
 ## [8.0.5](https://github.com/adobe/helix-publish/compare/v8.0.4...v8.0.5) (2020-12-09)
 
 
