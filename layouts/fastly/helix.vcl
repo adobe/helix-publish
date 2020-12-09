@@ -1803,7 +1803,7 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
   unset bereq.http.X-Restarts;
-  # unset bereq.http.X-Trace; // todo: should we remover this as well ?
+  unset bereq.http.X-Trace;
 }
 
 sub vcl_miss {
