@@ -1215,6 +1215,10 @@ sub hlx_type_content {
 sub hlx_type_preflight {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
 
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+
   # get it from OpenWhisk (for now, we will support other backends later)
   set req.backend = F_AdobeRuntime;
 
@@ -1783,16 +1787,17 @@ sub hlx_bereq {
   if (req.http.X-Request-Type != "Preflight") {
     unset bereq.http.X-Orig-Url;
     unset bereq.http.X-Orig-Host;
+    unset bereq.http.X-Owner;
+    unset bereq.http.X-Repo;
+    unset bereq.http.X-Ref;
+    # unset bereq.http.X-Repo-Root-Path;   // todo: should we remove this as well ?
   }
   unset bereq.http.X-Backend-URL;
   unset bereq.http.X-Request-Type;
   unset bereq.http.X-Static-Content-Type;
   unset bereq.http.X-Allow;
   unset bereq.http.X-Deny;
-  unset bereq.http.X-Owner;
   unset bereq.http.X-Index;
-  unset bereq.http.X-Repo;
-  unset bereq.http.X-Ref;
   unset bereq.http.X-Root-Path;
   unset bereq.http.X-Action-Root;
   unset bereq.http.X-Github-Static-Repo;
@@ -1800,6 +1805,7 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
   unset bereq.http.X-Restarts;
+  unset bereq.http.X-Trace;
 }
 
 sub vcl_miss {
