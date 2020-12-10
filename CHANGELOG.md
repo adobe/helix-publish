@@ -1,3 +1,15 @@
+# [8.1.0](https://github.com/adobe/helix-publish/compare/v8.0.6...v8.1.0) (2020-12-10)
+
+
+### Bug Fixes
+
+* **purge:** support azure ([#676](https://github.com/adobe/helix-publish/issues/676)) ([4aaef81](https://github.com/adobe/helix-publish/commit/4aaef8197fb0033a2ff6402661b24dd1fe962253))
+
+
+### Features
+
+* **preflight:** include repo/owner/ref ([#671](https://github.com/adobe/helix-publish/issues/671)) ([5132f77](https://github.com/adobe/helix-publish/commit/5132f773f3b998c82fd15282dfe26410dc64e145)), closes [#670](https://github.com/adobe/helix-publish/issues/670)
+
 ## [8.0.6](https://github.com/adobe/helix-publish/compare/v8.0.5...v8.0.6) (2020-12-09)
 
 
