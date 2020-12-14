@@ -21,6 +21,7 @@ module.exports = [
   /\.gitignore/,
   /\.htaccess/,
   /\.htpasswd/,
+  /\.html%.+/,
   /\.swf$/,
   /\/_?debug/,
   /\/(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|wiz.*|[Ww]eb)([aA]dmin|wiz.*)/,
