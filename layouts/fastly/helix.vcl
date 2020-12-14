@@ -1731,6 +1731,13 @@ sub hlx_bereq {
     set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
   }
 
+  # see https://fastly-guests.slack.com/archives/C0145H64N4W/p1607604397160200?thread_ts=1606991486.124800&cid=C0145H64N4W
+  # this should prevent restarts when github (static) returns a 503 – as this may cause
+  # us to exceed the restart limit
+  if (req.backend == F_GitHub) {
+    unset bereq.http.Fastly-Force-Shield;
+  }
+
   # If we're going to a shield (another Fastly POP) use the original URL and
   # Host header. If not a shield, we're going to origin; set the URL and Host
   # header as explained at the top of this file.
