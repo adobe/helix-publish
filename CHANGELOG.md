@@ -1,3 +1,12 @@
+## [8.1.2](https://github.com/adobe/helix-publish/compare/v8.1.1...v8.1.2) (2020-12-14)
+
+
+### Bug Fixes
+
+* **vcl:** do not unset fastly-ff ([b7e47b8](https://github.com/adobe/helix-publish/commit/b7e47b8b004e314cc921cd9cfef106a2bae92859))
+* **vcl:** fix backend name ([9f0c8a5](https://github.com/adobe/helix-publish/commit/9f0c8a5364051685fb5647395a12dfb5155e66c7))
+* **vcl:** prevent 503 max restarts error ([aac1d58](https://github.com/adobe/helix-publish/commit/aac1d58dc7e8fc24661fe10b4678bd54d213b1f3))
+
 ## [8.1.1](https://github.com/adobe/helix-publish/compare/v8.1.0...v8.1.1) (2020-12-10)
 
 
