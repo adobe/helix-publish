@@ -1,3 +1,10 @@
+## [8.1.4](https://github.com/adobe/helix-publish/compare/v8.1.3...v8.1.4) (2020-12-15)
+
+
+### Bug Fixes
+
+* **block:** block bad url ([0019836](https://github.com/adobe/helix-publish/commit/0019836b62b8d5d85c1bf412d76a90c220a3f629)), closes [#681](https://github.com/adobe/helix-publish/issues/681)
+
 ## [8.1.3](https://github.com/adobe/helix-publish/compare/v8.1.2...v8.1.3) (2020-12-15)
 
 
