@@ -81,13 +81,13 @@
     "sinon": "9.2.1"
   },
   "dependencies": {
-    "@adobe/fastly-native-promises": "1.17.3",
+    "@adobe/fastly-native-promises": "1.18.0",
     "@adobe/helix-epsagon": "1.5.5",
     "@adobe/helix-fetch": "1.9.2",
     "@adobe/helix-log": "4.5.3",
     "@adobe/helix-shared": "7.18.0",
     "@adobe/helix-status": "8.2.3",
-    "@adobe/openwhisk-action-logger": "2.2.2",
+    "@adobe/openwhisk-action-logger": "2.3.0",
     "@adobe/openwhisk-action-utils": "4.4.0",
     "escape-string-regexp": "4.0.0",
     "fs-extra": "9.0.1",
