@@ -1,3 +1,10 @@
+## [8.1.5](https://github.com/adobe/helix-publish/compare/v8.1.4...v8.1.5) (2020-12-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-logger to v2.3.1 ([ea5b927](https://github.com/adobe/helix-publish/commit/ea5b927396981b78c7e16a5ea306eaa99ecc8206))
+
 ## [8.1.4](https://github.com/adobe/helix-publish/compare/v8.1.3...v8.1.4) (2020-12-15)
 
 
