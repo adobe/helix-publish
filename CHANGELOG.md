@@ -1,3 +1,10 @@
+## [8.1.6](https://github.com/adobe/helix-publish/compare/v8.1.5...v8.1.6) (2020-12-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.18.2 ([56de509](https://github.com/adobe/helix-publish/commit/56de5099f8bed7baf623d851d3341b95cbfbfcad))
+
 ## [8.1.5](https://github.com/adobe/helix-publish/compare/v8.1.4...v8.1.5) (2020-12-16)
 
 
