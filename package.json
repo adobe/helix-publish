@@ -81,7 +81,7 @@
     "sinon": "9.2.1"
   },
   "dependencies": {
-    "@adobe/fastly-native-promises": "1.18.0",
+    "@adobe/fastly-native-promises": "1.18.2",
     "@adobe/helix-epsagon": "1.5.5",
     "@adobe/helix-fetch": "1.9.2",
     "@adobe/helix-log": "4.5.3",
