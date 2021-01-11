@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 module.exports = [
+  /%([^0-9A-Fa-f]($|[^0-9A-Fa-f])|[0-9A-Fa-f][^0-9A-Fa-f])/,
   /_debugbar/,
   /.+\.axd/,
   /.+\.log$/,
