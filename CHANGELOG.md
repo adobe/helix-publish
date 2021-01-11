@@ -1,3 +1,10 @@
+## [8.1.12](https://github.com/adobe/helix-publish/compare/v8.1.11...v8.1.12) (2021-01-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.18.3 ([aecc3e4](https://github.com/adobe/helix-publish/commit/aecc3e4d29d018ce78661f771ad5cb388b01d743))
+
 ## [8.1.11](https://github.com/adobe/helix-publish/compare/v8.1.10...v8.1.11) (2021-01-09)
 
 
