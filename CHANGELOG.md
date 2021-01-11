@@ -1,3 +1,10 @@
+## [8.1.13](https://github.com/adobe/helix-publish/compare/v8.1.12...v8.1.13) (2021-01-11)
+
+
+### Bug Fixes
+
+* **block:** block invalid URL-code sequences ([e82ad9d](https://github.com/adobe/helix-publish/commit/e82ad9d018805db87b68d11d0f21e8261624d1d6))
+
 ## [8.1.12](https://github.com/adobe/helix-publish/compare/v8.1.11...v8.1.12) (2021-01-11)
 
 
