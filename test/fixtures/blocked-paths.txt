@@ -2108,3 +2108,4 @@
 /en/fpost/2020/update-for-enterprise-adobe-flash-player.html%gs.o60v58
 /adobe-flash-update/%29.
 /en/publish/2019/05/30/the-future-of-adobe-air.
+/test.html.?file=foo.

@@ -23,7 +23,7 @@ module.exports = [
   /\.htaccess/,
   /\.htpasswd/,
   /\.html%.+/,
-  /^[^?]+\.$/, // file name ends with a dot
+  /^[^?]+\.($|\?)/, // file name ends with a dot
   /\.swf$/,
   /\/_?debug/,
   /\/(.?php.*|tiki.*|test.*|user.*|wp-|ws|t.*|v.*|u.*|wiz.*|[Ww]eb)([aA]dmin|wiz.*)/,
