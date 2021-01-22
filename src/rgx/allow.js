@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 module.exports = [
-  /^\/[a-z0-9\-_]+(\/[a-z0-9-]+)*\/?(\.[a-z0-9]+){0,2}$/,
+  /^\/[a-z0-9\-_]+(\/[a-z0-9-_]+)*?((\.[a-z0-9]+){0,2}|[/])(\?[a-zA-Z0-9=_&%.*-]+)?$/,
   /^\/$/,
+  /\/\.well-known\/acme-challenge/,
 ];
