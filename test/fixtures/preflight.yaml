@@ -11,50 +11,54 @@ version: 1
 
 definitions:
   constants:
-    defaultRepo: &myrepo
+    defaultRepo:
+      &myrepo
       owner: adobe
       repo: project-helix.io
       ref: master
   strains:
-    base: &basestrain
+    base:
+      &basestrain
       code: *myrepo
       content: *myrepo
       static: *myrepo
-      redirects:
-        - from: /foo/(.*)
-          to: /bar/$1
+
+preflight: https://adobeioruntime.net/example
 
 strains:
-  default:
-    <<: *basestrain
+  - <<: *basestrain
+    name: default
 
-  adhoc:
-    <<: *basestrain
-    package: fake/75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty
-    directoryIndex: foo.html
-    version-lock:
-      dispatch: 4.1.3
-      word2md: 3.3.4
-
-  client:
-    code: *myrepo
-    static: *myrepo
+  - <<: *basestrain
+    name: adhoc
+    package: 75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty
+    perf:
+      location: London
+      onload: 1000
     condition:
-      url: https://client.project-helix.io
+      preflight.x-version>: 1
+
+  - code: *myrepo
+    static: *myrepo
+    name: client
+    condition:
+      preflight.x-version=: 1
     sticky: false
     content:
       repo: helix-cli
       ref: master
       owner: adobe
     directoryIndex: readme.html
-    redirects:
-      - from: /(.*).php
-        to: /$1.html
 
-  pipeline:
-    <<: *basestrain
+  - <<: *basestrain
+    name: pipeline
     condition:
-      url.hostname=: pipeline.project-helix.io
+      and:
+        - preflight.x-audience=: returning
+        - preflight.x-segment=: mid-value
+    params:
+      - search
+      - lang
     content:
       repo: hypermedia-pipeline
       ref: master
@@ -62,25 +66,27 @@ strains:
     static:
       <<: *myrepo
       path: /www
+    redirects:
+      - from: (.*)\.php
+        to: $1.html
+      - from: /content/dam/(.*)$
+        to: /htdocs/$1
 
-  proxy:
+  - name: proxy
     origin: https://www.adobe.io/
-    condition:
-      url.hostname=: proxy.project-helix.io
-    sticky: true
+    condition: req.http.host == "proxy.project-helix.io"
     params:
-      - "search*"
-      - "*lang"
+      - search
+      - api*
+    sticky: true
 
-  proxy-detailed:
-    condition:
-      url.hostname=: proxy2.project-helix.io
+  - name: proxy-detailed
+    redirects:
+      - from: /old
+        to: /new
     origin:
       address: 192.168.0.1
       name: publish
       use_ssl: false
-
-  proxy-path:
-    origin: https://www.adobe.io/newdir
-    condition:
-      url: https://developer.adobe.com/olddir
+      path: /stuff
+      override_host: www.adobe.io

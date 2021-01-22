@@ -181,7 +181,8 @@ sub hlx_strain {
   }
 
   # we don't need cookies for anything else, but Proxy strains might
-  if (req.http.X-Request-Type != "Proxy") {
+  # and Preflight requests often do
+  if (req.http.X-Request-Type != "Proxy" && req.http.X-Request-Type != "Preflight") {
     unset req.http.Cookie;
   }
 }
@@ -326,6 +327,20 @@ sub hlx_github_static_root {
   set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root +  ")";
 }
 
+# Gets the version lock
+sub hlx_version_lock {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_version_lock";
+  if (req.http.X-OW-Version-Lock && req.http.X-OW-Version-Lock != "") {
+    set req.http.X-Trace = req.http.X-Trace + "(header)";
+    return;
+  }
+
+  set req.http.X-OW-Version-Lock = table.lookup(strain_version_lock, req.http.X-Strain);
+  if (req.http.X-OW-Version-Lock == "") {
+    set req.http.X-OW-Version-Lock = table.lookup(strain_version_lock, "default");
+  }
+}
+
 # Gets the github static ref
 sub hlx_github_static_ref {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_ref";
@@ -407,6 +422,7 @@ sub hlx_headers_deliver {
     set resp.http.X-Action-Root = req.http.X-Action-Root;
     set resp.http.X-Orig-URL = req.http.X-Orig-URL;
     set resp.http.X-Repo-Root-Path = req.http.X-Repo-Root-Path;
+    set resp.http.X-Version-Lock = req.http.X-OW-Version-Lock;
 
     set resp.http.X-Fastly-Imageopto-Api = req.http.X-Fastly-Imageopto-Api;
 
@@ -448,7 +464,7 @@ sub hlx_determine_request_type {
   }
 
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
-  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).(jpg|jpeg|png|webp|gif|svg)$") {
+  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).([0-9a-z]+)$") {
     set req.http.X-Trace = req.http.X-Trace + "(blob)";
     set req.http.X-Request-Type = "Blob";
     unset req.http.Accept-Encoding;
@@ -532,7 +548,14 @@ sub hlx_type_static_url {
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
+  # get static version
+  declare local var.static_version STRING;
+  set var.static_version = subfield(req.http.X-OW-Version-Lock, "static", "&");
+  if (var.static_version == "") {
+    set var.static_version = {"const:static_version"};
+  }
+
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -572,7 +595,6 @@ sub hlx_type_static {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
-
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
@@ -587,7 +609,14 @@ sub hlx_type_static {
   }
   set var.path = regsuball(var.path, "/+", "/");
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@v1";
+  # get static version
+  declare local var.static_version STRING;
+  set var.static_version = subfield(req.http.X-OW-Version-Lock, "static", "&");
+  if (var.static_version == "") {
+    set var.static_version = {"const:static_version"};
+  }
+
+  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
   set req.http.X-Backend-URL = req.http.X-Action-Root
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -601,7 +630,7 @@ sub hlx_type_static {
     + "&deny=" urlencode(req.http.X-Deny)
     + "&root=" + req.http.X-Github-Static-Root;
 
-  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$" && std.strlen(req.url.qs) > 0) {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
@@ -619,15 +648,24 @@ sub hlx_type_purge {
   call hlx_action_root;
   set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
 
+  # get purge version
+  declare local var.purge_version STRING;
+  set var.purge_version = subfield(req.http.X-OW-Version-Lock, "purge", "&");
+  if (var.purge_version == "") {
+    set var.purge_version = {"const:purge_version"};
+  }
+
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace
     + "/helix-services"
-    + "/purge@v1"
+    + "/purge@" + var.purge_version
     + "?host=" + urlencode(req.http.X-Orig-Host)
     + "&xfh="  + urlencode(req.http.X-Forwarded-Host)
     + "&path=" + urlencode(req.http.X-Orig-Url);
-
-  set req.request = "POST";
+  # yes, this should be a POST request, but:
+  # Azure Front Door rejects POST requests without a content-length header (because it can't determine body length)
+  # and VCL does not allow setting the content-lenght header (because it is calculated)
+  set req.request = "GET";
 }
 
 sub hlx_type_cgi {
@@ -678,13 +716,15 @@ sub hlx_type_blob {
   declare local var.ext STRING;
   declare local var.sas STRING;
 
-  if (req.url.path ~ "^/hlx_(([0-9a-f]){40}).(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.path ~ "^/hlx_(([0-9a-f]){40}).([0-9a-z]+)$") {
     set var.sha = re.group.1;
     set var.ext = req.url.ext;
     set var.sas = table.lookup(secrets, "AZURE_BLOB_SAS_RO", "");
 
-    # request image optimization
-    set req.http.X-Fastly-Imageopto-Api = "fastly";
+    if (std.strlen(req.url.qs) > 0) {
+      # request image optimization
+      set req.http.X-Fastly-Imageopto-Api = "fastly";
+    }
   }
 
   set req.http.X-Backend-URL = "/external/" + var.sha + var.sas;
@@ -702,10 +742,17 @@ sub hlx_type_query {
   call hlx_repo;
   call hlx_ref;
 
+  # get query-index version
+  declare local var.qindex_version STRING;
+  set var.qindex_version = subfield(req.http.X-OW-Version-Lock, "query-index", "&");
+  if (var.qindex_version == "") {
+    set var.qindex_version = {"const:query-index_version"};
+  }
 
   if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
     # establish the fallback first
-    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@v1/" + re.group.1 + "/" + re.group.2
+    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@" + var.qindex_version
+    + "/" + re.group.1 + "/" + re.group.2
     + "?__hlx_owner=" + req.http.X-Owner
     + "&__hlx_repo=" + req.http.X-Repo
     + "&__hlx_ref=" + req.http.X-Ref
@@ -752,7 +799,7 @@ sub hlx_type_static_redirect {
   # - don't forget to override the Content-Type header
   set req.backend = F_GitHub;
 
-  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$" && std.strlen(req.url.qs) > 0) {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
@@ -918,9 +965,13 @@ sub hlx_deliver_type {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
   if (req.http.X-Request-Type == "Dispatch") {
     call hlx_deliver_static;
+    call hlx_deliver_redirects;
   }
   if (req.http.X-Request-Type == "Query") {
     call hlx_deliver_query;
+  }
+  if (req.http.X-Request-Type == "Preflight") {
+    call hlx_deliver_preflight;
   }
 }
 
@@ -999,6 +1050,59 @@ sub hlx_deliver_static {
     #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     #restart;
   }
+}
+
+/**
+ * Handle delivery of redirects. The most important thing is to re-
+ * add the query string from the original url.
+ */
+sub hlx_deliver_redirects {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_redirect";
+  // only do this if we are serving a redirect
+  if ((resp.status == 301 || resp.status == 302) && resp.http.Location) {
+    set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+    // and only if the original url had parameters while the target has none
+    if (resp.http.Location !~ "\?" && req.http.X-Orig-URL ~ "\?") {
+      // append url parameters from original url to redirect target
+      set resp.http.Location = resp.http.Location + regsub(req.http.X-Orig-URL, ".*\?", "?");
+    }
+  }
+}
+
+sub hlx_fetch_preflight {
+  # We're in the 'fetch' state where we temporarily store
+  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+  if (req.http.X-Request-Type == "Preflight") {
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_preflight";
+    # We're adding X-Restarts to the Vary here, so that we don't have to use
+    # req.hash_always_miss, which can cause a thundering herd. Since we only
+    # add to the Vary when we are restarting, and not on the final object, the
+    # final object will supersede the objects with the additional Vary. See
+    # https://vimeo.com/376921144 for the full explanation of how this works.
+    # The : after the header name is the subfield syntax. Basically, if the
+    # Vary header exists, we add `,X-Restarts` to it. If it doesn't exist,
+    # it will only contain `X-Restarts` after this statement.
+    set beresp.http.Vary:X-Restarts = "";
+  }
+}
+
+/**
+ * Process preflight response by copying relevant headers back to the
+ * request and restart.
+ */
+sub hlx_deliver_preflight {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_preflight";
+  if (resp.status == 200) {
+    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    include "preflight.vcl";
+    set req.http.X-Trace = req.http.X-Trace + "(site-version=" resp.http.site-version "/" req.http.x-preflight-site-version ")";
+  } else {
+    # any other error, ignore
+    set req.http.X-Trace = req.http.X-Trace + "(error)";
+  }
+  unset req.http.X-Request-Type;
+  unset req.http.X-Strain;
+  restart;
 }
 
 sub hlx_deliver_query {
@@ -1081,11 +1185,18 @@ sub hlx_type_content {
   }
 
   // clean up the query string
-  set req.url = querystring.regfilter_except(req.url, "^(limit|offset|hlx_.*)$");
+  set req.url = querystring.regfilter_except(req.url, "^(limit|offset|table|sheet|hlx_.*)$");
+
+  # get content-proxy version
+  declare local var.cproxy_version STRING;
+  set var.cproxy_version = subfield(req.http.X-OW-Version-Lock, "content-proxy", "&");
+  if (var.cproxy_version == "") {
+    set var.cproxy_version = {"const:content-proxy_version"};
+  }
 
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/content-proxy@v1"
+    + "/helix-services/content-proxy@" + var.cproxy_version
     + "?ref=" + var.ref
     + "&path=" + req.url.path
     // content repo
@@ -1096,6 +1207,23 @@ sub hlx_type_content {
     + "&" + req.url.qs;
 }
 
+
+/**
+ * Handles preflight requests by forwarding the current
+ * request to the preflight service.
+ */
+sub hlx_type_preflight {
+  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
+
+  call hlx_owner;
+  call hlx_repo;
+  call hlx_ref;
+
+  # get it from OpenWhisk (for now, we will support other backends later)
+  set req.backend = F_AdobeRuntime;
+
+  set req.http.X-Backend-URL = {"const:preflight"};
+}
 
 /**
  * Handles requests for the main Helix rendering pipeline.
@@ -1128,7 +1256,6 @@ sub hlx_type_dispatch {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
-
   # enable ESI
   # TODO: move to dispatch action
   set req.http.x-esi = "1";
@@ -1143,9 +1270,16 @@ sub hlx_type_dispatch {
   # get (strain-specific) parameter allowlist
   include "params.vcl";
 
+  # get dispatch version
+  declare local var.dispatch_version STRING;
+  set var.dispatch_version = subfield(req.http.X-OW-Version-Lock, "dispatch", "&");
+  if (var.dispatch_version == "") {
+    set var.dispatch_version = {"const:dispatch_version"};
+  }
+
   set req.http.X-Backend-URL = "/api/v1/web"
     + "/" + var.namespace // i.e. /trieloff
-    + "/helix-services/dispatch@" + req.http.X-Dispatch-Version
+    + "/helix-services/dispatch@" + var.dispatch_version
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
     + "&static.repo=" + req.http.X-Github-Static-Repo
@@ -1168,7 +1302,7 @@ sub hlx_type_dispatch {
       + "&params=" + req.http.X-Encoded-Params;
   }
 
-  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$") {
+  if (req.url.ext ~ "(jpg|jpeg|png|webp|gif)$" && std.strlen(req.url.qs) > 0) {
     # request image optimization
     set req.http.X-Fastly-Imageopto-Api = "fastly";
   }
@@ -1212,7 +1346,7 @@ sub hlx_check_debug_key {
   //X-Debug must be protected
   if (var.debugSecret && var.key == var.debugSecret) {
     set req.http.X-Debug = var.level;
-  } else {
+  } elseif (req.restarts == 0) {
     unset req.http.X-Debug;
   }
 }
@@ -1277,6 +1411,9 @@ sub vcl_recv {
   # Determine the current strain and execute strain-specific code
   call hlx_strain;
 
+  # set the version lock header based on the strain
+  call hlx_version_lock;
+
   # block bad requests – needs current strain and unchanged req.url
   call hlx_block_recv;
 
@@ -1323,6 +1460,8 @@ sub vcl_recv {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Content/JSON") {
     call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Preflight") {
+    call hlx_type_preflight;
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
@@ -1503,6 +1642,8 @@ sub vcl_fetch {
     return(pass);
   }
 
+  call hlx_fetch_preflight;
+
   call hlx_fetch_errors;
 
   unset beresp.http.Set-Cookie;
@@ -1525,6 +1666,8 @@ sub vcl_fetch {
   # https://github.com/adobe/project-helix/issues/460
   set beresp.http.Vary:X-Forwarded-Host = "";
 
+  # Vary on x-ow-version-lock, to avoid caching of different versions
+  set beresp.http.Vary:X-OW-Version-Lock = "";
 
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
@@ -1588,12 +1731,20 @@ sub hlx_bereq {
     set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
   }
 
+  # see https://fastly-guests.slack.com/archives/C0145H64N4W/p1607604397160200?thread_ts=1606991486.124800&cid=C0145H64N4W
+  # this should prevent restarts when github (static) returns a 503 – as this may cause
+  # us to exceed the restart limit
+  if (req.backend == F_GitHub) {
+    unset bereq.http.Fastly-Force-Shield;
+  }
+
   # If we're going to a shield (another Fastly POP) use the original URL and
   # Host header. If not a shield, we're going to origin; set the URL and Host
   # header as explained at the top of this file.
   if (req.backend.is_shield) {
     set bereq.url = req.http.X-Orig-Url;
     set bereq.http.Host = req.http.X-Orig-Host;
+
   } else {
     if (req.http.X-Backend-URL) {
       set bereq.url = req.http.X-Backend-URL;
@@ -1640,17 +1791,20 @@ sub hlx_bereq {
   unset bereq.http.Accept-Encoding;
 
   # Clean up all temporary request headers, since origins might be 3rd parties
-  unset bereq.http.X-Orig-Url;
-  unset bereq.http.X-Orig-Host;
+  if (req.http.X-Request-Type != "Preflight") {
+    unset bereq.http.X-Orig-Url;
+    unset bereq.http.X-Orig-Host;
+    unset bereq.http.X-Owner;
+    unset bereq.http.X-Repo;
+    unset bereq.http.X-Ref;
+    # unset bereq.http.X-Repo-Root-Path;   // todo: should we remove this as well ?
+  }
   unset bereq.http.X-Backend-URL;
   unset bereq.http.X-Request-Type;
   unset bereq.http.X-Static-Content-Type;
   unset bereq.http.X-Allow;
   unset bereq.http.X-Deny;
-  unset bereq.http.X-Owner;
   unset bereq.http.X-Index;
-  unset bereq.http.X-Repo;
-  unset bereq.http.X-Ref;
   unset bereq.http.X-Root-Path;
   unset bereq.http.X-Action-Root;
   unset bereq.http.X-Github-Static-Repo;
@@ -1658,6 +1812,7 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Root;
   unset bereq.http.X-Github-Static-Ref;
   unset bereq.http.X-Restarts;
+  unset bereq.http.X-Trace;
 }
 
 sub vcl_miss {

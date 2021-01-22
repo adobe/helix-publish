@@ -19,7 +19,7 @@ const allowRgx = require('../src/rgx/allow.js');
 
 function decode(urlfragment) {
   try {
-    return `(${decodeURIComponent(urlfragment)})`;
+    return `(${decodeURIComponent(urlfragment).replace('\x00', 'x00')})`;
   } catch {
     return '';
   }

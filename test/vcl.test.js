@@ -22,13 +22,33 @@ const {
 /* eslint-env mocha */
 
 describe('Testing vcl.js', () => {
-  it('#init', async () => {
+  it('#init/full', async () => {
     const fastly = {
       writeVCL: sinon.fake.returns({}),
       setMainVCL: sinon.fake.returns({}),
     };
 
-    assert.ok(await init(fastly, 1));
+    const config = await new HelixConfig()
+      .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
+      .init();
+
+    assert.ok(await init(fastly, 1, {}, config, { dispatch: 'v4' }));
+    assert.ok(fastly.writeVCL.calledOnce);
+    assert.ok(fastly.writeVCL.calledWith(1, 'helix.vcl'));
+    assert.ok(fastly.setMainVCL.notCalled);
+  });
+
+  it('#init/preflight', async () => {
+    const fastly = {
+      writeVCL: sinon.fake.returns({}),
+      setMainVCL: sinon.fake.returns({}),
+    };
+
+    const config = await new HelixConfig()
+      .withConfigPath(path.resolve(__dirname, 'fixtures/preflight.yaml'))
+      .init();
+
+    assert.ok(await init(fastly, 1, {}, config, { dispatch: 'v4' }));
     assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'helix.vcl'));
     assert.ok(fastly.setMainVCL.notCalled);
@@ -90,11 +110,29 @@ describe('Testing vcl.js', () => {
       .withConfigPath(path.resolve(__dirname, 'fixtures/full.yaml'))
       .init();
 
-    assert.ok(await updatestrains(fastly, 1, config.strains));
+    assert.ok(await updatestrains(fastly, 1, config.strains, config));
 
-    assert.ok(fastly.writeVCL.calledTwice);
+    assert.ok(fastly.writeVCL.calledThrice);
     assert.ok(fastly.writeVCL.calledWith(1, 'strains.vcl'));
     assert.ok(fastly.writeVCL.calledWith(1, 'params.vcl'));
+    assert.ok(fastly.writeVCL.calledWith(1, 'preflight.vcl'));
+  });
+
+  it('#updatestrains/preflight', async () => {
+    const fastly = {
+      writeVCL: sinon.fake(),
+    };
+
+    const config = await new HelixConfig()
+      .withConfigPath(path.resolve(__dirname, 'fixtures/preflight.yaml'))
+      .init();
+
+    assert.ok(await updatestrains(fastly, 1, config.strains, config));
+
+    assert.ok(fastly.writeVCL.calledThrice);
+    assert.ok(fastly.writeVCL.calledWith(1, 'strains.vcl'));
+    assert.ok(fastly.writeVCL.calledWith(1, 'params.vcl'));
+    assert.ok(fastly.writeVCL.calledWith(1, 'preflight.vcl'));
   });
 
   it('#dynamic', async () => {
@@ -102,7 +140,7 @@ describe('Testing vcl.js', () => {
       writeVCL: sinon.fake(),
     };
 
-    assert.ok(await dynamic(fastly, 1, 1));
+    assert.ok(await dynamic(fastly, 1));
 
     assert.ok(fastly.writeVCL.calledOnce);
     assert.ok(fastly.writeVCL.calledWith(1, 'dynamic.vcl'));

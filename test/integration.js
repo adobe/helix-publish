@@ -9,6 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+
+/* eslint-disable no-console */
 process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 
 const path = require('path');
@@ -28,7 +30,57 @@ const { expect } = chai;
 const config = {
   configuration: {
     version: 1,
+    preflight: 'https://adobeioruntime.net/example',
     strains: {
+      adhoc: {
+        code: {
+          host: 'github.com',
+          hostname: 'github.com',
+          owner: 'adobe',
+          path: '',
+          port: '',
+          protocol: 'https',
+          ref: 'master',
+          repo: 'project-helix.io',
+        },
+        condition: {
+          'preflight.x-version>': 1,
+        },
+        content: {
+          host: 'github.com',
+          hostname: 'github.com',
+          owner: 'adobe',
+          path: '',
+          port: '',
+          protocol: 'https',
+          ref: 'master',
+          repo: 'project-helix.io',
+        },
+        directoryIndex: 'index.html',
+        name: 'adhoc',
+        package: '75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty',
+        perf: {
+          connection: '',
+          device: '',
+          location: 'London',
+          onload: 1000,
+        },
+        static: {
+          allow: [],
+          deny: [],
+          host: 'github.com',
+          hostname: 'github.com',
+          magic: false,
+          owner: 'adobe',
+          path: '/htdocs',
+          port: '',
+          protocol: 'https',
+          ref: 'master',
+          repo: 'project-helix.io',
+        },
+        sticky: true,
+        urls: [],
+      },
       default: {
         code: {
           protocol: 'ssh',
@@ -138,9 +190,10 @@ const indexconfig = {
 
 // give process.env values preference, so that we can test this on circleci w/o polly
 const usePolly = !process.env.HLX_FASTLY_NAMESPACE;
+// require('dotenv').config();
 const HLX_FASTLY_NAMESPACE = process.env.HLX_FASTLY_NAMESPACE || '54nWWFJicKgbdVHou26Y6a';
 const HLX_FASTLY_AUTH = process.env.HLX_FASTLY_AUTH || 'secret';
-const VERSION_NUM = process.env.VERSION_NUM || 247;
+const VERSION_NUM = process.env.VERSION_NUM || 316;
 const ALGOLIA_APP_ID = process.env.ALGOLIA_APP_ID || 'A8PL9E4TZT';
 const EPSAGON_TOKEN = process.env.EPSAGON_TOKEN || 'fake-token';
 
@@ -209,6 +262,9 @@ describe('Integration Test', () => {
     this.polly.server
       .get('https://adobeioruntime.net/api/v1/web/mrosier/9d723ce487448cc132cd240a484b65772b201241/html/_status_check/healthcheck.json')
       .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
 
     const params = {
       service: HLX_FASTLY_NAMESPACE,
@@ -226,9 +282,16 @@ describe('Integration Test', () => {
       this.polly.server.any('https://api.fastly.com/service/54nWWFJicKgbdVHou26Y6a/version/247/backend/AdobeFonts').intercept((req, res) => {
         res.sendStatus(200);
       });
+      this.polly.server.any('https://api.fastly.com/service/54nWWFJicKgbdVHou26Y6a/version/247/vcl/preflight.vcl').intercept((req, res) => {
+        res.sendStatus(200);
+      });
     }
     this.polly.server
       .get('https://adobeioruntime.net/api/v1/web/mrosier/9d723ce487448cc132cd240a484b65772b201241/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
+
+    this.polly.server
+      .get('https://adobeioruntime.net/api/v1/web/75f29aa936bfc2b84bde5ac0ee4afbf824b1391e-dirty/html/_status_check/healthcheck.json')
       .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
 
     const params = {
@@ -264,11 +327,9 @@ describe('Integration Test', () => {
         const json = JSON.parse(response.text);
         expect(json.status).to.equal('ok');
         expect(json.errors).to.be.an('array');
-        expect(json.errors).to.be.empty;
-        expect(json.warnings).to.be.an('array');
-        expect(json.warnings).to.be.empty;
+        expect(json.errors, `errors: ${JSON.stringify(json.errors)}`).to.be.empty;
         expect(json.messages).to.be.an('array');
-        expect(json.messages).to.be.empty;
+        expect(json.warnings).to.be.an('array');
         /* eslint-enable no-unused-expressions */
       });
   }).timeout(60000);
@@ -277,7 +338,7 @@ describe('Integration Test', () => {
     const params = {
       service: HLX_FASTLY_NAMESPACE,
       token: HLX_FASTLY_AUTH,
-      version: VERSION_NUM,
+      version: VERSION_NUM - 1,
     };
 
     const res = await main(params);

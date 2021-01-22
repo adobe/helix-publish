@@ -14,14 +14,16 @@ const {
   include,
   synthetize,
   regex,
+  injectConsts,
 } = require('./include-util');
 const {
   resolve,
   parameters,
   xversion,
   writevcl,
-  reqHeader,
+  preflightHeaders,
 } = require('./vcl-utils');
+const defaultVersions = require('../default-versions.js');
 
 const { queryvcl } = require('./algolia');
 
@@ -35,7 +37,7 @@ function basedir() {
   return __filename !== 'vcl.js' ? '' : path.resolve(__dirname, '../..');
 }
 
-async function init(fastly, version, options) {
+async function init(fastly, version, options, config) {
   const vclfile = path.resolve(basedir(), 'layouts/fastly/helix.vcl');
   let content = options
     ? include(vclfile, addEpsagonTraces, {
@@ -46,6 +48,17 @@ async function init(fastly, version, options) {
     })
     : include(vclfile);
   content = regex(content, urlFilters);
+
+  // create the constants object
+  const constants = {
+    preflight: config.preflight ? config.preflight.replace('https://adobeioruntime.net', '') : undefined,
+  };
+
+  // define default version constants
+  Object.entries(defaultVersions).forEach(([k, v]) => {
+    constants[`${k}_version`] = v;
+  });
+  content = injectConsts(content, constants);
   return writevcl(fastly, version, content, 'helix.vcl');
 }
 
@@ -68,17 +81,17 @@ async function extensions(fastly, version, vclOverride = {}) {
   return writevcl(fastly, version, content, 'extensions.vcl');
 }
 
-function updatestrains(fastly, version, strains) {
+function updatestrains(fastly, version, strains, config) {
   return Promise.all([
-    writevcl(fastly, version, resolve(strains), 'strains.vcl'),
+    writevcl(fastly, version, resolve(strains, config.preflight), 'strains.vcl'),
     writevcl(fastly, version, parameters(strains), 'params.vcl'),
+    writevcl(fastly, version, preflightHeaders(config), 'preflight.vcl'),
   ]);
 }
 
-function dynamic(fastly, version, dispatchVersion) {
+function dynamic(fastly, version) {
   let content = '';
   content += xversion(version, package.version);
-  content += reqHeader('X-Dispatch-Version', dispatchVersion);
   return Promise.all([
     writevcl(fastly, version, content, 'dynamic.vcl'),
   ]);

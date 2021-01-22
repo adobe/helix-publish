@@ -28,6 +28,88 @@ commands:
         name: prepare test git user
         command: git config --global user.email "circleci@example.com" && git config --global user.name "CircleCi Build"
 
+  run-helix-pages-smoke-tests-cmd:
+    description: "Run smoke tests on a remote repository, wait for execution and report status"
+    parameters:
+        token:
+            type: env_var_name
+            default: SMOKE_TEST_TOKEN
+            description: the CircleCI token to execute a CircleCI job on the smoke test repo
+        remote_branch:
+            type: string
+            default: master
+            description: the branch of repo that hosts the smoke tests
+        publish_ci_version:
+            type: string
+            description: the helix-publish ci version to use for the smoke tests
+    steps:
+    - run:
+        name: Call helix-pages smoke tests job
+        command: |
+            curl \
+                --user ${<< parameters.token>>}: \
+                --header "Content-Type: application/json" \
+                --silent \
+                --data "{ \"branch\": \"<< parameters.remote_branch >>\", \"parameters\": {\"smoke_tests_only\": true, \"publish_ci_version\": \"<< parameters.publish_ci_version>>\"}}" \
+                --request POST "https://circleci.com/api/v2/project/github/adobe/helix-pages/pipeline" > run_tests_cmd_job.json
+
+    - run:
+        name: Wait for helix-pages smoke tests job to complete and report status
+        command: |
+            cat run_tests_cmd_job.json
+            # get pipeline from response
+            smoke_pipeline_id=$(jq -r '.id' < run_tests_cmd_job.json)
+            pipeline_url="https://circleci.com/api/v2/pipeline/${smoke_pipeline_id}/workflow"
+            echo "New pipeline triggered. See API ${pipeline_url}"
+            echo -n "Waiting now for the workflow to start"
+            # get workflow id from pipeline
+            # this assumes ([0]) there is only one workflow started
+            RUNNING=true
+                while [ $RUNNING == true ]; do
+                sleep 1;
+                smoke_workflow_id=$(curl --silent --header "Accept: application/json" --user ${<< parameters.token>>}: ${pipeline_url} | jq -r ".items[0].id" || echo '')
+                echo 'waiting for workflow to start' | grep --silent "$smoke_workflow_id" || RUNNING=false;
+                echo -n "."
+            done
+            echo ""
+            workflow_url="https://circleci.com/api/v2/workflow/${smoke_workflow_id}"
+            smoke_result_file="smoke_result.json"
+            echo "Smoke tests workflow - i.e \"build\" workflow - triggered. See API ${workflow_url}"
+            echo ""
+            echo "To debug error or check workflow state, you can access the workflow UI here - https://circleci.com/workflow-run/${smoke_workflow_id}"
+            echo ""
+            echo -n "Waiting now for workflow execution"
+            RUNNING=true
+                while [ $RUNNING == true ]; do
+                sleep 10;
+                status=$(curl --silent --header "Accept: application/json"  --user ${<< parameters.token>>}: ${workflow_url} | tee ${smoke_result_file} | jq -r '.status' || echo '');
+                echo 'running queued scheduled not_running' | grep --silent "$status" || RUNNING=false;
+                echo -n "."
+            done
+            echo ""
+            echo "Smoke tests https://circleci.com/workflow-run/${smoke_workflow_id} finished with status \"${status}\""
+
+            pipeline_number=$(cat ${smoke_result_file} | jq -r .pipeline_number)
+            modulo=$(expr $pipeline_number % 7 + 1)
+            TEST_DOMAIN=hlx-${modulo}.page
+            mkdir -p env
+            # "pass" the variable to the next steps...
+            echo "export TEST_DOMAIN=$TEST_DOMAIN" >> env/TEST_DOMAIN
+            cat env/TEST_DOMAIN >> $BASH_ENV
+
+            echo "Test Domain is" $TEST_DOMAIN
+
+            npx @adobe/cci-test-aggregator ${pipeline_url}
+
+            exit_code=0
+            if [[ ! $status =~ 'success' ]] && [[ ! $status =~ 'fixed' ]]
+            then
+                exit_code=1
+            fi
+            exit $exit_code
+    - store_test_results:
+        path: junit
+
 jobs:
   build:
     executor: node10
@@ -45,6 +127,8 @@ jobs:
 
     - store_test_results:
         path: junit
+
+    - run: ls junit
 
     - store_artifacts:
         path: junit
@@ -97,6 +181,9 @@ jobs:
         name: Branch Deployment
         command: npm run deploy-ci
 
+    - run-helix-pages-smoke-tests-cmd:
+        publish_ci_version: ci$CIRCLE_BUILD_NUM
+
     - run:
         name: Post-Deployment Integration Test
         command: npm run test-postdeploy
@@ -111,10 +198,10 @@ workflows:
           - build
         filters:
           branches:
-            ignore: master
+            ignore: main
     - semantic-release:
         requires:
         - build
         filters:
           branches:
-            only: master
+            only: main

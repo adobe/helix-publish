@@ -12,6 +12,7 @@
 
 const fs = require('fs-extra');
 const path = require('path');
+const escapeStringRegexp = require('escape-string-regexp');
 
 function regex(content, regexpArray) {
   const fastlyRegexp = regexpArray
@@ -39,6 +40,16 @@ function include(srcfile, tracer, opts) {
   return synthetize(str, path.dirname(srcfile));
 }
 
+function injectConsts(content, constants) {
+  return Object
+    .entries(constants)
+    .filter(([key, value]) => !!key && !!value)
+    .reduce((str, [key, value]) => str
+      .replace(new RegExp(escapeStringRegexp(`{"const:${key}"}`), 'g'), `"${value}"`),
+    content);
+}
+
 module.exports.include = include;
 module.exports.synthetize = synthetize;
 module.exports.regex = regex;
+module.exports.injectConsts = injectConsts;

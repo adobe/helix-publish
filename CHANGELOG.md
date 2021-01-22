@@ -1,3 +1,385 @@
+## [8.1.13](https://github.com/adobe/helix-publish/compare/v8.1.12...v8.1.13) (2021-01-11)
+
+
+### Bug Fixes
+
+* **block:** block invalid URL-code sequences ([e82ad9d](https://github.com/adobe/helix-publish/commit/e82ad9d018805db87b68d11d0f21e8261624d1d6))
+
+## [8.1.12](https://github.com/adobe/helix-publish/compare/v8.1.11...v8.1.12) (2021-01-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.18.3 ([aecc3e4](https://github.com/adobe/helix-publish/commit/aecc3e4d29d018ce78661f771ad5cb388b01d743))
+
+## [8.1.11](https://github.com/adobe/helix-publish/compare/v8.1.10...v8.1.11) (2021-01-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.18.2 ([a4015dd](https://github.com/adobe/helix-publish/commit/a4015ddb18dc9c21422358250e93d85c6ae3d11c))
+
+## [8.1.10](https://github.com/adobe/helix-publish/compare/v8.1.9...v8.1.10) (2021-01-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.19.4 ([33d9352](https://github.com/adobe/helix-publish/commit/33d9352515fabc3b938aaa4d454f8809a535c8bd))
+
+## [8.1.9](https://github.com/adobe/helix-publish/compare/v8.1.8...v8.1.9) (2021-01-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.18.1 ([#692](https://github.com/adobe/helix-publish/issues/692)) ([afc998d](https://github.com/adobe/helix-publish/commit/afc998dee9f53b6b92dae02c79ad18c4a5d3bb78))
+
+## [8.1.8](https://github.com/adobe/helix-publish/compare/v8.1.7...v8.1.8) (2021-01-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.19.2 ([e8939ae](https://github.com/adobe/helix-publish/commit/e8939aece8a11e66bcd6be23e798dd470f3e8bf7))
+
+## [8.1.7](https://github.com/adobe/helix-publish/compare/v8.1.6...v8.1.7) (2020-12-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v9 ([6956e9d](https://github.com/adobe/helix-publish/commit/6956e9d54ce2a9c9cb4f2bbefdaf4bd54b815d1d))
+
+## [8.1.6](https://github.com/adobe/helix-publish/compare/v8.1.5...v8.1.6) (2020-12-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.18.2 ([56de509](https://github.com/adobe/helix-publish/commit/56de5099f8bed7baf623d851d3341b95cbfbfcad))
+
+## [8.1.5](https://github.com/adobe/helix-publish/compare/v8.1.4...v8.1.5) (2020-12-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-logger to v2.3.1 ([ea5b927](https://github.com/adobe/helix-publish/commit/ea5b927396981b78c7e16a5ea306eaa99ecc8206))
+
+## [8.1.4](https://github.com/adobe/helix-publish/compare/v8.1.3...v8.1.4) (2020-12-15)
+
+
+### Bug Fixes
+
+* **block:** block bad url ([0019836](https://github.com/adobe/helix-publish/commit/0019836b62b8d5d85c1bf412d76a90c220a3f629)), closes [#681](https://github.com/adobe/helix-publish/issues/681)
+
+## [8.1.3](https://github.com/adobe/helix-publish/compare/v8.1.2...v8.1.3) (2020-12-15)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([6eca12c](https://github.com/adobe/helix-publish/commit/6eca12c542058509268da4cece62de7973a92280))
+
+## [8.1.2](https://github.com/adobe/helix-publish/compare/v8.1.1...v8.1.2) (2020-12-14)
+
+
+### Bug Fixes
+
+* **vcl:** do not unset fastly-ff ([b7e47b8](https://github.com/adobe/helix-publish/commit/b7e47b8b004e314cc921cd9cfef106a2bae92859))
+* **vcl:** fix backend name ([9f0c8a5](https://github.com/adobe/helix-publish/commit/9f0c8a5364051685fb5647395a12dfb5155e66c7))
+* **vcl:** prevent 503 max restarts error ([aac1d58](https://github.com/adobe/helix-publish/commit/aac1d58dc7e8fc24661fe10b4678bd54d213b1f3))
+
+## [8.1.1](https://github.com/adobe/helix-publish/compare/v8.1.0...v8.1.1) (2020-12-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v8.2.3 ([b28088a](https://github.com/adobe/helix-publish/commit/b28088aa554b47bc08fac9a4f168e08c33d360d2))
+
+# [8.1.0](https://github.com/adobe/helix-publish/compare/v8.0.6...v8.1.0) (2020-12-10)
+
+
+### Bug Fixes
+
+* **purge:** support azure ([#676](https://github.com/adobe/helix-publish/issues/676)) ([4aaef81](https://github.com/adobe/helix-publish/commit/4aaef8197fb0033a2ff6402661b24dd1fe962253))
+
+
+### Features
+
+* **preflight:** include repo/owner/ref ([#671](https://github.com/adobe/helix-publish/issues/671)) ([5132f77](https://github.com/adobe/helix-publish/commit/5132f773f3b998c82fd15282dfe26410dc64e145)), closes [#670](https://github.com/adobe/helix-publish/issues/670)
+
+## [8.0.6](https://github.com/adobe/helix-publish/compare/v8.0.5...v8.0.6) (2020-12-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-fetch to v1.9.2 ([2f42b94](https://github.com/adobe/helix-publish/commit/2f42b94769a1902526bbca5685ee2b204cb8c627))
+
+## [8.0.5](https://github.com/adobe/helix-publish/compare/v8.0.4...v8.0.5) (2020-12-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.18.0 ([2f5e4a7](https://github.com/adobe/helix-publish/commit/2f5e4a7b68e1977852da7a7a930ef60ec499f9de))
+
+## [8.0.4](https://github.com/adobe/helix-publish/compare/v8.0.3...v8.0.4) (2020-12-08)
+
+
+### Bug Fixes
+
+* **preflight:** version lock is lost after preflight ([#674](https://github.com/adobe/helix-publish/issues/674)) ([e03bd82](https://github.com/adobe/helix-publish/commit/e03bd82ee4559e0d7398af8de358b309a0982d6d)), closes [#673](https://github.com/adobe/helix-publish/issues/673)
+
+## [8.0.3](https://github.com/adobe/helix-publish/compare/v8.0.2...v8.0.3) (2020-12-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.5.5 ([#669](https://github.com/adobe/helix-publish/issues/669)) ([1b3c05d](https://github.com/adobe/helix-publish/commit/1b3c05d2424517a0cc3179c36b22a9b79122065c))
+
+## [8.0.2](https://github.com/adobe/helix-publish/compare/v8.0.1...v8.0.2) (2020-12-06)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.17.0 ([9451433](https://github.com/adobe/helix-publish/commit/9451433d7340e96eddc671f372d2214d2a85b123))
+
+## [8.0.1](https://github.com/adobe/helix-publish/compare/v8.0.0...v8.0.1) (2020-12-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v4.4.0 ([fdfb45f](https://github.com/adobe/helix-publish/commit/fdfb45f4ccf22810f0ff5bc00bc43057ef54f634))
+
+# [8.0.0](https://github.com/adobe/helix-publish/compare/v7.6.1...v8.0.0) (2020-12-04)
+
+
+### Bug Fixes
+
+* **action:** remove dispatcher version parameter ([#665](https://github.com/adobe/helix-publish/issues/665)) ([b317e89](https://github.com/adobe/helix-publish/commit/b317e8986c284f5e068ceadf9053654472e0c985))
+
+
+### BREAKING CHANGES
+
+* **action:** the dispatchVersion action parameter is no longer honoured
+
+## [7.6.1](https://github.com/adobe/helix-publish/compare/v7.6.0...v7.6.1) (2020-12-04)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([#661](https://github.com/adobe/helix-publish/issues/661)) ([d7f5b37](https://github.com/adobe/helix-publish/commit/d7f5b37e74b33e5ae47c15acab22ccde07e426d0))
+
+# [7.6.0](https://github.com/adobe/helix-publish/compare/v7.5.1...v7.6.0) (2020-12-04)
+
+
+### Features
+
+* **vlc:** use version-lock header and edge dictionary ([#663](https://github.com/adobe/helix-publish/issues/663)) ([0d52075](https://github.com/adobe/helix-publish/commit/0d52075fd8223692e1d5fe208fa22191cf14f530))
+
+## [7.5.1](https://github.com/adobe/helix-publish/compare/v7.5.0...v7.5.1) (2020-11-30)
+
+
+### Bug Fixes
+
+* **deps:** update external fixes ([3df1a1d](https://github.com/adobe/helix-publish/commit/3df1a1d87ffa1a3bf4d340a21cb5b471c6b2846b))
+
+# [7.5.0](https://github.com/adobe/helix-publish/compare/v7.4.1...v7.5.0) (2020-11-30)
+
+
+### Features
+
+* **redirects:** carry over url parameters from original url when redirecting ([a82b9d2](https://github.com/adobe/helix-publish/commit/a82b9d291c3c0a73fd9a04f26b8042765d7a7609))
+
+## [7.4.1](https://github.com/adobe/helix-publish/compare/v7.4.0...v7.4.1) (2020-11-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.16.2 ([e821622](https://github.com/adobe/helix-publish/commit/e82162223d4c8e7e34adcfa8550c9d72b93e7efc))
+
+# [7.4.0](https://github.com/adobe/helix-publish/compare/v7.3.4...v7.4.0) (2020-11-23)
+
+
+### Bug Fixes
+
+* **preflight:** do not replace empty constants ([f63fd37](https://github.com/adobe/helix-publish/commit/f63fd37eb887e30deb1b1d7c463b34bb5638b5df))
+* **preflight:** fix const replacement ([a24615e](https://github.com/adobe/helix-publish/commit/a24615e099330b1d553bf9675be8c1abd66e1de0))
+* **preflight:** fix log statement ([691d523](https://github.com/adobe/helix-publish/commit/691d5237f027daaedcb2d9dd81d53ec7f49cb43d))
+* **preflight:** pass config for preflight ([a5dc56a](https://github.com/adobe/helix-publish/commit/a5dc56a943aed125aaab2d00f1c71cc62224c8cf))
+* **publish:** pass config to init ([b0a8f50](https://github.com/adobe/helix-publish/commit/b0a8f509ff93b60e547cb8dd417ea9f894d763e8))
+* **vcl:** call preflight fetch ([810955f](https://github.com/adobe/helix-publish/commit/810955fda8958748ffa7cb3f9519393540b54dcc))
+* **vcl:** guard debug header against accidential deletion after a restart ([73da884](https://github.com/adobe/helix-publish/commit/73da884c40b841f2b808df4a7316e8844bf65d4e))
+* **vcl:** unset strain header before a restart ([60119c4](https://github.com/adobe/helix-publish/commit/60119c462bd06364c3da3ea03163879d3805d7fb))
+
+
+### Features
+
+* **vcl:** more traces ([48660d3](https://github.com/adobe/helix-publish/commit/48660d3487d7904f39e17dcb8e04257c1d07401f))
+* **vcl:** support preflight conditions ([7a97da9](https://github.com/adobe/helix-publish/commit/7a97da9cde8e12fdb644704a36566edf98c1e5e3)), closes [#349](https://github.com/adobe/helix-publish/issues/349)
+
+## [7.3.4](https://github.com/adobe/helix-publish/compare/v7.3.3...v7.3.4) (2020-11-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v8.2.2 ([#655](https://github.com/adobe/helix-publish/issues/655)) ([1df62ae](https://github.com/adobe/helix-publish/commit/1df62ae84137f8cc1b3c16a4438479b7a688962a))
+
+## [7.3.3](https://github.com/adobe/helix-publish/compare/v7.3.2...v7.3.3) (2020-11-18)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([f3eba6a](https://github.com/adobe/helix-publish/commit/f3eba6a54a38400af10d87fd80aa578c33c4e92e))
+
+## [7.3.2](https://github.com/adobe/helix-publish/compare/v7.3.1...v7.3.2) (2020-11-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.5.4 ([#650](https://github.com/adobe/helix-publish/issues/650)) ([9d8f4c5](https://github.com/adobe/helix-publish/commit/9d8f4c5b10faaba338c452466af51e2817158fa0))
+
+## [7.3.1](https://github.com/adobe/helix-publish/compare/v7.3.0...v7.3.1) (2020-11-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.16.1 ([b70bc2d](https://github.com/adobe/helix-publish/commit/b70bc2d48cf42a968265a2009763d6c477d808b4))
+
+# [7.3.0](https://github.com/adobe/helix-publish/compare/v7.2.1...v7.3.0) (2020-10-31)
+
+
+### Features
+
+* **helix.vcl:** conditional image optimization ([1101086](https://github.com/adobe/helix-publish/commit/11010865dd64dacc3f622c72a7d113479a604b36)), closes [#644](https://github.com/adobe/helix-publish/issues/644)
+
+## [7.2.1](https://github.com/adobe/helix-publish/compare/v7.2.0...v7.2.1) (2020-10-28)
+
+
+### Bug Fixes
+
+* **backends:** always set sni hostname for runtime ([cef3ad7](https://github.com/adobe/helix-publish/commit/cef3ad750313eab15a754e2fa33728e608127731))
+* **fetch:** disable http2 for tests so that polly can intercept ([1a96495](https://github.com/adobe/helix-publish/commit/1a96495bd456bfdafc0205781ec2b2c8609410e3))
+
+# [7.2.0](https://github.com/adobe/helix-publish/compare/v7.1.3...v7.2.0) (2020-10-16)
+
+
+### Features
+
+* **vcl:** add very on version lock ([#635](https://github.com/adobe/helix-publish/issues/635)) ([024f199](https://github.com/adobe/helix-publish/commit/024f199761c136b7d6d4b7228be70ce14c176875))
+
+## [7.1.3](https://github.com/adobe/helix-publish/compare/v7.1.2...v7.1.3) (2020-10-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-logger to v2.2.1 ([#634](https://github.com/adobe/helix-publish/issues/634)) ([df7ae74](https://github.com/adobe/helix-publish/commit/df7ae74ebe479c32c6e14e0c549e3ff8ceca5748))
+
+## [7.1.2](https://github.com/adobe/helix-publish/compare/v7.1.1...v7.1.2) (2020-10-08)
+
+
+### Bug Fixes
+
+* allow table and sheet as parameters ([#631](https://github.com/adobe/helix-publish/issues/631)) ([1516b35](https://github.com/adobe/helix-publish/commit/1516b35ac13c2511d03ded36b55ee40692032fc9))
+
+## [7.1.1](https://github.com/adobe/helix-publish/compare/v7.1.0...v7.1.1) (2020-10-07)
+
+
+### Bug Fixes
+
+* **publish:** reduce parallelism in updating vcl ([fd6bdc7](https://github.com/adobe/helix-publish/commit/fd6bdc7a0b08c353df8c08fc8f845cc92498db49)), closes [#628](https://github.com/adobe/helix-publish/issues/628)
+
+# [7.1.0](https://github.com/adobe/helix-publish/compare/v7.0.2...v7.1.0) (2020-10-06)
+
+
+### Features
+
+* **blobs:** allow all extenions for azure blobs ([#623](https://github.com/adobe/helix-publish/issues/623)) ([b96c952](https://github.com/adobe/helix-publish/commit/b96c952ffc1588c33768ef8942e2ac644f4e3e06))
+
+## [7.0.2](https://github.com/adobe/helix-publish/compare/v7.0.1...v7.0.2) (2020-10-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.16.0 ([ff0fb2a](https://github.com/adobe/helix-publish/commit/ff0fb2a20e4ace93f9c57e880743f5038a1ff723))
+
+## [7.0.1](https://github.com/adobe/helix-publish/compare/v7.0.0...v7.0.1) (2020-10-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.15.0 ([73e2f59](https://github.com/adobe/helix-publish/commit/73e2f59d79517f536d399639967ce7694c452857))
+
+# [7.0.0](https://github.com/adobe/helix-publish/compare/v6.6.12...v7.0.0) (2020-09-30)
+
+
+### Features
+
+* **deps:** use content-proxy v2 ([fe870d8](https://github.com/adobe/helix-publish/commit/fe870d84a4070a7316283f0aa7365f16506db191))
+
+
+### BREAKING CHANGES
+
+* **deps:** content proxy v2 uses new data embed and gdocs services.
+                 - requests to json now returns an object instead of and array [0]
+                 - gdocs2md now has a different table handling [1]
+                 - gdocs2md supports author friendly names [2]
+
+[0] https://github.com/adobe/helix-data-embed/commit/9d1e924acc3aa6488b464a3cdc4a3bf68e3843bc
+[1] https://github.com/adobe/helix-gdocs2md/commit/e4befdbaed4a5319b2cca4be8507f153bedcc68a
+[2] https://github.com/adobe/helix-gdocs2md/commit/3aca7b387bbee977f84e61ce823ff6271b1b0a8d
+
+## [6.6.12](https://github.com/adobe/helix-publish/compare/v6.6.11...v6.6.12) (2020-09-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v8.2.1 ([2554537](https://github.com/adobe/helix-publish/commit/255453774b99eeaf5e00300e4dfd48ef686a5396))
+
+## [6.6.11](https://github.com/adobe/helix-publish/compare/v6.6.10...v6.6.11) (2020-09-29)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) fixes ([9db1548](https://github.com/adobe/helix-publish/commit/9db1548105b0e84d6ec2ca288ef8538ba39edb44))
+
+## [6.6.10](https://github.com/adobe/helix-publish/compare/v6.6.9...v6.6.10) (2020-09-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.5.3 ([#615](https://github.com/adobe/helix-publish/issues/615)) ([a4cc4c0](https://github.com/adobe/helix-publish/commit/a4cc4c0ef095f12aea64a9a968af4e2ef8387898))
+
+## [6.6.9](https://github.com/adobe/helix-publish/compare/v6.6.8...v6.6.9) (2020-09-24)
+
+
+### Bug Fixes
+
+* **block:** relax block expression ([b3f5506](https://github.com/adobe/helix-publish/commit/b3f5506646ad56ecb0a2bdbf1e68fe10d222c48d))
+
+## [6.6.8](https://github.com/adobe/helix-publish/compare/v6.6.7...v6.6.8) (2020-09-21)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) fixes ([80abded](https://github.com/adobe/helix-publish/commit/80abded0f42fadba13446161ebbfffdc7a115e83))
+
+## [6.6.7](https://github.com/adobe/helix-publish/compare/v6.6.6...v6.6.7) (2020-09-14)
+
+
+### Bug Fixes
+
+* **deps:** update [@adobe](https://github.com/adobe) fixes ([8b41aaa](https://github.com/adobe/helix-publish/commit/8b41aaa6d40cf0b2d33e8e2e4b602b3c2bcba037))
+
+## [6.6.6](https://github.com/adobe/helix-publish/compare/v6.6.5...v6.6.6) (2020-09-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.12.0 ([cadb273](https://github.com/adobe/helix-publish/commit/cadb273f60aa54c5f93a5c15ea978fc97f8912bf))
+* **deps:** update dependency @adobe/helix-shared to v7.13.0 ([b8758f4](https://github.com/adobe/helix-publish/commit/b8758f480b799d3a409e32d3de8864e02e63ae12))
+
+## [6.6.5](https://github.com/adobe/helix-publish/compare/v6.6.4...v6.6.5) (2020-09-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/openwhisk-action-utils to v4.3.0 ([#604](https://github.com/adobe/helix-publish/issues/604)) ([a5608e1](https://github.com/adobe/helix-publish/commit/a5608e1c09ddb064c91925e9c98cbeb6faf9e120))
+
 ## [6.6.4](https://github.com/adobe/helix-publish/compare/v6.6.3...v6.6.4) (2020-09-02)
 
 

@@ -44,20 +44,36 @@ function reportError(e) {
 }
 
 /**
- *
+ * @typedef PublishOptions
  * @param {object} configuration the Helix Strains configuration
  * @param {string} service the Fastly Service ID
  * @param {string} token the Fastly Auth token
  * @param {string} version the Helix CLI version
  * @param {object} vclOverrides the VCL overrides (extension points)
- * @param {string} dispatchVersion the helix-dispatch microservice version to use
  * @param {object} log a logger
  * @param {object} iconfig the IndexConfig from helix-shared
  * @param {string} algoliaappid Algolia App ID (not secret)
  * @param {string} epsagonToken Epsagon Token for tracing
  * @param {string} epsagonAppName Epsagon Application name for tracing
  */
-async function publish(configuration, service, token, version, vclOverrides = {}, dispatchVersion = 'v4', log = console, iconfig, algoliaappid, epsagonToken, epsagonAppName) {
+
+/**
+ *
+ * @param {PublishOptions} options The options for publishing.
+ */
+async function publish(options) {
+  const {
+    configuration,
+    service,
+    token,
+    version,
+    vclOverrides = {},
+    log = console,
+    iconfig,
+    algoliaappid,
+    epsagonToken,
+    epsagonAppName,
+  } = options;
   if (!(!!token && !!service)) {
     log.error('No token or service.');
     return {
@@ -81,19 +97,36 @@ async function publish(configuration, service, token, version, vclOverrides = {}
 
     await checkPkgs(config, log);
     const fastly = await initfastly(token, service);
-    log.info('running publishing tasks...');
+    log.info('running publishing tasks…');
+
+    let pretasks = 1;
+
+    const handleError = (e) => {
+      log.error(`error executing tasks: ${e}, ${e.data}`, e);
+      return reportError(e);
+    };
+
+    try {
+      await vcl.dynamic(fastly, version);
+      await vcl.extensions(fastly, version, vclOverrides);
+      await vcl.updatestrains(fastly, version, config.strains, config);
+      await vcl.queries(fastly, version, indexconfig);
+      pretasks += 4;
+    } catch (e) {
+      return handleError(e);
+    }
+
     const publishtasks = [
       backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
       vcl.init(fastly, version, epsagonToken
         ? {
-          token: epsagonToken, logname: 'helix-epsagon', serviceid: service, epsagonAppName,
+          token: epsagonToken,
+          logname: 'helix-epsagon',
+          serviceid: service,
+          epsagonAppName,
         }
-        : undefined),
-      vcl.dynamic(fastly, version, dispatchVersion),
-      vcl.extensions(fastly, version, vclOverrides),
-      vcl.updatestrains(fastly, version, config.strains),
-      vcl.queries(fastly, version, indexconfig),
+        : undefined, config),
       redirects.updatestrains(fastly, version, config.strains),
       dictionaries.init(
         fastly,
@@ -111,19 +144,16 @@ async function publish(configuration, service, token, version, vclOverrides = {}
     return Promise.all(publishtasks)
       .then(() => vcl.finish(fastly, version))
       .then(() => {
-        log.info(`completed ${publishtasks.length + 1} tasks.`);
+        log.info(`completed ${publishtasks.length + pretasks} tasks.`);
         return {
           body: {
             status: 'published',
-            completed: publishtasks.length + 1,
+            completed: publishtasks.length + pretasks,
           },
           statusCode: 200,
         };
       })
-      .catch((e) => {
-        log.error(`error executing tasks: ${e}, ${e.data}`, e);
-        return reportError(e);
-      });
+      .catch(handleError);
   } catch (e) {
     // invalid configuration
     log.error(e);
