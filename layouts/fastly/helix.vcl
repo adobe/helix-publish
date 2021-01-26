@@ -1267,9 +1267,7 @@ sub hlx_type_dispatch {
   declare local var.namespace STRING; # namespace
   declare local var.package STRING;   # package
 
-  set var.strain = req.http.x-strain;
-
-  if (var.strain ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
     set var.universal = false;
     set var.namespace = re.group.2;
     set var.package = re.group.5;
