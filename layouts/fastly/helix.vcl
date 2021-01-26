@@ -1798,7 +1798,7 @@ sub hlx_bereq {
     }
   }
 
-  if (req.backend == F_AdobeRuntime || F_UniversalRuntime) {
+  if (req.backend == F_AdobeRuntime || req.backend == F_UniversalRuntime) {
     # set Adobe Runtime backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
     # pass Github Token via X-Github-Token header
