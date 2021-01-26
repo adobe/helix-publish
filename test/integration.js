@@ -328,9 +328,8 @@ describe('Integration Test', () => {
         /* eslint-disable no-unused-expressions */
         expect(response).to.be.json;
         const json = JSON.parse(response.text);
-        expect(json.status).to.equal('ok');
-        expect(json.errors).to.be.an('array');
         expect(json.errors, `errors: ${JSON.stringify(json.errors)}`).to.be.empty;
+        expect(json.status).to.equal('ok');
         expect(json.messages).to.be.an('array');
         expect(json.warnings).to.be.an('array');
         /* eslint-enable no-unused-expressions */
