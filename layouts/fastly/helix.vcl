@@ -1800,7 +1800,7 @@ sub hlx_bereq {
     }
   }
 
-  if (req.backend == F_AdobeRuntime) {
+  if (req.backend == F_AdobeRuntime || F_UniversalRuntime) {
     # set Adobe Runtime backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
     # pass Github Token via X-Github-Token header
@@ -1900,7 +1900,7 @@ sub vcl_deliver {
   # Proxy strains can't be sticky, because resolution sets backend and what not,
   # so skipping resolution would skip that too.
   if (req.http.X-Strain && req.http.X-Sticky == "true"
-      && req.backend == F_AdobeRuntime && req.http.X-Request-Type != "Proxy") {
+      && (req.backend == F_AdobeRuntime || req.backend == F_UniversalRuntime) && req.http.X-Request-Type != "Proxy") {
     set resp.http.Set-Cookie = "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
   }
 
