@@ -277,7 +277,7 @@ describe('Integration Test', () => {
     assert.equal(res.statusCode, 500);
   }).timeout(60000);
 
-  it.only('Test publish function locally', async function test() {
+  it('Test publish function locally', async function test() {
     if (usePolly) {
       this.polly.server.any('https://api.fastly.com/service/54nWWFJicKgbdVHou26Y6a/version/247/backend/AdobeFonts').intercept((req, res) => {
         res.sendStatus(200);
