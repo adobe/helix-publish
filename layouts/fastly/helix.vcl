@@ -1237,12 +1237,6 @@ sub hlx_type_dispatch {
   # get it from OpenWhisk
   set req.backend = F_AdobeRuntime;
 
-  # Only declare local variables for things we mean to change before putting
-  # them into the URL
-  declare local var.action STRING; # the action to call
-  declare local var.namespace STRING;
-  declare local var.package STRING;
-
   # Load important information for content repo from edge dicts
   call hlx_owner;
   call hlx_repo;
@@ -1263,9 +1257,30 @@ sub hlx_type_dispatch {
 
   # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
-  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
-  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
 
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.action STRING;    # the action to call
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  set var.strain = req.http.x-strain;
+
+  if (var.strain ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
 
   # get (strain-specific) parameter allowlist
   include "params.vcl";
@@ -1277,8 +1292,7 @@ sub hlx_type_dispatch {
     set var.dispatch_version = {"const:dispatch_version"};
   }
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace // i.e. /trieloff
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/dispatch@" + var.dispatch_version
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
@@ -1751,6 +1765,19 @@ sub hlx_bereq {
     }
     if (req.backend == F_AdobeRuntime) {
       set bereq.http.Host = "adobeioruntime.net";
+      // Adobe I/O Runtime overrides the Host and Forwarded-Host
+      // headers, so we create a new one that Runtime won't
+      // override
+      if (req.http.x-forwarded-host) {
+        // if there is an outer CDN, use the forwarded host
+        // header we have recieved from the outer CDN
+        set bereq.http.hlx-forwarded-host = req.http.x-forwarded-host;
+      } else {
+        set bereq.http.hlx-forwarded-host = req.http.X-Orig-Host;
+      }
+    } elsif (req.backend == F_UniversalRuntime) {
+      // Set the hostame for the universal Runtime service
+      set bereq.http.Host = req.http.X-Backend-Host;
       // Adobe I/O Runtime overrides the Host and Forwarded-Host
       // headers, so we create a new one that Runtime won't
       // override
