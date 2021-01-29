@@ -735,8 +735,6 @@ sub hlx_type_purge {
 }
 
 sub hlx_type_cgi {
-  declare local var.namespace STRING;
-  declare local var.package STRING;
   declare local var.script STRING;
 
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_cgi";
@@ -744,10 +742,28 @@ sub hlx_type_cgi {
 
   set req.backend = F_AdobeRuntime;
 
-  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  # We need the action root for the next bit
   call hlx_action_root;
-  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
-  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
 
   # Load important information from edge dicts
   call hlx_owner;
@@ -759,8 +775,7 @@ sub hlx_type_cgi {
   # get (strain-specific) parameter allowlist
   include "params.vcl";
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/" + var.package
     // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
     + "/cgi-bin-" + var.script
