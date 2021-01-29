@@ -545,6 +545,32 @@ sub hlx_type_static_url {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  # We need the action root for the next bit
+  call hlx_action_root;
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    } else {
+      # lookup the configured default namespace
+      set var.namespace = table.lookup(secrets, "OPENWHISK_NAMESPACE", var.namespace);
+    }
+  }
+
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
@@ -555,8 +581,8 @@ sub hlx_type_static_url {
     set var.static_version = {"const:static_version"};
   }
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
-  set req.http.X-Backend-URL = req.http.X-Action-Root
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+    + "/helix-services/static@" + var.static_version
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
     + "&strain=" + req.http.X-Strain
@@ -595,6 +621,32 @@ sub hlx_type_static {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  # We need the action root for the next bit
+  call hlx_action_root;
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    } else {
+      # lookup the configured default namespace
+      set var.namespace = table.lookup(secrets, "OPENWHISK_NAMESPACE", var.namespace);
+    }
+  }
+
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
@@ -616,8 +668,8 @@ sub hlx_type_static {
     set var.static_version = {"const:static_version"};
   }
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
-  set req.http.X-Backend-URL = req.http.X-Action-Root
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+    + "/helix-services/static@" + var.static_version
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
     + "&strain=" + req.http.X-Strain
