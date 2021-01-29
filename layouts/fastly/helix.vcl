@@ -689,16 +689,31 @@ sub hlx_type_static {
 }
 
 sub hlx_type_purge {
-  declare local var.namespace STRING;
-
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
   # This is a purge request.
 
   set req.backend = F_AdobeRuntime;
 
-  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+
+  # We need the action root for the next bit
   call hlx_action_root;
-  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
 
   # get purge version
   declare local var.purge_version STRING;
@@ -707,8 +722,7 @@ sub hlx_type_purge {
     set var.purge_version = {"const:purge_version"};
   }
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services"
     + "/purge@" + var.purge_version
     + "?host=" + urlencode(req.http.X-Orig-Host)
