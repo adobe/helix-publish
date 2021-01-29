@@ -831,8 +831,29 @@ sub hlx_type_query {
   }
 
   if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
+    # Only declare local variables for things we mean to change before putting
+    # them into the URL
+    declare local var.universal BOOL;   # use universal runtime?
+    declare local var.hostname STRING;  # if yes, what's the hostname
+    declare local var.namespace STRING; # namespace
+
+    # We need the action root for the next bit
+    call hlx_action_root;
+
+    if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+      set var.universal = false;
+      set var.namespace = re.group.2;
+
+      if(re.group.1 == "https://") {
+        set var.universal = true;
+        set var.hostname = var.namespace + "." + re.group.4;
+        set req.backend = F_UniversalRuntime;
+        set req.http.X-Backend-Host = var.hostname;
+      }
+    }    
     # establish the fallback first
-    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@" + var.qindex_version
+    set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+    + "/helix-services/query-index@" + var.qindex_version
     + "/" + re.group.1 + "/" + re.group.2
     + "?__hlx_owner=" + req.http.X-Owner
     + "&__hlx_repo=" + req.http.X-Repo
@@ -845,7 +866,7 @@ sub hlx_type_query {
   include "queries.vcl";
 
   # check if we are still using the fallback
-  if (req.http.X-Backend-URL ~ "^/api/v1/web/helix/helix-services/query-index@") {
+  if (req.http.X-Backend-URL ~ "helix-services/query-index@") {
     # this is a Runtime URL
     set req.backend = F_AdobeRuntime;
   }
