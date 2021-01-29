@@ -1229,6 +1229,30 @@ sub hlx_type_embed {
   # we are handling it here), but keeps the correct Host header in place (which
   # is why we can check against it)
   set req.backend = F_AdobeRuntime;
+  if (req.url !~ "/api/v1/web") {
+    # We need to do some more work for universal runtime
+    # Only declare local variables for things we mean to change before putting
+    # them into the URL
+    declare local var.universal BOOL;   # use universal runtime?
+    declare local var.hostname STRING;  # if yes, what's the hostname
+    declare local var.namespace STRING; # namespace
+
+    # We need the action root for the next bit
+    call hlx_action_root;
+
+    if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+      set var.universal = false;
+      set var.namespace = re.group.2;
+
+      if(re.group.1 == "https://") {
+        set var.universal = true;
+        set var.hostname = var.namespace + "." + re.group.4;
+        set req.backend = F_UniversalRuntime;
+        set req.http.X-Backend-Host = var.hostname;
+      }
+    }  
+  }
+  
 }
 
 /**
