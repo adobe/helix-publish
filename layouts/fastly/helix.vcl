@@ -545,6 +545,32 @@ sub hlx_type_static_url {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  # We need the action root for the next bit
+  call hlx_action_root;
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    } else {
+      # lookup the configured default namespace
+      set var.namespace = table.lookup(secrets, "OPENWHISK_NAMESPACE", var.namespace);
+    }
+  }
+
   # TODO: check for URL ending with `/` and look up index file
   set var.path = regsub(req.http.X-Orig-URL, ".(url|302)$", "");
 
@@ -555,8 +581,8 @@ sub hlx_type_static_url {
     set var.static_version = {"const:static_version"};
   }
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
-  set req.http.X-Backend-URL = req.http.X-Action-Root
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+    + "/helix-services/static@" + var.static_version
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
     + "&strain=" + req.http.X-Strain
@@ -595,6 +621,32 @@ sub hlx_type_static {
   call hlx_github_static_ref;
   call hlx_github_static_root;
 
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  # We need the action root for the next bit
+  call hlx_action_root;
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    } else {
+      # lookup the configured default namespace
+      set var.namespace = table.lookup(secrets, "OPENWHISK_NAMESPACE", var.namespace);
+    }
+  }
+
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
     set req.http.X-Trace = req.http.X-Trace + "(immutable)";
@@ -616,8 +668,8 @@ sub hlx_type_static {
     set var.static_version = {"const:static_version"};
   }
 
-  set req.http.X-Action-Root = "/api/v1/web/" + table.lookup(secrets, "OPENWHISK_NAMESPACE") + "/helix-services/static@" + var.static_version;
-  set req.http.X-Backend-URL = req.http.X-Action-Root
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+    + "/helix-services/static@" + var.static_version
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
     + "&strain=" + req.http.X-Strain
@@ -637,16 +689,31 @@ sub hlx_type_static {
 }
 
 sub hlx_type_purge {
-  declare local var.namespace STRING;
-
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
   # This is a purge request.
 
   set req.backend = F_AdobeRuntime;
 
-  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+
+  # We need the action root for the next bit
   call hlx_action_root;
-  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
 
   # get purge version
   declare local var.purge_version STRING;
@@ -655,8 +722,7 @@ sub hlx_type_purge {
     set var.purge_version = {"const:purge_version"};
   }
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services"
     + "/purge@" + var.purge_version
     + "?host=" + urlencode(req.http.X-Orig-Host)
@@ -669,8 +735,6 @@ sub hlx_type_purge {
 }
 
 sub hlx_type_cgi {
-  declare local var.namespace STRING;
-  declare local var.package STRING;
   declare local var.script STRING;
 
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_cgi";
@@ -678,10 +742,28 @@ sub hlx_type_cgi {
 
   set req.backend = F_AdobeRuntime;
 
-  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  # We need the action root for the next bit
   call hlx_action_root;
-  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
-  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
 
   # Load important information from edge dicts
   call hlx_owner;
@@ -693,8 +775,7 @@ sub hlx_type_cgi {
   # get (strain-specific) parameter allowlist
   include "params.vcl";
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/" + var.package
     // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
     + "/cgi-bin-" + var.script
@@ -750,8 +831,29 @@ sub hlx_type_query {
   }
 
   if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
+    # Only declare local variables for things we mean to change before putting
+    # them into the URL
+    declare local var.universal BOOL;   # use universal runtime?
+    declare local var.hostname STRING;  # if yes, what's the hostname
+    declare local var.namespace STRING; # namespace
+
+    # We need the action root for the next bit
+    call hlx_action_root;
+
+    if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+      set var.universal = false;
+      set var.namespace = re.group.2;
+
+      if(re.group.1 == "https://") {
+        set var.universal = true;
+        set var.hostname = var.namespace + "." + re.group.4;
+        set req.backend = F_UniversalRuntime;
+        set req.http.X-Backend-Host = var.hostname;
+      }
+    }    
     # establish the fallback first
-    set req.http.X-Backend-URL = "/api/v1/web/helix/helix-services/query-index@" + var.qindex_version
+    set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+    + "/helix-services/query-index@" + var.qindex_version
     + "/" + re.group.1 + "/" + re.group.2
     + "?__hlx_owner=" + req.http.X-Owner
     + "&__hlx_repo=" + req.http.X-Repo
@@ -764,7 +866,7 @@ sub hlx_type_query {
   include "queries.vcl";
 
   # check if we are still using the fallback
-  if (req.http.X-Backend-URL ~ "^/api/v1/web/helix/helix-services/query-index@") {
+  if (req.http.X-Backend-URL ~ "helix-services/query-index@") {
     # this is a Runtime URL
     set req.backend = F_AdobeRuntime;
   }
@@ -1148,6 +1250,30 @@ sub hlx_type_embed {
   # we are handling it here), but keeps the correct Host header in place (which
   # is why we can check against it)
   set req.backend = F_AdobeRuntime;
+  if (req.url !~ "/api/v1/web") {
+    # We need to do some more work for universal runtime
+    # Only declare local variables for things we mean to change before putting
+    # them into the URL
+    declare local var.universal BOOL;   # use universal runtime?
+    declare local var.hostname STRING;  # if yes, what's the hostname
+    declare local var.namespace STRING; # namespace
+
+    # We need the action root for the next bit
+    call hlx_action_root;
+
+    if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+      set var.universal = false;
+      set var.namespace = re.group.2;
+
+      if(re.group.1 == "https://") {
+        set var.universal = true;
+        set var.hostname = var.namespace + "." + re.group.4;
+        set req.backend = F_UniversalRuntime;
+        set req.http.X-Backend-Host = var.hostname;
+      }
+    }  
+  }
+  
 }
 
 /**
@@ -1161,9 +1287,25 @@ sub hlx_type_content {
 
   # Only declare local variables for things we mean to change before putting
   # them into the URL
-  declare local var.action STRING; # the action to call
-  declare local var.namespace STRING;
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
   declare local var.ref STRING;
+
+  # We need the action root for the next bit
+  call hlx_action_root;
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
 
   # Load important information for content repo from edge dicts
   call hlx_owner;
@@ -1171,10 +1313,6 @@ sub hlx_type_content {
   call hlx_ref;
   call hlx_root_path;
   call hlx_index;
-
-  # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
-  call hlx_action_root;
-  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
 
   if (subfield(req.url.qs, "ref", "&")) {
     // use the ref provided in the URL if possible
@@ -1194,8 +1332,7 @@ sub hlx_type_content {
     set var.cproxy_version = {"const:content-proxy_version"};
   }
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace // i.e. /trieloff
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/content-proxy@" + var.cproxy_version
     + "?ref=" + var.ref
     + "&path=" + req.url.path
@@ -1237,12 +1374,6 @@ sub hlx_type_dispatch {
   # get it from OpenWhisk
   set req.backend = F_AdobeRuntime;
 
-  # Only declare local variables for things we mean to change before putting
-  # them into the URL
-  declare local var.action STRING; # the action to call
-  declare local var.namespace STRING;
-  declare local var.package STRING;
-
   # Load important information for content repo from edge dicts
   call hlx_owner;
   call hlx_repo;
@@ -1263,9 +1394,28 @@ sub hlx_type_dispatch {
 
   # sets X-Action-Root to something like trieloff/b7aa8a6351215b7e12b6d3be242c622410c1eb28
   call hlx_action_root;
-  set var.namespace = regsuball(req.http.X-Action-Root, "/.*$", ""); // cut away the slash and everything after it
-  set var.package = regsuball(req.http.X-Action-Root, "^.*/", ""); // cut away everything from the start up to (including) the slash
 
+
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.action STRING;    # the action to call
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  declare local var.package STRING;   # package
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+    set var.package = re.group.5;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
 
   # get (strain-specific) parameter allowlist
   include "params.vcl";
@@ -1277,8 +1427,7 @@ sub hlx_type_dispatch {
     set var.dispatch_version = {"const:dispatch_version"};
   }
 
-  set req.http.X-Backend-URL = "/api/v1/web"
-    + "/" + var.namespace // i.e. /trieloff
+  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/dispatch@" + var.dispatch_version
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
@@ -1761,6 +1910,19 @@ sub hlx_bereq {
       } else {
         set bereq.http.hlx-forwarded-host = req.http.X-Orig-Host;
       }
+    } elsif (req.backend == F_UniversalRuntime) {
+      // Set the hostame for the universal Runtime service
+      set bereq.http.Host = req.http.X-Backend-Host;
+      // Adobe I/O Runtime overrides the Host and Forwarded-Host
+      // headers, so we create a new one that Runtime won't
+      // override
+      if (req.http.x-forwarded-host) {
+        // if there is an outer CDN, use the forwarded host
+        // header we have recieved from the outer CDN
+        set bereq.http.hlx-forwarded-host = req.http.x-forwarded-host;
+      } else {
+        set bereq.http.hlx-forwarded-host = req.http.X-Orig-Host;
+      }
     } elsif (req.backend == F_GitHub) {
       set bereq.http.Host = "raw.githubusercontent.com";
     } elseif (req.backend == F_AzureBlobs) {
@@ -1773,7 +1935,7 @@ sub hlx_bereq {
     }
   }
 
-  if (req.backend == F_AdobeRuntime) {
+  if (req.backend == F_AdobeRuntime || req.backend == F_UniversalRuntime) {
     # set Adobe Runtime backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
     # pass Github Token via X-Github-Token header
@@ -1873,7 +2035,7 @@ sub vcl_deliver {
   # Proxy strains can't be sticky, because resolution sets backend and what not,
   # so skipping resolution would skip that too.
   if (req.http.X-Strain && req.http.X-Sticky == "true"
-      && req.backend == F_AdobeRuntime && req.http.X-Request-Type != "Proxy") {
+      && (req.backend == F_AdobeRuntime || req.backend == F_UniversalRuntime) && req.http.X-Request-Type != "Proxy") {
     set resp.http.Set-Cookie = "X-Strain=" + req.http.X-Strain + "; Secure; HttpOnly; SameSite=Strict;";
   }
 
