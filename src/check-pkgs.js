@@ -42,7 +42,8 @@ async function checkStrains(strain, log = console) {
  */
 async function checkPkgs(config, log = console) {
   const strains = config.strains.getRuntimeStrains();
-  const checkArr = strains.filter((strain) => !!strain.package)
+  const checkArr = strains
+    .filter((strain) => !!strain.package && !strain.package.match(/^https:/))
     .map((strain) => checkStrains(strain, log));
   return Promise.all(checkArr);
 }
