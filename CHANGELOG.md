@@ -1,3 +1,24 @@
+# [8.2.0](https://github.com/adobe/helix-publish/compare/v8.1.21...v8.2.0) (2021-02-02)
+
+
+### Bug Fixes
+
+* **vcl:** fix syntax error ([a9218f3](https://github.com/adobe/helix-publish/commit/a9218f32e5ded49a3310df652bd83ff132509fed))
+* **vcl:** make sure adobe io runtime and universal runtime are treated the same ([fe505af](https://github.com/adobe/helix-publish/commit/fe505af46b1ee18d796b843773a83e894d75d941))
+* **vcl:** use x-action-root to determine namespace and package ([9a3b818](https://github.com/adobe/helix-publish/commit/9a3b81865bc663e85be97dca76c536ac650c6310))
+
+
+### Features
+
+* **backends:** add universal runtime backend ([cbcff71](https://github.com/adobe/helix-publish/commit/cbcff716c3fce91184625c8a7d488887df2a0449))
+* **cgi:** add support for universal runtime ([d297a7b](https://github.com/adobe/helix-publish/commit/d297a7b909336d1450a2247a89ad6dd8737725f1))
+* **content:** add support for universal runtime ([d1628cb](https://github.com/adobe/helix-publish/commit/d1628cb9f5b6ce12ccb18355a0231e02f67485c4))
+* **embed:** support universal runtime ([97237a1](https://github.com/adobe/helix-publish/commit/97237a1b110c295986d41c96be3d0c75caf15799))
+* **purge:** add universal runtime support ([e8bd33b](https://github.com/adobe/helix-publish/commit/e8bd33b38a33e46dd3e8dc2fc00a039e7f7c8811))
+* **query:** add universal runtime support ([4b84092](https://github.com/adobe/helix-publish/commit/4b840925d478da87407c815841ca1e3ac7395a57))
+* **static:** support universal runtime for static requests ([add85df](https://github.com/adobe/helix-publish/commit/add85dfdc6b5c11168598ed47ee49171e2525c39))
+* **vcl:** allow using universal runtime in `dispatch` request type ([87025f1](https://github.com/adobe/helix-publish/commit/87025f103aa55fa9ca9d5045ceeb1f3df8c7d5bf))
+
 ## [8.1.21](https://github.com/adobe/helix-publish/compare/v8.1.20...v8.1.21) (2021-02-01)
 
 
