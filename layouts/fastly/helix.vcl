@@ -472,13 +472,13 @@ sub hlx_determine_request_type {
   }
 
   // something like /cgi-bin/foo.js or /cgi-bin/bar.cgi
-  if (req.url.dirname ~ "^/cgi-bin" || req.url.dirname ~ "/cgi-bin.hlx") {
+  if (req.url.dirname ~ "^/cgi-bin" || req.url.dirname ~ "/cgi-bin\.hlx") {
     set req.http.X-Request-Type = "CGI-Action";
     return;
   }
 
   // something like /_query/index/name
-  if (req.url.path ~ "^/_query/.+/.+$") {
+  if (req.url.path ~ "^/_query/.+/.+$" || req.url.path ~ "^/query\.hlx/.+/.+$") {
     set req.http.X-Trace = req.http.X-Trace + "(query)";
     set req.http.X-Request-Type = "Query";
     unset req.http.Accept-Encoding;
@@ -830,31 +830,33 @@ sub hlx_type_query {
     set var.qindex_version = {"const:query-index_version"};
   }
 
-  if (req.url.path ~ "^/_query/([^/]+)\/([^/]+)$") {
+  # We need the action root for the next bit
+  call hlx_action_root;
+
+  if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
+    set var.universal = false;
+    set var.namespace = re.group.2;
+
+    if(re.group.1 == "https://") {
+      set var.universal = true;
+      set var.hostname = var.namespace + "." + re.group.4;
+      set req.backend = F_UniversalRuntime;
+      set req.http.X-Backend-Host = var.hostname;
+    }
+  }
+
+  if (req.url.path ~ "(^/_query|/query\.hlx/)/([^/]+)\/([^/]+)$") {
     # Only declare local variables for things we mean to change before putting
     # them into the URL
     declare local var.universal BOOL;   # use universal runtime?
     declare local var.hostname STRING;  # if yes, what's the hostname
     declare local var.namespace STRING; # namespace
 
-    # We need the action root for the next bit
-    call hlx_action_root;
 
-    if (req.http.X-Action-Root ~ "(^|^https://)([^/:\.]+)(/|\.([^/]+)/)([^/]+)") {
-      set var.universal = false;
-      set var.namespace = re.group.2;
-
-      if(re.group.1 == "https://") {
-        set var.universal = true;
-        set var.hostname = var.namespace + "." + re.group.4;
-        set req.backend = F_UniversalRuntime;
-        set req.http.X-Backend-Host = var.hostname;
-      }
-    }    
     # establish the fallback first
     set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/query-index@" + var.qindex_version
-    + "/" + re.group.1 + "/" + re.group.2
+    + "/" + re.group.2 + "/" + re.group.3
     + "?__hlx_owner=" + req.http.X-Owner
     + "&__hlx_repo=" + req.http.X-Repo
     + "&__hlx_ref=" + req.http.X-Ref
