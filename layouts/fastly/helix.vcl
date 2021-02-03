@@ -501,7 +501,10 @@ sub hlx_determine_request_type {
 
   // something like /hlx_fonts/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
   // but not like /hlx_fonts/eic8tkf.css
-  if (req.url.path ~ "^/hlx_fonts/.+" && req.url.ext != "css") {
+  // or
+  // something like /foo/fonts.hlx/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
+  // but not like /foo/fonts.hlx/eic8tkf.css
+  if (req.url.path ~ "(^/hlx_fonts|/fonts\.hlx)/.+" && req.url.ext != "css") {
     set req.http.X-Trace = req.http.X-Trace + "(fonts)";
     set req.http.X-Request-Type = "Fonts";
   }
@@ -835,7 +838,7 @@ sub hlx_type_query {
   declare local var.universal BOOL;   # use universal runtime?
   declare local var.hostname STRING;  # if yes, what's the hostname
   declare local var.namespace STRING; # namespace
-  
+
   # We need the action root for the next bit
   call hlx_action_root;
 
@@ -884,7 +887,8 @@ sub hlx_type_fonts {
   set req.backend = F_AdobeFonts;
 
   # remove the /hlx_fonts/ prefix again
-  set req.http.X-Backend-URL = regsub(req.url, "^/hlx_fonts/", "/");
+  # or everything before and including /fonts.hlx
+  set req.http.X-Backend-URL = regsub(req.url, "(^/hlx_fonts|^.*/fonts.hlx)/", "/");
 
   unset req.http.x-forwarded-host;
 }
