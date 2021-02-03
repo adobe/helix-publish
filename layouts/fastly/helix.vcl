@@ -464,7 +464,7 @@ sub hlx_determine_request_type {
   }
 
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
-  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).([0-9a-z]+)$") {
+  if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).([0-9a-z]+)$" || req.url.path ~ "/blob\.hlx/([0-9a-f]){40}\.([0-9a-z]+)$") {
     set req.http.X-Trace = req.http.X-Trace + "(blob)";
     set req.http.X-Request-Type = "Blob";
     unset req.http.Accept-Encoding;
@@ -797,8 +797,8 @@ sub hlx_type_blob {
   declare local var.ext STRING;
   declare local var.sas STRING;
 
-  if (req.url.path ~ "^/hlx_(([0-9a-f]){40}).([0-9a-z]+)$") {
-    set var.sha = re.group.1;
+  if (req.url.path ~ "(^/hlx_|/blob\.hlx/)(([0-9a-f]){40}).([0-9a-z]+)$") {
+    set var.sha = re.group.2;
     set var.ext = req.url.ext;
     set var.sas = table.lookup(secrets, "AZURE_BLOB_SAS_RO", "");
 
