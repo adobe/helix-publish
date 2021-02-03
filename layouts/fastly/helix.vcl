@@ -830,6 +830,12 @@ sub hlx_type_query {
     set var.qindex_version = {"const:query-index_version"};
   }
 
+  # Only declare local variables for things we mean to change before putting
+  # them into the URL
+  declare local var.universal BOOL;   # use universal runtime?
+  declare local var.hostname STRING;  # if yes, what's the hostname
+  declare local var.namespace STRING; # namespace
+  
   # We need the action root for the next bit
   call hlx_action_root;
 
@@ -846,11 +852,7 @@ sub hlx_type_query {
   }
 
   if (req.url.path ~ "(^/_query|/query\.hlx/)/([^/]+)\/([^/]+)$") {
-    # Only declare local variables for things we mean to change before putting
-    # them into the URL
-    declare local var.universal BOOL;   # use universal runtime?
-    declare local var.hostname STRING;  # if yes, what's the hostname
-    declare local var.namespace STRING; # namespace
+
 
 
     # establish the fallback first
