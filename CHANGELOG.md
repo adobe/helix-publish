@@ -1,3 +1,16 @@
+# [8.3.0](https://github.com/adobe/helix-publish/compare/v8.2.1...v8.3.0) (2021-02-03)
+
+
+### Bug Fixes
+
+* **check:** use correct condition ([1917e35](https://github.com/adobe/helix-publish/commit/1917e358b1033f8212806ee712dcdcdac903dfb0))
+* **checks:** do not check universal runtime packages ([fa9796b](https://github.com/adobe/helix-publish/commit/fa9796b63d1283ca3cbbb33c9e6d324f481cf863))
+
+
+### Features
+
+* **check:** check universal runtime strains, too ([00f9c4c](https://github.com/adobe/helix-publish/commit/00f9c4cc151bf8d211154eb057419d1a02756fa6))
+
 ## [8.2.1](https://github.com/adobe/helix-publish/compare/v8.2.0...v8.2.1) (2021-02-02)
 
 
