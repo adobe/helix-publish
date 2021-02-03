@@ -472,7 +472,7 @@ sub hlx_determine_request_type {
   }
 
   // something like /cgi-bin/foo.js or /cgi-bin/bar.cgi
-  if (req.url.dirname ~ "^/cgi-bin?") {
+  if (req.url.dirname ~ "^/cgi-bin" || req.url.dirname ~ "/cgi-bin.hlx") {
     set req.http.X-Request-Type = "CGI-Action";
     return;
   }
