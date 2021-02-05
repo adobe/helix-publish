@@ -1,3 +1,11 @@
+## [8.3.1](https://github.com/adobe/helix-publish/compare/v8.3.0...v8.3.1) (2021-02-05)
+
+
+### Bug Fixes
+
+* **backends:** use a working placeholder backend ([5608147](https://github.com/adobe/helix-publish/commit/5608147b796f6446edfaffd39253600b109a7c04))
+* **publish:** add better error message for checking strains ([#721](https://github.com/adobe/helix-publish/issues/721)) ([6b312b9](https://github.com/adobe/helix-publish/commit/6b312b99d213809adc0bb44927808b2b43e8063a))
+
 # [8.3.0](https://github.com/adobe/helix-publish/compare/v8.2.1...v8.3.0) (2021-02-03)
 
 
