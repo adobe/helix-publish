@@ -24,16 +24,17 @@ const { fetch } = require('@adobe/helix-fetch').context({
  */
 async function checkStrains(strain, log = console) {
   // for now we assume that all helix projects have a html action...
-  const result = await fetch(
-    !strain.package.match(/^https:/)
-      ? `https://adobeioruntime.net/api/v1/web/${strain.package}/html/_status_check/healthcheck.json`
-      : `${strain.package}/html/_status_check/healthcheck.json`,
-  );
+  const testUrl = strain.package.startsWith('https://')
+    ? `${strain.package}/html/_status_check/healthcheck.json`
+    : `https://adobeioruntime.net/api/v1/web/${strain.package}/html/_status_check/healthcheck.json`;
+  const result = await fetch(testUrl);
+  const body = await result.text();
   if (!result.ok) {
-    log.error(`fetch call failed for url ${result.url}`);
-    throw new Error(await result.text());
+    const msg = `Status check for strain ${strain.name} failed when invoking ${testUrl}: ${result.status} ${body}`;
+    log.error(msg);
+    throw new Error(msg);
   } else {
-    return result.json();
+    return JSON.parse(body);
   }
 }
 
