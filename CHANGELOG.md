@@ -1,3 +1,10 @@
+## [8.3.2](https://github.com/adobe/helix-publish/compare/v8.3.1...v8.3.2) (2021-02-08)
+
+
+### Bug Fixes
+
+* **vcl:** allow setting request type from outside ([9413fe0](https://github.com/adobe/helix-publish/commit/9413fe08b51debcdb8d850349938ce8a66cf9bec))
+
 ## [8.3.1](https://github.com/adobe/helix-publish/compare/v8.3.0...v8.3.1) (2021-02-05)
 
 
