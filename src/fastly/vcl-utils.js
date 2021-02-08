@@ -123,7 +123,7 @@ function resolve(mystrains, preflight) {
 # Strain resolution depends on preflight completion. If the preflight request has
 # not been made, we need to start it now.
 
-if (req.restarts < 1) {
+if (req.restarts < 1 && !req.http.X-Request-Type) {
   set req.http.X-Request-Type = "Preflight";
 } else {
 `;
