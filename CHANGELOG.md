@@ -1,3 +1,11 @@
+## [8.3.3](https://github.com/adobe/helix-publish/compare/v8.3.2...v8.3.3) (2021-02-08)
+
+
+### Bug Fixes
+
+* **block:** block paths that do not have a file extension ([06f02c6](https://github.com/adobe/helix-publish/commit/06f02c668878e50afc3f494d48a931f671c7c4d4))
+* **block:** handle special case of file name ending with dot, but url having a query string ([0e9b2e1](https://github.com/adobe/helix-publish/commit/0e9b2e15de188509da5ab354ab650a42ffa3907a))
+
 ## [8.3.2](https://github.com/adobe/helix-publish/compare/v8.3.1...v8.3.2) (2021-02-08)
 
 
