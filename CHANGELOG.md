@@ -1,3 +1,109 @@
+## [8.3.1](https://github.com/adobe/helix-publish/compare/v8.3.0...v8.3.1) (2021-02-05)
+
+
+### Bug Fixes
+
+* **backends:** use a working placeholder backend ([5608147](https://github.com/adobe/helix-publish/commit/5608147b796f6446edfaffd39253600b109a7c04))
+* **publish:** add better error message for checking strains ([#721](https://github.com/adobe/helix-publish/issues/721)) ([6b312b9](https://github.com/adobe/helix-publish/commit/6b312b99d213809adc0bb44927808b2b43e8063a))
+
+# [8.3.0](https://github.com/adobe/helix-publish/compare/v8.2.1...v8.3.0) (2021-02-03)
+
+
+### Bug Fixes
+
+* **check:** use correct condition ([1917e35](https://github.com/adobe/helix-publish/commit/1917e358b1033f8212806ee712dcdcdac903dfb0))
+* **checks:** do not check universal runtime packages ([fa9796b](https://github.com/adobe/helix-publish/commit/fa9796b63d1283ca3cbbb33c9e6d324f481cf863))
+
+
+### Features
+
+* **check:** check universal runtime strains, too ([00f9c4c](https://github.com/adobe/helix-publish/commit/00f9c4cc151bf8d211154eb057419d1a02756fa6))
+
+## [8.2.1](https://github.com/adobe/helix-publish/compare/v8.2.0...v8.2.1) (2021-02-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v9.0.1 ([bdae997](https://github.com/adobe/helix-publish/commit/bdae9976025f0b9f7275ee9998ef3df48b84fa47))
+
+# [8.2.0](https://github.com/adobe/helix-publish/compare/v8.1.21...v8.2.0) (2021-02-02)
+
+
+### Bug Fixes
+
+* **vcl:** fix syntax error ([a9218f3](https://github.com/adobe/helix-publish/commit/a9218f32e5ded49a3310df652bd83ff132509fed))
+* **vcl:** make sure adobe io runtime and universal runtime are treated the same ([fe505af](https://github.com/adobe/helix-publish/commit/fe505af46b1ee18d796b843773a83e894d75d941))
+* **vcl:** use x-action-root to determine namespace and package ([9a3b818](https://github.com/adobe/helix-publish/commit/9a3b81865bc663e85be97dca76c536ac650c6310))
+
+
+### Features
+
+* **backends:** add universal runtime backend ([cbcff71](https://github.com/adobe/helix-publish/commit/cbcff716c3fce91184625c8a7d488887df2a0449))
+* **cgi:** add support for universal runtime ([d297a7b](https://github.com/adobe/helix-publish/commit/d297a7b909336d1450a2247a89ad6dd8737725f1))
+* **content:** add support for universal runtime ([d1628cb](https://github.com/adobe/helix-publish/commit/d1628cb9f5b6ce12ccb18355a0231e02f67485c4))
+* **embed:** support universal runtime ([97237a1](https://github.com/adobe/helix-publish/commit/97237a1b110c295986d41c96be3d0c75caf15799))
+* **purge:** add universal runtime support ([e8bd33b](https://github.com/adobe/helix-publish/commit/e8bd33b38a33e46dd3e8dc2fc00a039e7f7c8811))
+* **query:** add universal runtime support ([4b84092](https://github.com/adobe/helix-publish/commit/4b840925d478da87407c815841ca1e3ac7395a57))
+* **static:** support universal runtime for static requests ([add85df](https://github.com/adobe/helix-publish/commit/add85dfdc6b5c11168598ed47ee49171e2525c39))
+* **vcl:** allow using universal runtime in `dispatch` request type ([87025f1](https://github.com/adobe/helix-publish/commit/87025f103aa55fa9ca9d5045ceeb1f3df8c7d5bf))
+
+## [8.1.21](https://github.com/adobe/helix-publish/compare/v8.1.20...v8.1.21) (2021-02-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.19.5 ([#714](https://github.com/adobe/helix-publish/issues/714)) ([6e0b35e](https://github.com/adobe/helix-publish/commit/6e0b35e10a12adb5c0cd6eac5089333a6388ba30))
+
+## [8.1.20](https://github.com/adobe/helix-publish/compare/v8.1.19...v8.1.20) (2021-02-01)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([#713](https://github.com/adobe/helix-publish/issues/713)) ([7feb9f8](https://github.com/adobe/helix-publish/commit/7feb9f86d9025f227e6866f3f05b6fe42ec87582))
+
+## [8.1.19](https://github.com/adobe/helix-publish/compare/v8.1.18...v8.1.19) (2021-01-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.19.4 ([f8ebf04](https://github.com/adobe/helix-publish/commit/f8ebf04706d5c853d24aca8b0ebd45ad54957ed3))
+
+## [8.1.18](https://github.com/adobe/helix-publish/compare/v8.1.17...v8.1.18) (2021-01-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared to v7.19.3 ([6c2f68d](https://github.com/adobe/helix-publish/commit/6c2f68d83dfd604ae7bfdb4052f6fb26ab5078b3))
+
+## [8.1.17](https://github.com/adobe/helix-publish/compare/v8.1.16...v8.1.17) (2021-01-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.19.9 ([#708](https://github.com/adobe/helix-publish/issues/708)) ([055ea22](https://github.com/adobe/helix-publish/commit/055ea2264874669e0fe544c018d8d68f8366a75a))
+
+## [8.1.16](https://github.com/adobe/helix-publish/compare/v8.1.15...v8.1.16) (2021-01-26)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([44ec03e](https://github.com/adobe/helix-publish/commit/44ec03ec50684bacf32aebcef6108b88cc5d1e65))
+
+## [8.1.15](https://github.com/adobe/helix-publish/compare/v8.1.14...v8.1.15) (2021-01-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.19.6 ([4e6b26f](https://github.com/adobe/helix-publish/commit/4e6b26f2ee31d2e734e9ec115ee3e14095e29739))
+
+## [8.1.14](https://github.com/adobe/helix-publish/compare/v8.1.13...v8.1.14) (2021-01-26)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([c2f8ad2](https://github.com/adobe/helix-publish/commit/c2f8ad2897a14cd921b554ba52fadff759f73e48))
+* **deps:** update external fixes ([ec807b3](https://github.com/adobe/helix-publish/commit/ec807b377d59ddb25db2a4403a0892cf619e188a))
+
 ## [8.1.13](https://github.com/adobe/helix-publish/compare/v8.1.12...v8.1.13) (2021-01-11)
 
 

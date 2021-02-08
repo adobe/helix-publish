@@ -43,6 +43,9 @@ describe('test check_pkgs', () => {
     this.polly.server
       .get('https://adobeioruntime.net/api/v1/web/mrosier/9d723ce487448cc132cd240a484b65772b201241/html/_status_check/healthcheck.json')
       .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
+    this.polly.server
+      .get('https://deploy-test.anywhere.run/pages_4.15.4/html/_status_check/healthcheck.json')
+      .intercept((req, res) => res.json({ status: 'OK', version: '1.2.3' }));
     const config = await new HelixConfig()
       .withConfigPath(path.resolve(__dirname, 'fixtures/pass.yaml'))
       .init();

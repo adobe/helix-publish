@@ -43,6 +43,11 @@ strains:
     package: mrosier/c4763cd3420bf015454e2e1f2ce2ecd1dd1ca942
     directoryIndex: foo.html
 
+  universal:
+    <<: *basestrain
+    package: https://deploy-test.anywhere.run/pages_4.15.4
+    directoryIndex: foo.html
+
   client:
     code: *myrepo
     static: *myrepo

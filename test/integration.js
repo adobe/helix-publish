@@ -282,6 +282,9 @@ describe('Integration Test', () => {
       this.polly.server.any('https://api.fastly.com/service/54nWWFJicKgbdVHou26Y6a/version/247/backend/AdobeFonts').intercept((req, res) => {
         res.sendStatus(200);
       });
+      this.polly.server.any('https://api.fastly.com/service/54nWWFJicKgbdVHou26Y6a/version/316/backend/UniversalRuntime').intercept((req, res) => {
+        res.sendStatus(200);
+      });
       this.polly.server.any('https://api.fastly.com/service/54nWWFJicKgbdVHou26Y6a/version/247/vcl/preflight.vcl').intercept((req, res) => {
         res.sendStatus(200);
       });
@@ -325,9 +328,8 @@ describe('Integration Test', () => {
         /* eslint-disable no-unused-expressions */
         expect(response).to.be.json;
         const json = JSON.parse(response.text);
-        expect(json.status).to.equal('ok');
-        expect(json.errors).to.be.an('array');
         expect(json.errors, `errors: ${JSON.stringify(json.errors)}`).to.be.empty;
+        expect(json.status).to.equal('ok');
         expect(json.messages).to.be.an('array');
         expect(json.warnings).to.be.an('array');
         /* eslint-enable no-unused-expressions */

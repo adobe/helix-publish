@@ -15,6 +15,14 @@ if (req.backend == F_AdobeRuntime && req.restarts == 0) {
     set req.backend = F_AdobeRuntime;
   }
 }
+if (req.backend == F_UniversalRuntime && req.restarts == 0) {
+  if (server.identity !~ "-IAD$" && req.http.Fastly-FF !~ "-IAD") {
+    set req.backend = ssl_shield_iad_va_us;
+  }
+  if (!req.backend.healthy) {
+    set req.backend = F_UniversalRuntime;
+  }
+}
 if (req.backend == F_AdobeFonts && req.restarts == 0) {
   if (server.identity !~ "-IAD$" && req.http.Fastly-FF !~ "-IAD") {
     set req.backend = ssl_shield_iad_va_us;
