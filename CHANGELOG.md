@@ -1,3 +1,10 @@
+## [8.3.5](https://github.com/adobe/helix-publish/compare/v8.3.4...v8.3.5) (2021-02-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-epsagon to v1.5.8 ([61eb42c](https://github.com/adobe/helix-publish/commit/61eb42cdb4e730357450db9926a12f1a27178d56))
+
 ## [8.3.4](https://github.com/adobe/helix-publish/compare/v8.3.3...v8.3.4) (2021-02-08)
 
 
