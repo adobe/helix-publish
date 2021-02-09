@@ -1435,7 +1435,7 @@ sub hlx_type_dispatch {
     set var.dispatch_version = {"const:dispatch_version"};
   }
 
-  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+  set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/dispatch@" + var.dispatch_version
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
