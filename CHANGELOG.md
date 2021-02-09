@@ -1,3 +1,15 @@
+# [8.4.0](https://github.com/adobe/helix-publish/compare/v8.3.5...v8.4.0) (2021-02-09)
+
+
+### Bug Fixes
+
+* **blob:** fix media path expression ([f68bbf7](https://github.com/adobe/helix-publish/commit/f68bbf7c8ddda23387e0801d925ff1e680866c23))
+
+
+### Features
+
+* **blob:** add support for `media_` URLs ([116b7f1](https://github.com/adobe/helix-publish/commit/116b7f150cdc7d993ac84cefc618742b92d8afa3)), closes [#718](https://github.com/adobe/helix-publish/issues/718)
+
 ## [8.3.5](https://github.com/adobe/helix-publish/compare/v8.3.4...v8.3.5) (2021-02-09)
 
 
