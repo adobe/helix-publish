@@ -1,3 +1,10 @@
+## [8.4.3](https://github.com/adobe/helix-publish/compare/v8.4.2...v8.4.3) (2021-02-09)
+
+
+### Bug Fixes
+
+* **preflight:** do not process preflight requests for external embeds ([72527df](https://github.com/adobe/helix-publish/commit/72527dfa989952b0e2cec96528d32900ebd20b07)), closes [#725](https://github.com/adobe/helix-publish/issues/725)
+
 ## [8.4.2](https://github.com/adobe/helix-publish/compare/v8.4.1...v8.4.2) (2021-02-09)
 
 
