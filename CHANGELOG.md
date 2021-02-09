@@ -1,3 +1,11 @@
+## [8.4.2](https://github.com/adobe/helix-publish/compare/v8.4.1...v8.4.2) (2021-02-09)
+
+
+### Bug Fixes
+
+* **dispatch:** remove double slash ([491fbc0](https://github.com/adobe/helix-publish/commit/491fbc0cf7bbae772331dbbba78a7c4982694ad9)), closes [#729](https://github.com/adobe/helix-publish/issues/729)
+* **vcl:** remove duplicate slashes from backend URL ([114066a](https://github.com/adobe/helix-publish/commit/114066a657ec9f610fa9e0ac805c4db8aff6db92))
+
 ## [8.4.1](https://github.com/adobe/helix-publish/compare/v8.4.0...v8.4.1) (2021-02-09)
 
 
