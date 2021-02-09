@@ -1,3 +1,10 @@
+## [8.4.1](https://github.com/adobe/helix-publish/compare/v8.4.0...v8.4.1) (2021-02-09)
+
+
+### Bug Fixes
+
+* **preflight:** make sure preflight requests are always made with owner, repo, ref ([26fe59d](https://github.com/adobe/helix-publish/commit/26fe59ddef2d468802e4f01803ae05006f97fccb)), closes [#725](https://github.com/adobe/helix-publish/issues/725)
+
 # [8.4.0](https://github.com/adobe/helix-publish/compare/v8.3.5...v8.4.0) (2021-02-09)
 
 
