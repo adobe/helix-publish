@@ -1357,6 +1357,13 @@ sub hlx_type_preflight {
   call hlx_repo;
   call hlx_ref;
 
+  if (!req.http.X-Owner || !req.http.X-Repo || !req.http.X-Ref) {
+    set req.http.X-Trace = req.http.X-Trace + "; (no ORR)";
+    // we could not resolve owner, repo, ref, so the preflight 
+    // service might fail, so we just skip it
+    restart;
+  }
+
   # get it from OpenWhisk (for now, we will support other backends later)
   set req.backend = F_AdobeRuntime;
 
