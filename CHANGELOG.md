@@ -1,3 +1,10 @@
+## [8.4.5](https://github.com/adobe/helix-publish/compare/v8.4.4...v8.4.5) (2021-02-09)
+
+
+### Bug Fixes
+
+* **vcl:** use X-OW-Version-Lock consistently ([70e709c](https://github.com/adobe/helix-publish/commit/70e709c3a63585ec0bb2d0e1a5d06a209dddf0c0)), closes [#733](https://github.com/adobe/helix-publish/issues/733)
+
 ## [8.4.4](https://github.com/adobe/helix-publish/compare/v8.4.3...v8.4.4) (2021-02-09)
 
 
