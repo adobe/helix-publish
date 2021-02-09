@@ -581,7 +581,7 @@ sub hlx_type_static_url {
     set var.static_version = {"const:static_version"};
   }
 
-  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+  set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/static@" + var.static_version
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -668,7 +668,7 @@ sub hlx_type_static {
     set var.static_version = {"const:static_version"};
   }
 
-  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+  set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/static@" + var.static_version
     + "?owner=" + req.http.X-Github-Static-Owner
     + "&repo=" + req.http.X-Github-Static-Repo
@@ -722,7 +722,7 @@ sub hlx_type_purge {
     set var.purge_version = {"const:purge_version"};
   }
 
-  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+  set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services"
     + "/purge@" + var.purge_version
     + "?host=" + urlencode(req.http.X-Orig-Host)
@@ -775,7 +775,7 @@ sub hlx_type_cgi {
   # get (strain-specific) parameter allowlist
   include "params.vcl";
 
-  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+  set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/" + var.package
     // looks like cgi-bin-hello-world for /cgi-bin/hello-world.js
     + "/cgi-bin-" + var.script
@@ -853,7 +853,7 @@ sub hlx_type_query {
       }
     }    
     # establish the fallback first
-    set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+    set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/query-index@" + var.qindex_version
     + "/" + re.group.1 + "/" + re.group.2
     + "?__hlx_owner=" + req.http.X-Owner
@@ -1333,7 +1333,7 @@ sub hlx_type_content {
     set var.cproxy_version = {"const:content-proxy_version"};
   }
 
-  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+  set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/content-proxy@" + var.cproxy_version
     + "?ref=" + var.ref
     + "&path=" + req.url.path
@@ -1435,7 +1435,7 @@ sub hlx_type_dispatch {
     set var.dispatch_version = {"const:dispatch_version"};
   }
 
-  set req.http.X-Backend-URL = if(var.universal, "/", "/api/v1/web" + "/" + var.namespace)
+  set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/dispatch@" + var.dispatch_version
     // fallback repo
     + "?static.owner=" + req.http.X-Github-Static-Owner
