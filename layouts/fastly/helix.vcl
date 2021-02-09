@@ -1340,7 +1340,7 @@ sub hlx_type_content {
     // content repo
     + "&owner=" + req.http.X-Owner
     + "&repo=" + req.http.X-Repo
-    + "&root=" + req.http.X-Repo-Root-Path
+    + "&root=" + if(req.http.X-Repo-Root-Path, req.http.X-Repo-Root-Path, "")
     // we append the complete query string
     + "&" + req.url.qs;
 }
@@ -1451,7 +1451,7 @@ sub hlx_type_dispatch {
     + "&content.index=" + req.http.X-Index
     + "&path=" + req.url.path
     + "&strain=" + req.http.X-Strain
-    + "&rootPath=" + req.http.X-Root-Path;
+    + "&rootPath=" + if(req.http.X-Repo-Root-Path, req.http.X-Repo-Root-Path, "");
 
   # only append the encoded params if there are encoded params
   if (req.http.X-Encoded-Params) {
