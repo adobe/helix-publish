@@ -1,3 +1,10 @@
+## [8.4.4](https://github.com/adobe/helix-publish/compare/v8.4.3...v8.4.4) (2021-02-09)
+
+
+### Bug Fixes
+
+* **vcl:** fix nullable root path for universal runtime ([56e2e32](https://github.com/adobe/helix-publish/commit/56e2e32836b8b817670b6bd361c54729b4b2316d)), closes [#731](https://github.com/adobe/helix-publish/issues/731)
+
 ## [8.4.3](https://github.com/adobe/helix-publish/compare/v8.4.2...v8.4.3) (2021-02-09)
 
 
