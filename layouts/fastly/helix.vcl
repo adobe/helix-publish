@@ -422,7 +422,7 @@ sub hlx_headers_deliver {
     set resp.http.X-Action-Root = req.http.X-Action-Root;
     set resp.http.X-Orig-URL = req.http.X-Orig-URL;
     set resp.http.X-Repo-Root-Path = req.http.X-Repo-Root-Path;
-    set resp.http.X-Version-Lock = req.http.X-OW-Version-Lock;
+    set resp.http.X-OW-Version-Lock = req.http.X-OW-Version-Lock;
 
     set resp.http.X-Fastly-Imageopto-Api = req.http.X-Fastly-Imageopto-Api;
 
