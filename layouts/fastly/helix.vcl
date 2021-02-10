@@ -1891,7 +1891,7 @@ sub hlx_bereq {
   # see https://fastly-guests.slack.com/archives/C0145H64N4W/p1607604397160200?thread_ts=1606991486.124800&cid=C0145H64N4W
   # this should prevent restarts when github (static) returns a 503 – as this may cause
   # us to exceed the restart limit
-  if (req.backend == F_GitHub) {
+  if (req.backend == F_GitHub || req.backend == F_UniversalRuntime) {
     unset bereq.http.Fastly-Force-Shield;
   }
 
