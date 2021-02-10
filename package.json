@@ -86,7 +86,7 @@
     "@adobe/helix-fetch": "1.9.2",
     "@adobe/helix-log": "4.5.3",
     "@adobe/helix-shared": "7.19.5",
-    "@adobe/helix-status": "9.0.1",
+    "@adobe/helix-status": "9.0.2",
     "@adobe/openwhisk-action-logger": "2.3.1",
     "@adobe/openwhisk-action-utils": "4.4.0",
     "escape-string-regexp": "4.0.0",
