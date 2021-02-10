@@ -1,3 +1,10 @@
+## [8.4.6](https://github.com/adobe/helix-publish/compare/v8.4.5...v8.4.6) (2021-02-10)
+
+
+### Bug Fixes
+
+* **universal:** fix restart issue with universal runtime ([2994401](https://github.com/adobe/helix-publish/commit/29944010a4e443c27ebaa9f2d76866d6de2b3d1c))
+
 ## [8.4.5](https://github.com/adobe/helix-publish/compare/v8.4.4...v8.4.5) (2021-02-09)
 
 
