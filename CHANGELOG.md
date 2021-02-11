@@ -1,3 +1,10 @@
+## [8.4.8](https://github.com/adobe/helix-publish/compare/v8.4.7...v8.4.8) (2021-02-11)
+
+
+### Bug Fixes
+
+* **deps:** migrate to helix-fetch v2 ([503e448](https://github.com/adobe/helix-publish/commit/503e448696a94fcb4207c0764dbd156bd5fc607f))
+
 ## [8.4.7](https://github.com/adobe/helix-publish/compare/v8.4.6...v8.4.7) (2021-02-10)
 
 
