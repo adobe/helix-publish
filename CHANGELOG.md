@@ -1,3 +1,10 @@
+## [8.4.10](https://github.com/adobe/helix-publish/compare/v8.4.9...v8.4.10) (2021-02-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v9.0.3 ([fe9295c](https://github.com/adobe/helix-publish/commit/fe9295ccfc4fdcff1b6bd811b3b24b532af7235d))
+
 ## [8.4.9](https://github.com/adobe/helix-publish/compare/v8.4.8...v8.4.9) (2021-02-13)
 
 
