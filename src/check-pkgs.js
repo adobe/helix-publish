@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable max-classes-per-file */
+const querystring = require('querystring');
 const fetchAPI = require('@adobe/helix-fetch');
 
 const { fetch } = process.env.HELIX_FETCH_FORCE_HTTP1
@@ -31,7 +32,11 @@ async function checkStrains(strain, log = console) {
   const testUrl = strain.package.startsWith('https://')
     ? `${strain.package}/html/_status_check/healthcheck.json`
     : `https://adobeioruntime.net/api/v1/web/${strain.package}/html/_status_check/healthcheck.json`;
-  const result = await fetch(testUrl);
+  const result = await fetch(testUrl, {
+    headers: {
+      'X-OW-Version-Lock': querystring.stringify(strain.versionLock || {}),
+    },
+  });
   const body = await result.text();
   if (!result.ok) {
     const msg = `Status check for strain ${strain.name} failed when invoking ${testUrl}: ${result.status} ${body}`;
