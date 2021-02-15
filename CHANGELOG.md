@@ -1,3 +1,10 @@
+## [8.4.12](https://github.com/adobe/helix-publish/compare/v8.4.11...v8.4.12) (2021-02-15)
+
+
+### Bug Fixes
+
+* **check-packages:** pass version-lock header when verifying package ([69ddc00](https://github.com/adobe/helix-publish/commit/69ddc00902cfdd61b5c9a000e3b2b888e819d317)), closes [#740](https://github.com/adobe/helix-publish/issues/740)
+
 ## [8.4.11](https://github.com/adobe/helix-publish/compare/v8.4.10...v8.4.11) (2021-02-15)
 
 
