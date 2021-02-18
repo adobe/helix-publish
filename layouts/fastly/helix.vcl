@@ -168,7 +168,7 @@ sub hlx_strain {
     set req.http.X-Trace = req.http.X-Trace + "(cookie)";
   }
   # read strain from stealty-strain header
-  if (req.http.X-Stealty-Strain) {
+  if (req.http.X-Stealthy-Strain) {
     set req.http.X-Strain = req.http.X-Stealthy-Strain;
     set req.http.X-Trace = req.http.X-Trace + "(stealthy)";
   }
