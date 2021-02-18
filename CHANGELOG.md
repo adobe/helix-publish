@@ -1,3 +1,15 @@
+# [8.5.0](https://github.com/adobe/helix-publish/compare/v8.4.15...v8.5.0) (2021-02-18)
+
+
+### Bug Fixes
+
+* **vcl:** fix header name ([20e4617](https://github.com/adobe/helix-publish/commit/20e4617c4c656865a74f8e7d966b4e05c00841a9))
+
+
+### Features
+
+* **strains:** allow strain selection via x-stealthy-strain header ([6a8e4ae](https://github.com/adobe/helix-publish/commit/6a8e4ae4eb3852f4ac7285bb278189a779050b92)), closes [/github.com/adobe/helix-pages/pull/695#issuecomment-781187574](https://github.com//github.com/adobe/helix-pages/pull/695/issues/issuecomment-781187574)
+
 ## [8.4.15](https://github.com/adobe/helix-publish/compare/v8.4.14...v8.4.15) (2021-02-17)
 
 
