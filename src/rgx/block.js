@@ -57,7 +57,7 @@ module.exports = [
   /\/tiny_?mce/,
   /\/umbraco/,
   /\/v[1-9]\/_catalog/,
-  /\/wp-(app|admin|config|contents?|includes|login|rss.*|register)/,
+  /^\/wp-(app|admin|config|contents?|includes|login|rss.*|register)/,
   /\/zimbra/,
   /%(2[26]|3([aA]|[dD])|5[cC]|7[cC])/, // note that the % is an encoded percent sign
   /%0[a-fA-F0-9]/,

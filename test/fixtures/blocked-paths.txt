@@ -1460,10 +1460,6 @@
 /error.log
 /errors.log
 /example.log
-/experience-cloud/wp-content/uploads/2017/06/Image-Connecting-Industry-and-Academia-A-Bright-Future-for-Data-Science.png
-/experience-cloud/wp-content/uploads/2017/06/Image-Five-Ways-to-Make-Sure-Your-Distributors-Love-You-%e2%80%94-The-Benefits-of-Brand-Portals-in-Manufacturer-Distributor-Relationships--e1496464968216-1200x672.jpeg
-/experience-cloud/wp-content/uploads/2040/09/hero-image-Adobe-Enhances-Retailers%E2%80%99-Workflows-to-Power-Personalization-e1506356370834-1200x678.jpeg
-/experience-cloud/wp-content/uploads/2050/06/Image-How-NBC-Sports-Delivered-the-Most-Watched-Digital-Event-in-History.-e1496286896161.png
 /experience-cloud/wp-login.php
 /extend-targeted-mobile-reach-facebooks-audience-network/www.adobe.com/experience-cloud/use-cases/audience-reach.html
 /extrafield.log

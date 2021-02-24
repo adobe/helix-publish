@@ -863,3 +863,8 @@
 /webhooks/webhook_events/agreement_action_completed.html
 /webhooks/webhook_events/agreement_workflow_completed.html
 /test.html?file=foo.
+/japan/wp-content/uploads/2019/12/AICC2020_Comp_Guide.pdf
+/experience-cloud/wp-content/uploads/2017/06/Image-Connecting-Industry-and-Academia-A-Bright-Future-for-Data-Science.png
+/experience-cloud/wp-content/uploads/2017/06/Image-Five-Ways-to-Make-Sure-Your-Distributors-Love-You-%e2%80%94-The-Benefits-of-Brand-Portals-in-Manufacturer-Distributor-Relationships--e1496464968216-1200x672.jpeg
+/experience-cloud/wp-content/uploads/2040/09/hero-image-Adobe-Enhances-Retailers%E2%80%99-Workflows-to-Power-Personalization-e1506356370834-1200x678.jpeg
+/experience-cloud/wp-content/uploads/2050/06/Image-How-NBC-Sports-Delivered-the-Most-Watched-Digital-Event-in-History.-e1496286896161.png
