@@ -1,3 +1,10 @@
+## [8.5.2](https://github.com/adobe/helix-publish/compare/v8.5.1...v8.5.2) (2021-02-24)
+
+
+### Bug Fixes
+
+* **block:** allow some wp-content ([ff173c9](https://github.com/adobe/helix-publish/commit/ff173c9977cb0768e7c002be7e3bca9835f48396))
+
 ## [8.5.1](https://github.com/adobe/helix-publish/compare/v8.5.0...v8.5.1) (2021-02-18)
 
 
