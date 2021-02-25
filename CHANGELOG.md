@@ -1,3 +1,10 @@
+## [8.5.3](https://github.com/adobe/helix-publish/compare/v8.5.2...v8.5.3) (2021-02-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-log to v5 ([#754](https://github.com/adobe/helix-publish/issues/754)) ([efc293b](https://github.com/adobe/helix-publish/commit/efc293b48c7796e104bd83d2f5b34b2cae011bf3))
+
 ## [8.5.2](https://github.com/adobe/helix-publish/compare/v8.5.1...v8.5.2) (2021-02-24)
 
 
