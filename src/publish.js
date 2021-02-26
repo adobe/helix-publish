@@ -9,9 +9,6 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-// use HTTP1 if we are on Adobe I/O Runtime
-// eslint-disable-next-line no-underscore-dangle
-process.env.HELIX_FETCH_FORCE_HTTP1 = process.env.__OW_ACTIVATION_ID;
 
 const { HelixConfig, IndexConfig } = require('@adobe/helix-shared');
 const initfastly = require('@adobe/fastly-native-promises');
