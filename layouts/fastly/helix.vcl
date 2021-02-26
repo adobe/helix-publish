@@ -1203,7 +1203,7 @@ sub hlx_deliver_preflight {
   if (resp.status == 200) {
     set req.http.X-Trace = req.http.X-Trace + "(ok)";
     include "preflight.vcl";
-    set req.http.X-Trace = req.http.X-Trace + "(site-version=" resp.http.site-version "/" req.http.x-preflight-site-version ")";
+    set req.http.X-Trace = req.http.X-Trace + "(x-pages-version=" resp.http.x-pages-version "/" req.http.x-preflight-x-pages-version ")";
   } else {
     # any other error, ignore
     set req.http.X-Trace = req.http.X-Trace + "(error)";
