@@ -204,7 +204,7 @@ if (HLX_FASTLY_NAMESPACE.startsWith('1McG')) {
 
 describe('Integration Test', () => {
   setupPolly({
-    recordFailedRequests: true,
+    recordFailedRequests: false,
     recordIfMissing: false,
     logging: false,
     adapters: [NodeHttpAdapter],
