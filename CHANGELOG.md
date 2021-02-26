@@ -1,3 +1,10 @@
+## [8.5.4](https://github.com/adobe/helix-publish/compare/v8.5.3...v8.5.4) (2021-02-26)
+
+
+### Bug Fixes
+
+* **http:** force http1 when running inside adobe io runtime ([acc61bd](https://github.com/adobe/helix-publish/commit/acc61bd33e0ffbd0e3baec50531d737590bbf3cf))
+
 ## [8.5.3](https://github.com/adobe/helix-publish/compare/v8.5.2...v8.5.3) (2021-02-25)
 
 
