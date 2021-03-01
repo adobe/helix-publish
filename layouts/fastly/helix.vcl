@@ -1906,7 +1906,6 @@ sub hlx_bereq {
   if (req.backend.is_shield) {
     set bereq.url = req.http.X-Orig-Url;
     set bereq.http.Host = req.http.X-Orig-Host;
-
   } else {
     if (req.http.X-Backend-URL) {
       set bereq.url = req.http.X-Backend-URL;
@@ -1988,6 +1987,20 @@ sub hlx_bereq {
   unset bereq.http.X-Github-Static-Ref;
   unset bereq.http.X-Restarts;
   unset bereq.http.X-Trace;
+  # cleanup misc. bereq headers copied from the request
+  unset bereq.http.Accept-ESI;
+  unset bereq.http.Akamai-Origin-Hop;
+  unset bereq.http.Fastly-Client-IP;
+  unset bereq.http.Fastly-Orig-Accept-Encoding;
+  unset bereq.http.Fastly-SSL;
+  unset bereq.http.Pragma;
+  unset bereq.http.True-Client-IP;
+  unset bereq.http.X-Adobe-SSL;
+  unset bereq.http.X-Akamai-Config-Log-Detail;
+  unset bereq.http.X-Akamai-SR-Hop;
+  unset bereq.http.X-BM-HA;
+  unset bereq.http.X-Forwarded-Server;
+  unset bereq.http.X-Varnish;
 }
 
 sub vcl_miss {
