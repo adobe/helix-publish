@@ -1,3 +1,10 @@
+# [8.6.0](https://github.com/adobe/helix-publish/compare/v8.5.7...v8.6.0) (2021-03-01)
+
+
+### Features
+
+* cleanup headers sent to backend ([e1ac0b9](https://github.com/adobe/helix-publish/commit/e1ac0b956078c1c649e6965e1aa40ceff2d9cf71))
+
 ## [8.5.7](https://github.com/adobe/helix-publish/compare/v8.5.6...v8.5.7) (2021-03-01)
 
 
