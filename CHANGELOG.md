@@ -1,3 +1,24 @@
+# [8.6.0](https://github.com/adobe/helix-publish/compare/v8.5.7...v8.6.0) (2021-03-01)
+
+
+### Features
+
+* cleanup headers sent to backend ([e1ac0b9](https://github.com/adobe/helix-publish/commit/e1ac0b956078c1c649e6965e1aa40ceff2d9cf71))
+
+## [8.5.7](https://github.com/adobe/helix-publish/compare/v8.5.6...v8.5.7) (2021-03-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.22.0 ([9a299ee](https://github.com/adobe/helix-publish/commit/9a299ee91f295959954513864ecfc5178bcb1763))
+
+## [8.5.6](https://github.com/adobe/helix-publish/compare/v8.5.5...v8.5.6) (2021-03-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/fastly-native-promises to v1.21.0 ([46adf8e](https://github.com/adobe/helix-publish/commit/46adf8eb4224c36bc2e5868a8d533153289a4fa4))
+
 ## [8.5.5](https://github.com/adobe/helix-publish/compare/v8.5.4...v8.5.5) (2021-02-26)
 
 
