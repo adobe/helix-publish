@@ -1369,7 +1369,9 @@ sub hlx_type_preflight {
     restart;
   }
 
-  if ({"const:preflight_host"} == "adobeioruntime.net") {
+  declare local var.preflight_host STRING;
+  set var.preflight_host = {"const:preflight_host"};
+  if (var.preflight_host == "adobeioruntime.net") {
     set req.backend = F_AdobeRuntime;
   } else {
     set req.backend = F_UniversalRuntime;
