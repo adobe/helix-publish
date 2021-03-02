@@ -84,6 +84,7 @@ async function publish(options) {
     };
   }
 
+  let fastly;
   try {
     const config = await new HelixConfig()
       .withLogger(log)
@@ -96,7 +97,7 @@ async function publish(options) {
       .init();
 
     await checkPkgs(config, log);
-    const fastly = await initfastly(token, service);
+    fastly = await initfastly(token, service);
     log.info('running publishing tasks…');
 
     let pretasks = 1;
@@ -153,8 +154,18 @@ async function publish(options) {
           statusCode: 200,
         };
       })
-      .catch(handleError);
+      .catch(handleError)
+      .finally(() => {
+        // discard fastly client to close pending connections
+        if (fastly) {
+          fastly.discard();
+        }
+      });
   } catch (e) {
+    // discard fastly client to close pending connections
+    if (fastly) {
+      fastly.discard();
+    }
     // invalid configuration
     log.error(e);
     return {
