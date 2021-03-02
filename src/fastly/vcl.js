@@ -50,8 +50,11 @@ async function init(fastly, version, options, config) {
   content = regex(content, urlFilters);
 
   // create the constants object
+  const preflight = config.preflight ? new URL(config.preflight) : undefined;
+
   const constants = {
-    preflight: config.preflight ? config.preflight.replace('https://adobeioruntime.net', '') : undefined,
+    preflight: preflight ? preflight.pathname : undefined,
+    preflight_host: preflight ? preflight.hostname : undefined,
   };
 
   // define default version constants

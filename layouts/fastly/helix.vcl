@@ -1369,8 +1369,13 @@ sub hlx_type_preflight {
     restart;
   }
 
-  # get it from OpenWhisk (for now, we will support other backends later)
-  set req.backend = F_AdobeRuntime;
+  if ({"const:preflight_host"} == "adobeioruntime.net") {
+    set req.backend = F_AdobeRuntime;
+  } else {
+    set req.backend = F_UniversalRuntime;
+    set req.http.X-Backend-Host = {"const:preflight_host"};
+  }
+  
 
   set req.http.X-Backend-URL = {"const:preflight"};
 }
