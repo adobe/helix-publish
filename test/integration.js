@@ -349,16 +349,4 @@ describe('Integration Test', () => {
     const res = await main(params);
     assert.equal(res.statusCode, 400);
   }).timeout(60000);
-
-  it('Get valid status report', async function test() {
-    if (usePolly) {
-      this.polly.server.get('https://api.fastly.com/').intercept((req, res) => {
-        res.sendStatus(200);
-      });
-    }
-
-    const res = await main({ __ow_method: 'get', __ow_path: '/_status_check/healthcheck.json' });
-
-    assert.equal(res.statusCode, 200);
-  });
 });
