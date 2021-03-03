@@ -16,7 +16,10 @@ const { Response } = require('@adobe/helix-fetch');
 const publish = require('./publish');
 
 async function publishConfig(request, context) {
-  const params = await request.json();
+  context.log.info('helix-publish: parsing body ');
+  const text = await request.text();
+  context.log(`body text: ${text}`);
+  const params = JSON.parse(text);
 
   const res = await publish({
     configuration: params.configuration,
