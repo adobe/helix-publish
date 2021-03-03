@@ -20,7 +20,10 @@ const chaiHttp = require('chai-http');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
-const { main } = require('../src/index');
+const { retrofit } = require('./utils.js');
+const { main: universalMain } = require('../src/index');
+
+const main = retrofit(universalMain);
 
 chai.use(chaiHttp);
 const { expect } = chai;

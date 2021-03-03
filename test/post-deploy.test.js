@@ -12,34 +12,26 @@
 
 /* eslint-env mocha */
 /* eslint-disable no-unused-expressions */
-
-const packjson = require('../package.json');
-
-function getbaseurl() {
-  const namespace = 'helix';
-  const package = 'helix-services';
-  const name = packjson.name.replace('@adobe/helix-', '');
-  let version = `${packjson.version}`;
-  if (process.env.CI && process.env.CIRCLE_BUILD_NUM && process.env.CIRCLE_BRANCH !== 'master') {
-    version = `ci${process.env.CIRCLE_BUILD_NUM}`;
-  }
-  return `api/v1/web/${namespace}/${package}/${name}@${version}`;
-}
+const { createTargets } = require('./post-deploy-utils.js');
 
 function getbasedomain() {
   return process.env.TEST_DOMAIN;
 }
 
-describe('Post-Deploy Tests', () => {
-  it('Print Test Instructions', async () => {
-    // eslint-disable-next-line no-console
-    console.log(`Try it yourself:
-hlx publish --api-publish https://adobeioruntime.net/${getbaseurl()}`);
-  }).timeout(10000);
+createTargets().forEach((target) => {
+  describe(`Post-Deploy Tests (${target.title()})`, () => {
+    describe('Post-Deploy Tests', () => {
+      it('Print Test Instructions', async () => {
+        // eslint-disable-next-line no-console
+        console.log(`Try it yourself:
+hlx publish --api-publish ${target.host()}${target.urlPath()}`);
+      }).timeout(10000);
 
-  it('Print Test Instructions for Helix Pages', async () => {
-    // eslint-disable-next-line no-console
-    console.log(`Your Helix Pages Test Domain is:
+      it('Print Test Instructions for Helix Pages', async () => {
+        // eslint-disable-next-line no-console
+        console.log(`Your Helix Pages Test Domain is:
 https://owner--repo.${getbasedomain()}`);
-  }).timeout(10000);
+      }).timeout(10000);
+    });
+  });
 });

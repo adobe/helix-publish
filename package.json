@@ -14,10 +14,10 @@
     "junit": "mocha --exit -R mocha-junit-reporter",
     "test-postdeploy": "mocha --reporter xunit --reporter-options output=./junit/test-results.xml -g 'Post-Deploy'",
     "semantic-release": "semantic-release",
-    "build": "wsk-builder -v",
-    "deploy": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json",
-    "deploy-sequences": "wsk-builder --no-build -no-hints -l latest -l major -l minor",
-    "deploy-ci": "wsk-builder -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci",
+    "build": "hedy -v",
+    "deploy": "hedy -v --deploy --test=/_status_check/healthcheck.json",
+    "deploy-sequences": "hedy --no-build -no-hints -l latest -l major -l minor",
+    "deploy-ci": "hedy -v --deploy --test=/_status_check/healthcheck.json --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci",
     "commit": "git-cz"
   },
   "wsk": {
@@ -54,8 +54,8 @@
   "homepage": "https://github.com/adobe/helix-publish#readme",
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.4",
+    "@adobe/helix-deploy": "3.6.3",
     "@adobe/helix-testutils": "0.4.3",
-    "@adobe/openwhisk-action-builder": "3.0.12",
     "@pollyjs/adapter-fetch": "5.1.0",
     "@pollyjs/adapter-node-http": "5.1.0",
     "@pollyjs/core": "5.1.0",
@@ -68,6 +68,7 @@
     "codecov": "3.8.1",
     "commitizen": "4.2.3",
     "cz-conventional-changelog": "3.3.0",
+    "dotenv": "8.2.0",
     "eslint": "7.21.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "2.22.1",
@@ -82,7 +83,6 @@
   },
   "dependencies": {
     "@adobe/fastly-native-promises": "1.22.1",
-    "@adobe/helix-epsagon": "1.5.8",
     "@adobe/helix-fetch": "2.1.6",
     "@adobe/helix-log": "5.0.0",
     "@adobe/helix-shared": "7.21.0",
