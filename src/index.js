@@ -18,7 +18,7 @@ const publish = require('./publish');
 async function publishConfig(request, context) {
   context.log.info('helix-publish: parsing body ');
   const text = await request.text();
-  context.log(`body text: ${text}`);
+  context.log.info(`body text: ${text}`);
   const params = JSON.parse(text);
 
   const res = await publish({

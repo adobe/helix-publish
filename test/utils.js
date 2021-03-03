@@ -28,6 +28,7 @@ function retrofit(fn) {
       url: `https://helix-publish.com/publish?${querystring.encode(params)}`,
       headers: new Map(Object.entries(params.__ow_headers || {})),
       json: () => params,
+      text: () => JSON.stringify(params),
     }, context);
     return {
       statusCode: resp.status,
