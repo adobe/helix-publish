@@ -316,6 +316,9 @@ describe('Integration Test', () => {
         status: 'published',
         completed: 11,
       },
+      headers: {
+        'content-type': 'application/json',
+      },
       statusCode: 200,
     });
 
