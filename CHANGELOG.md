@@ -1,3 +1,15 @@
+# [8.7.0](https://github.com/adobe/helix-publish/compare/v8.6.2...v8.7.0) (2021-03-03)
+
+
+### Bug Fixes
+
+* **vcl:** put preflight host into variable ([0a9e68c](https://github.com/adobe/helix-publish/commit/0a9e68cd32e6bd842f98e7f2437de65c66da63b7)), closes [#756](https://github.com/adobe/helix-publish/issues/756)
+
+
+### Features
+
+* **vcl:** support universal runtime preflight ([b3c487c](https://github.com/adobe/helix-publish/commit/b3c487cbb65f5f95ee2156013d2f0f86fe41b81a)), closes [#756](https://github.com/adobe/helix-publish/issues/756)
+
 ## [8.6.2](https://github.com/adobe/helix-publish/compare/v8.6.1...v8.6.2) (2021-03-02)
 
 
