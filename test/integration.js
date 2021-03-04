@@ -20,7 +20,10 @@ const chaiHttp = require('chai-http');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const FSPersister = require('@pollyjs/persister-fs');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
-const { main } = require('../src/index');
+const { retrofit } = require('./utils.js');
+const { main: universalMain } = require('../src/index');
+
+const main = retrofit(universalMain);
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -313,6 +316,9 @@ describe('Integration Test', () => {
         status: 'published',
         completed: 11,
       },
+      headers: {
+        'content-type': 'application/json',
+      },
       statusCode: 200,
     });
 
@@ -346,16 +352,4 @@ describe('Integration Test', () => {
     const res = await main(params);
     assert.equal(res.statusCode, 400);
   }).timeout(60000);
-
-  it('Get valid status report', async function test() {
-    if (usePolly) {
-      this.polly.server.get('https://api.fastly.com/').intercept((req, res) => {
-        res.sendStatus(200);
-      });
-    }
-
-    const res = await main({ __ow_method: 'get', __ow_path: '/_status_check/healthcheck.json' });
-
-    assert.equal(res.statusCode, 200);
-  });
 });
