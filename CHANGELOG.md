@@ -1,3 +1,11 @@
+## [8.7.2](https://github.com/adobe/helix-publish/compare/v8.7.1...v8.7.2) (2021-03-04)
+
+
+### Bug Fixes
+
+* **deploy:** deploy to universal runtime ([c876ad8](https://github.com/adobe/helix-publish/commit/c876ad874fcc236485bc83564265415267206de9))
+* **deps:** use new helix-deploy with json body support ([7b33c92](https://github.com/adobe/helix-publish/commit/7b33c92142271f97730bcca8493db6b1000d3723))
+
 ## [8.7.1](https://github.com/adobe/helix-publish/compare/v8.7.0...v8.7.1) (2021-03-03)
 
 
