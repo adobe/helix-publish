@@ -54,7 +54,7 @@
   "homepage": "https://github.com/adobe/helix-publish#readme",
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.4",
-    "@adobe/helix-deploy": "3.6.6",
+    "@adobe/helix-deploy": "3.7.0",
     "@adobe/helix-testutils": "0.4.3",
     "@pollyjs/adapter-fetch": "5.1.0",
     "@pollyjs/adapter-node-http": "5.1.0",
