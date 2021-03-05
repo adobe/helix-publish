@@ -12,22 +12,32 @@
 const { logger } = require('@adobe/openwhisk-action-logger');
 const { wrap } = require('@adobe/openwhisk-action-utils');
 const { wrap: status } = require('@adobe/helix-status');
-const { epsagon } = require('@adobe/helix-epsagon');
+const { Response } = require('@adobe/helix-fetch');
 const publish = require('./publish');
 
-async function publishConfig(params) {
-  return publish({
+async function publishConfig(request, context) {
+  context.log.info('helix-publish: parsing body ');
+  const text = await request.text();
+  context.log.info(`body text: ${text}`);
+  const params = JSON.parse(text);
+
+  const res = await publish({
     configuration: params.configuration,
     service: params.service,
     token: params.token,
     version: params.version,
     vclOverrides: params.vcl,
     // eslint-disable-next-line no-underscore-dangle
-    log: params.__ow_logger,
+    log: context.log,
     iconfig: params.indexconfig,
     algoliaappid: params.algoliaappid,
     epsagonToken: params.epsagontoken,
     epsagonAppName: params.epsagonapp,
+  });
+
+  return new Response(res.body, {
+    status: res.statusCode,
+    headers: res.headers,
   });
 }
 
@@ -37,7 +47,6 @@ async function publishConfig(params) {
  * @returns {Promise<*>} The response
  */
 module.exports.main = wrap(publishConfig)
-  .with(epsagon)
   .with(status)
   .with(logger.trace)
   .with(logger);
