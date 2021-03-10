@@ -504,6 +504,12 @@ sub hlx_determine_request_type {
     return;
   }
 
+  if (req.url.ext ~ "^xml$" && req.url.path ~ "^/sitemap\.") {
+    set req.http.X-Trace = req.http.X-Trace + "(content-sitemap)";
+    set req.http.X-Request-Type = "Content/Sitemap";
+    return;
+  }
+
   // something like /hlx_fonts/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
   // but not like /hlx_fonts/eic8tkf.css
   if (req.url.path ~ "^/hlx_fonts/.+" && req.url.ext != "css") {
@@ -1628,6 +1634,8 @@ sub vcl_recv {
   } elseif (req.http.X-Request-Type == "Content/MD") {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Content/JSON") {
+    call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Content/Sitemap") {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Preflight") {
     call hlx_type_preflight;
