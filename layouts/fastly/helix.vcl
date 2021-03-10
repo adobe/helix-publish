@@ -504,7 +504,7 @@ sub hlx_determine_request_type {
     return;
   }
 
-  if (req.url.ext ~ "^xml$" && req.url.path ~ "^/sitemap\.") {
+  if (req.url.path ~ "/sitemap(-[^/]+)?\.xml$") {
     set req.http.X-Trace = req.http.X-Trace + "(content-sitemap)";
     set req.http.X-Request-Type = "Content/Sitemap";
     return;
