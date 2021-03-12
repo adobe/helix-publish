@@ -504,6 +504,12 @@ sub hlx_determine_request_type {
     return;
   }
 
+  if (req.url.path ~ "/sitemap(-[^/]+)?\.xml$") {
+    set req.http.X-Trace = req.http.X-Trace + "(content-sitemap)";
+    set req.http.X-Request-Type = "Content/Sitemap";
+    return;
+  }
+
   // something like /hlx_fonts/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
   // but not like /hlx_fonts/eic8tkf.css
   if (req.url.path ~ "^/hlx_fonts/.+" && req.url.ext != "css") {
@@ -1111,6 +1117,8 @@ sub hlx_fetch_error {
     } elsif (beresp.status == 429) {
       // serve a standard 429 error page when there is no response body
       error 965 "Too many requests";
+    } elsif (beresp.status == 400) {
+      error 966 "Bad request";
     } else {
        error 952 "Internal Server Error";
     }
@@ -1629,6 +1637,8 @@ sub vcl_recv {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Content/JSON") {
     call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Content/Sitemap") {
+    call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Preflight") {
     call hlx_type_preflight;
   } else {
@@ -1731,6 +1741,11 @@ sub hlx_deliver_errors {
      set resp.status = 429;
      set resp.response = "Too Many Requests";
   }
+
+  if (resp.status == 966) {
+     set resp.status = 400;
+     set resp.response = "Bad request";
+  }
 }
 
 sub hlx_error_errors {
@@ -1792,6 +1807,16 @@ sub hlx_error_errors {
   if (obj.status == 965 ) {
     set obj.http.Content-Type = "text/html";
     synthetic {"include:429.html"};
+    return(deliver);
+  }
+  if (obj.status == 965 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:429.html"};
+    return(deliver);
+  }
+  if (obj.status == 966 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:400.html"};
     return(deliver);
   }
 }
