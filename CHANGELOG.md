@@ -1,3 +1,10 @@
+## [8.7.7](https://github.com/adobe/helix-publish/compare/v8.7.6...v8.7.7) (2021-03-12)
+
+
+### Bug Fixes
+
+* **vcl:** allow returning pass from vcl_recv ([#786](https://github.com/adobe/helix-publish/issues/786)) ([8d17b63](https://github.com/adobe/helix-publish/commit/8d17b63cb1f0cd9442786c9643b6530bf77c8597))
+
 ## [8.7.6](https://github.com/adobe/helix-publish/compare/v8.7.5...v8.7.6) (2021-03-10)
 
 
