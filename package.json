@@ -28,6 +28,7 @@
       "./layouts/fastly/400.html",
       "./layouts/fastly/403.html",
       "./layouts/fastly/404.html",
+      "./layouts/fastly/405.html",
       "./layouts/fastly/429.html",
       "./layouts/fastly/500.html",
       "./layouts/fastly/502.html",

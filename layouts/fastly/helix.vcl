@@ -1119,6 +1119,8 @@ sub hlx_fetch_error {
       error 965 "Too many requests";
     } elsif (beresp.status == 400) {
       error 966 "Bad request";
+    } elsif (beresp.status == 400) {
+      error 967 "Method not allowed";
     } else {
        error 952 "Internal Server Error";
     }
@@ -1655,7 +1657,7 @@ sub vcl_recv {
 
   # We only handle GET and HEAD requests, but Proxy strains might
   if (req.request != "HEAD" && req.request != "GET" && req.request != "FASTLYPURGE") {
-    error 405;
+    error 967;
   }
 
   return(lookup);
@@ -1744,7 +1746,12 @@ sub hlx_deliver_errors {
 
   if (resp.status == 966) {
      set resp.status = 400;
-     set resp.response = "Bad request";
+     set resp.response = "Bad Request";
+  }
+
+  if (resp.status == 967) {
+     set resp.status = 400;
+     set resp.response = "Method Not Allowed";
   }
 }
 
@@ -1817,6 +1824,11 @@ sub hlx_error_errors {
   if (obj.status == 966 ) {
     set obj.http.Content-Type = "text/html";
     synthetic {"include:400.html"};
+    return(deliver);
+  }
+  if (obj.status == 967 ) {
+    set obj.http.Content-Type = "text/html";
+    synthetic {"include:405.html"};
     return(deliver);
   }
 }
