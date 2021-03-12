@@ -856,7 +856,7 @@ sub hlx_type_query {
         set req.backend = F_UniversalRuntime;
         set req.http.X-Backend-Host = var.hostname;
       }
-    }    
+    }
     # establish the fallback first
     set req.http.X-Backend-URL = if(var.universal, "", "/api/v1/web" + "/" + var.namespace)
     + "/helix-services/query-index@" + var.qindex_version
@@ -1277,9 +1277,9 @@ sub hlx_type_embed {
         set req.backend = F_UniversalRuntime;
         set req.http.X-Backend-Host = var.hostname;
       }
-    }  
+    }
   }
-  
+
 }
 
 /**
@@ -1364,7 +1364,7 @@ sub hlx_type_preflight {
 
   if (!req.http.X-Owner || !req.http.X-Repo || !req.http.X-Ref) {
     set req.http.X-Trace = req.http.X-Trace + "; (no ORR)";
-    // we could not resolve owner, repo, ref, so the preflight 
+    // we could not resolve owner, repo, ref, so the preflight
     // service might fail, so we just skip it
     restart;
   }
@@ -1377,7 +1377,7 @@ sub hlx_type_preflight {
     set req.backend = F_UniversalRuntime;
     set req.http.X-Backend-Host = {"const:preflight_host"};
   }
-  
+
 
   set req.http.X-Backend-URL = {"const:preflight"};
 }
@@ -1634,6 +1634,10 @@ sub vcl_recv {
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
+
+    if (req.http.X-Dispatch-Pass == "1") {
+      return (pass);
+    }
   }
 
   # re-enable shielding for changed backends
