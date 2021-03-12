@@ -1,3 +1,16 @@
+# [8.8.0](https://github.com/adobe/helix-publish/compare/v8.7.7...v8.8.0) (2021-03-12)
+
+
+### Bug Fixes
+
+* **vcl:** propagate error 400 from any backend to the client ([6585553](https://github.com/adobe/helix-publish/commit/658555355dd141431179871d1ff3241c3d607c23)), closes [#788](https://github.com/adobe/helix-publish/issues/788)
+
+
+### Features
+
+* **sitemap:** serve sitemap.xml from content proxy ([3193bf5](https://github.com/adobe/helix-publish/commit/3193bf5060d0cdfbf77f56254d408c5b15589727)), closes [#783](https://github.com/adobe/helix-publish/issues/783) [adobe/helix-content-proxy#315](https://github.com/adobe/helix-content-proxy/issues/315)
+* **vcl:** allow sitemaps anywhere ([876d76e](https://github.com/adobe/helix-publish/commit/876d76e8f9b7013fae590c997674a2cd54abccb3))
+
 ## [8.7.7](https://github.com/adobe/helix-publish/compare/v8.7.6...v8.7.7) (2021-03-12)
 
 
