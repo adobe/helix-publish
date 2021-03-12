@@ -1646,10 +1646,6 @@ sub vcl_recv {
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
-
-    if (req.http.X-Dispatch-Pass == "1") {
-      return (pass);
-    }
   }
 
   # re-enable shielding for changed backends
@@ -1658,6 +1654,10 @@ sub vcl_recv {
   # We only handle GET and HEAD requests, but Proxy strains might
   if (req.request != "HEAD" && req.request != "GET" && req.request != "FASTLYPURGE") {
     error 967;
+  }
+  if (req.http.X-Request-Type == "Dispatch" && req.http.X-Dispatch-Pass == "1") {
+    # helix pages wants no caching, so we pass
+    return(pass);
   }
 
   return(lookup);
