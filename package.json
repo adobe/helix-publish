@@ -25,6 +25,7 @@
     "static": [
       "./layouts/fastly/helix.vcl",
       "./layouts/fastly/extensions.vcl",
+      "./layouts/fastly/400.html",
       "./layouts/fastly/403.html",
       "./layouts/fastly/404.html",
       "./layouts/fastly/429.html",
