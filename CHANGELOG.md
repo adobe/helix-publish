@@ -1,3 +1,10 @@
+## [8.8.1](https://github.com/adobe/helix-publish/compare/v8.8.0...v8.8.1) (2021-03-12)
+
+
+### Bug Fixes
+
+* **vcl:** do not allow helix pages to circumvent our method filter ([735bfd3](https://github.com/adobe/helix-publish/commit/735bfd3aea14f2c39dd6e42c30d636c8b76fa8f3)), closes [#790](https://github.com/adobe/helix-publish/issues/790)
+
 # [8.8.0](https://github.com/adobe/helix-publish/compare/v8.7.7...v8.8.0) (2021-03-12)
 
 
