@@ -1,3 +1,10 @@
+# [8.9.0](https://github.com/adobe/helix-publish/compare/v8.8.2...v8.9.0) (2021-03-19)
+
+
+### Features
+
+* Do not vary on XFH for non-html ([61655c9](https://github.com/adobe/helix-publish/commit/61655c9e5f23ba332d52bd653e4914c3ebce8d63))
+
 ## [8.8.2](https://github.com/adobe/helix-publish/compare/v8.8.1...v8.8.2) (2021-03-15)
 
 
