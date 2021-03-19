@@ -1862,7 +1862,11 @@ sub vcl_fetch {
 
   # Vary on XFH, to avoid cache poisoning
   # https://github.com/adobe/project-helix/issues/460
-  set beresp.http.Vary:X-Forwarded-Host = "";
+  # Only vary on XFH for .html or robots.txt
+  # https://github.com/adobe/project-helix/issues/782
+  if (req.url.ext == "html" || req.url.path == "/robots.txt") {
+    set beresp.http.Vary:X-Forwarded-Host = "";
+  }
 
   # Vary on x-ow-version-lock, to avoid caching of different versions
   set beresp.http.Vary:X-OW-Version-Lock = "";
