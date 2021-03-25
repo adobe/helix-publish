@@ -468,6 +468,12 @@ sub hlx_determine_request_type {
     return;
   }
 
+  if (req.url.ext ~ "^lnk$") {
+    set req.http.X-Trace = req.http.X-Trace + "(content-lnk)";
+    set req.http.X-Request-Type = "Content/LNK";
+    return;
+  }
+
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
   if (req.url.path ~ "^/(hlx_([0-9a-f]){40}).([0-9a-z]+)$" || req.url.path ~ "/(media_([0-9a-f]){40}).([0-9a-z]+)$") {
     set req.http.X-Trace = req.http.X-Trace + "(blob)";
@@ -1638,6 +1644,8 @@ sub vcl_recv {
   } elseif (req.http.X-Request-Type == "Content/JSON") {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Content/Sitemap") {
+    call hlx_type_content;
+  } elseif (req.http.X-Request-Type == "Content/LNK") {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Preflight") {
     call hlx_type_preflight;
