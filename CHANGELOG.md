@@ -1,3 +1,10 @@
+# [8.10.0](https://github.com/adobe/helix-publish/compare/v8.9.0...v8.10.0) (2021-03-25)
+
+
+### Features
+
+* **vcl:** use content-proxy for .lnk extension ([#802](https://github.com/adobe/helix-publish/issues/802)) ([3f9f403](https://github.com/adobe/helix-publish/commit/3f9f403ee9562aea04cd785e586abb1977542545))
+
 # [8.9.0](https://github.com/adobe/helix-publish/compare/v8.8.2...v8.9.0) (2021-03-19)
 
 
