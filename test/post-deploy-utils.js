@@ -10,8 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-/* eslint-disable max-classes-per-file */
-/* eslint-disable class-methods-use-this */
+/* eslint-disable max-classes-per-file, class-methods-use-this */
 const packjson = require('../package.json');
 require('dotenv').config();
 
