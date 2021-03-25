@@ -1,3 +1,10 @@
+## [8.10.1](https://github.com/adobe/helix-publish/compare/v8.10.0...v8.10.1) (2021-03-25)
+
+
+### Bug Fixes
+
+* **vcl:** allow wider blob hash ([#803](https://github.com/adobe/helix-publish/issues/803)) ([550341c](https://github.com/adobe/helix-publish/commit/550341c03805ade422d1d4df358db2741c08d1c4))
+
 # [8.10.0](https://github.com/adobe/helix-publish/compare/v8.9.0...v8.10.0) (2021-03-25)
 
 
