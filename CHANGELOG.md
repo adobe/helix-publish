@@ -1,3 +1,10 @@
+# [8.11.0](https://github.com/adobe/helix-publish/compare/v8.10.3...v8.11.0) (2021-03-29)
+
+
+### Features
+
+* **google:** deploy to google ([64ef79f](https://github.com/adobe/helix-publish/commit/64ef79f40fd0243e7f71a2974c857c89b4a62be7))
+
 ## [8.10.3](https://github.com/adobe/helix-publish/compare/v8.10.2...v8.10.3) (2021-03-26)
 
 
