@@ -1,3 +1,10 @@
+## [8.11.1](https://github.com/adobe/helix-publish/compare/v8.11.0...v8.11.1) (2021-03-30)
+
+
+### Bug Fixes
+
+* **helix.vcl:** vary on XFH only for html responses or /robots.txt ([c8af9b1](https://github.com/adobe/helix-publish/commit/c8af9b16a2acef0a7443f35168ceace4123ab8ab))
+
 # [8.11.0](https://github.com/adobe/helix-publish/compare/v8.10.3...v8.11.0) (2021-03-29)
 
 
