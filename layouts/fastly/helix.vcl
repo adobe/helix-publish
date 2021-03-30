@@ -1870,9 +1870,9 @@ sub vcl_fetch {
 
   # Vary on XFH, to avoid cache poisoning
   # https://github.com/adobe/project-helix/issues/460
-  # Only vary on XFH for .html or robots.txt
-  # https://github.com/adobe/project-helix/issues/782
-  if (req.url.ext == "html" || req.url.path == "/robots.txt") {
+  # Only vary on XFH for html responses or robots.txt
+  # https://github.com/adobe/helix-publish/issues/782
+  if (beresp.http.Content-Type ~ "^text/html" || req.url.path == "/robots.txt") {
     set beresp.http.Vary:X-Forwarded-Host = "";
   }
 
