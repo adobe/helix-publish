@@ -1,3 +1,10 @@
+## [8.11.3](https://github.com/adobe/helix-publish/compare/v8.11.2...v8.11.3) (2021-03-31)
+
+
+### Bug Fixes
+
+* force release ([10cdda6](https://github.com/adobe/helix-publish/commit/10cdda62d3a357cf701b0f1eed430bf8feec09d6))
+
 ## [8.11.2](https://github.com/adobe/helix-publish/compare/v8.11.1...v8.11.2) (2021-03-31)
 
 
