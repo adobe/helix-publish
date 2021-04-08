@@ -42,8 +42,16 @@ async function checkStrains(strain, log = console) {
     const msg = `Status check for strain ${strain.name} failed when invoking ${testUrl}: ${result.status} ${body}`;
     log.error(msg);
     throw new Error(msg);
-  } else {
-    return JSON.parse(body);
+  }
+
+  // status response should be a JSON
+  try {
+    const status = JSON.parse(body);
+    log.info(`Status check for strain ${strain.name} ok for ${testUrl}: ${status}`);
+  } catch (e) {
+    const msg = `Status check for strain ${strain.name} failed JSON parsing for ${testUrl}: ${body.substring(0, 1024)}`;
+    log.error(msg);
+    throw new Error(msg);
   }
 }
 
