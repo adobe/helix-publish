@@ -55,7 +55,7 @@
   "homepage": "https://github.com/adobe/helix-publish#readme",
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.4",
-    "@adobe/helix-deploy": "3.17.0",
+    "@adobe/helix-deploy": "3.18.3",
     "@adobe/helix-testutils": "0.4.4",
     "@pollyjs/adapter-fetch": "5.1.0",
     "@pollyjs/adapter-node-http": "5.1.0",
@@ -85,7 +85,7 @@
     "@adobe/fastly-native-promises": "1.22.4",
     "@adobe/helix-fetch": "2.2.0",
     "@adobe/helix-log": "5.0.2",
-    "@adobe/helix-shared": "7.21.14",
+    "@adobe/helix-shared": "7.22.0",
     "@adobe/helix-status": "9.1.5",
     "@adobe/openwhisk-action-logger": "2.4.3",
     "@adobe/openwhisk-action-utils": "4.4.3",
