@@ -1,3 +1,16 @@
+# [8.12.0](https://github.com/adobe/helix-publish/compare/v8.11.6...v8.12.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* **check:** better error reporting when json parsing fails ([cd506b9](https://github.com/adobe/helix-publish/commit/cd506b996e33d8547ce846def97b77a2785d7d2b))
+* **fetch:** use http/2 again ([224555a](https://github.com/adobe/helix-publish/commit/224555a67f2f5231d799265c5cc26e712d12f99c))
+
+
+### Features
+
+* **uni:** use universal logger ([1c963b5](https://github.com/adobe/helix-publish/commit/1c963b57a299f71f98e63d2837d1f00953a478a1))
+
 ## [8.11.6](https://github.com/adobe/helix-publish/compare/v8.11.5...v8.11.6) (2021-04-05)
 
 
