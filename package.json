@@ -1,7 +1,7 @@
 {
   "name": "@adobe/helix-publish",
-  "version": "8.11.6",
-  "description": "A microservice (for Adobe I/O Runtime) that publishes Helix configurations to Fastly",
+  "version": "8.11.6-test",
+  "description": "A microservice that publishes Helix configurations to Fastly",
   "main": "src/index.js",
   "private": true,
   "directories": {
@@ -41,7 +41,8 @@
       "./node_modules/@adobe/helix-shared/src/schemas/index.schema.json",
       "./node_modules/@adobe/helix-shared/src/schemas/query.schema.json",
       "./node_modules/@adobe/helix-shared/src/schemas/property.schema.json"
-    ]
+    ],
+    "memory": 512
   },
   "repository": {
     "type": "git",
@@ -55,7 +56,7 @@
   "homepage": "https://github.com/adobe/helix-publish#readme",
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.4",
-    "@adobe/helix-deploy": "3.17.0",
+    "@adobe/helix-deploy": "3.18.3",
     "@adobe/helix-testutils": "0.4.4",
     "@pollyjs/adapter-fetch": "5.1.0",
     "@pollyjs/adapter-node-http": "5.1.0",
@@ -85,10 +86,9 @@
     "@adobe/fastly-native-promises": "1.22.4",
     "@adobe/helix-fetch": "2.2.0",
     "@adobe/helix-log": "5.0.2",
-    "@adobe/helix-shared": "7.21.14",
+    "@adobe/helix-shared": "7.23.0",
     "@adobe/helix-status": "9.1.5",
-    "@adobe/openwhisk-action-logger": "2.4.3",
-    "@adobe/openwhisk-action-utils": "4.4.3",
+    "@adobe/helix-universal-logger": "1.0.1",
     "escape-string-regexp": "4.0.0",
     "fs-extra": "9.1.0",
     "glob-to-regexp": "0.4.1",
