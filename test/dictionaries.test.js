@@ -26,7 +26,7 @@ describe('Testing dictionaries.js', () => {
     };
 
     assert.ok(await init(fastly, 1));
-    assert.equal(fastly.writeDictionary.getCalls().length, 14);
+    assert.equal(fastly.writeDictionary.getCalls().length, 15);
     assert.ok(fastly.writeDictionary.calledWith(1, 'secrets'));
   });
 
