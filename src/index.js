@@ -12,7 +12,7 @@
 const { logger } = require('@adobe/helix-universal-logger');
 const { wrap } = require('@adobe/helix-shared');
 const { wrap: status } = require('@adobe/helix-status');
-const { Response } = require('@adobe/helix-fetch');
+const { Response } = require('@adobe/helix-universal');
 const publish = require('./publish');
 
 async function publishConfig(request, context) {
