@@ -17,6 +17,7 @@ const limit = promiseLimit(2);
 
 const dictionaries = [
   'secrets',
+  'settings',
   'strain_action_roots',
   'strain_owners',
   'strain_refs',
@@ -38,7 +39,7 @@ async function init(fastly, version) {
     dictionary,
     {
       name: dictionary,
-      write_only: true,
+      write_only: /secret/.test(dictionary),
     },
   )));
 }
