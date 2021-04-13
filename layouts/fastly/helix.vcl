@@ -1879,6 +1879,11 @@ sub vcl_fetch {
   # Vary on x-ow-version-lock, to avoid caching of different versions
   set beresp.http.Vary:X-OW-Version-Lock = "";
 
+  # Vary on X-Github-Token, to avoid caching secret content
+  if (req.backend == F_AdobeRuntime || req.backend == F_UniversalRuntime || req.backend == F_GitHub) {
+    set beresp.http.Vary:X-Github-Token = "";
+  }
+
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
     # Use TTL from origin
@@ -1999,9 +2004,15 @@ sub hlx_bereq {
     # set Adobe Runtime backend authentication
     set bereq.http.Authorization = table.lookup(secrets, "OPENWHISK_AUTH");
     # pass Github Token via X-Github-Token header
-    set bereq.http.X-Github-Token = table.lookup(secrets, "GITHUB_TOKEN");
+    if (!req.http.X-Github-Token) {
+      # use global token if header not set
+      set bereq.http.X-Github-Token = table.lookup(secrets, "GITHUB_TOKEN");
+    }
+  } elsif (req.backend == F_GitHub && req.http.X-Github-Token) {
+    # set Github backend authentication from header
+    set bereq.http.Authorization = "token " + req.http.X-Github-Token;
   } elsif (req.backend == F_GitHub && table.lookup(secrets, "GITHUB_TOKEN")) {
-    # set Github backend authentication
+    # set Github backend authentication from dictionary
     set bereq.http.Authorization = "token " + table.lookup(secrets, "GITHUB_TOKEN");
   } elseif (req.backend == F_Algolia) {
     # set Algolia Backend authentication
