@@ -709,6 +709,10 @@ sub hlx_type_purge {
   set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
   # This is a purge request.
 
+  if (table.lookup(settings, "purge", "commence") ~ "stop") {
+    error 955 "Forbidden";
+  }
+
   set req.backend = F_AdobeRuntime;
 
   # Only declare local variables for things we mean to change before putting
