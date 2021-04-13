@@ -1,3 +1,12 @@
+# [8.13.0](https://github.com/adobe/helix-publish/compare/v8.12.4...v8.13.0) (2021-04-13)
+
+
+### Features
+
+* **fastly:** add new settings dictionary (not secret) ([56014b1](https://github.com/adobe/helix-publish/commit/56014b11380c40697b2c9001efc0fa7ff503d71a))
+* **purge:** control purging through entry in `settings` dictionary ([37c255b](https://github.com/adobe/helix-publish/commit/37c255bbd18773dcda7d3ab5316464c09859dee5)), closes [#765](https://github.com/adobe/helix-publish/issues/765)
+* **vcl:** allow passing the x-github-token header in request ([87d73b5](https://github.com/adobe/helix-publish/commit/87d73b50c5c52a1e150ba0439f6433b5b2c88c53))
+
 ## [8.12.4](https://github.com/adobe/helix-publish/compare/v8.12.3...v8.12.4) (2021-04-13)
 
 
