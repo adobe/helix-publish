@@ -1,3 +1,10 @@
+## [8.12.4](https://github.com/adobe/helix-publish/compare/v8.12.3...v8.12.4) (2021-04-13)
+
+
+### Bug Fixes
+
+* use helix-universal ([2fdd7bf](https://github.com/adobe/helix-publish/commit/2fdd7bf33f0e33f75a61e38f1f5e429b6d09d76d))
+
 ## [8.12.3](https://github.com/adobe/helix-publish/compare/v8.12.2...v8.12.3) (2021-04-13)
 
 
