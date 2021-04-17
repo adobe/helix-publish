@@ -1758,6 +1758,17 @@ sub hlx_deliver_errors {
      set resp.status = 400;
      set resp.response = "Bad request";
   }
+
+  set resp.http.Vary:X-Debug = "";
+  set resp.http.Vary:X-Strain = "";
+  set resp.http.Vary:X-Request-Type = "";
+  # why vary unconditionally here? All error pages
+  # are text/html, so the condition would be useless
+  set resp.http.Vary:X-Forwarded-Host = "";
+  set resp.http.Vary:X-OW-Version-Lock = "";
+  set resp.http.Vary:X-Github-Token = "";
+
+
 }
 
 sub hlx_error_errors {
@@ -1887,6 +1898,10 @@ sub vcl_fetch {
   if (req.backend == F_AdobeRuntime || req.backend == F_UniversalRuntime || req.backend == F_GitHub) {
     set beresp.http.Vary:X-Github-Token = "";
   }
+
+  # If your are looking to add another Vary, do not forget to add it in
+  # hlx_deliver_errors, too – unless you want to risk your errors becoming
+  # permantent.
 
 
   if (beresp.http.Expires || beresp.http.Surrogate-Control ~ "max-age" || beresp.http.Cache-Control ~ "(s-maxage|max-age)") {
