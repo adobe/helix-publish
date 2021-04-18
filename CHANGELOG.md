@@ -1,3 +1,10 @@
+## [8.13.3](https://github.com/adobe/helix-publish/compare/v8.13.2...v8.13.3) (2021-04-18)
+
+
+### Bug Fixes
+
+* **vcl:** set vary headers on synthetic (error) responses ([0fadb69](https://github.com/adobe/helix-publish/commit/0fadb6952d8725fbbd1c20c862853a6582c278b8)), closes [#836](https://github.com/adobe/helix-publish/issues/836)
+
 ## [8.13.2](https://github.com/adobe/helix-publish/compare/v8.13.1...v8.13.2) (2021-04-15)
 
 
