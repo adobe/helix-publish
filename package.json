@@ -90,7 +90,7 @@
     "@adobe/helix-status": "9.1.6",
     "@adobe/helix-universal": "1.1.0",
     "@adobe/helix-universal-logger": "1.0.2",
-    "escape-string-regexp": "4.0.0",
+    "escape-string-regexp": "5.0.0",
     "fs-extra": "9.1.0",
     "glob-to-regexp": "0.4.1",
     "p-limit": "3.1.0",
