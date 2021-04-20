@@ -1,3 +1,10 @@
+## [8.13.6](https://github.com/adobe/helix-publish/compare/v8.13.5...v8.13.6) (2021-04-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-deploy to v4.0.6 ([#842](https://github.com/adobe/helix-publish/issues/842)) ([25d6ab2](https://github.com/adobe/helix-publish/commit/25d6ab20950ae69bb72ba3360aa80b17c7f2372b))
+
 ## [8.13.5](https://github.com/adobe/helix-publish/compare/v8.13.4...v8.13.5) (2021-04-20)
 
 
