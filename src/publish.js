@@ -71,7 +71,6 @@ async function publish(options) {
     log = console,
     iconfig,
     algoliaappid,
-    epsagonToken,
     epsagonAppName,
   } = options;
   if (!(!!token && !!service)) {
@@ -83,6 +82,12 @@ async function publish(options) {
       statusCode: 401,
     };
   }
+
+  let { epsagonToken } = options;
+  // Disable Epsagon VCL tracing as it consumes a considerable amount
+  // of limited workspace which may lead to '503 Header overflow' errors
+  // and corrupted responses.
+  epsagonToken = undefined;
 
   let fastly;
   try {

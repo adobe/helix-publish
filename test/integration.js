@@ -314,7 +314,7 @@ describe('Integration Test', () => {
     assert.deepStrictEqual(res, {
       body: {
         status: 'published',
-        completed: 11,
+        completed: 10,
       },
       headers: {
         'content-type': 'application/json',
