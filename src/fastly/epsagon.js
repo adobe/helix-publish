@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+/* istanbul ignore file */
 function init(fastly, version, name, token) {
   return fastly.writeHttps(version, name, {
     name,

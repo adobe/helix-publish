@@ -71,7 +71,6 @@ async function publish(options) {
     log = console,
     iconfig,
     algoliaappid,
-    epsagonToken,
     epsagonAppName,
   } = options;
   if (!(!!token && !!service)) {
@@ -83,6 +82,12 @@ async function publish(options) {
       statusCode: 401,
     };
   }
+
+  let { epsagonToken } = options;
+  // Disable Epsagon VCL tracing as it consumes a considerable amount
+  // of limited workspace which may lead to '503 Header overflow' errors
+  // and corrupted responses.
+  epsagonToken = undefined;
 
   let fastly;
   try {
@@ -120,7 +125,7 @@ async function publish(options) {
     const publishtasks = [
       backends.init(fastly, version, algoliaappid),
       backends.updatestrains(fastly, version, config.strains),
-      vcl.init(fastly, version, epsagonToken
+      vcl.init(fastly, version, epsagonToken /* istanbul ignore next */
         ? {
           token: epsagonToken,
           logname: 'helix-epsagon',
@@ -139,6 +144,7 @@ async function publish(options) {
           config.strains,
         )),
     ];
+    /* istanbul ignore if */
     if (epsagonToken) {
       publishtasks.push(epsagon.init(fastly, version, 'helix-epsagon', epsagonToken));
     }
