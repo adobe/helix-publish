@@ -1,3 +1,10 @@
+## [8.13.8](https://github.com/adobe/helix-publish/compare/v8.13.7...v8.13.8) (2021-04-22)
+
+
+### Bug Fixes
+
+* **vcl:** disable Epsagon VCL tracing ([f3202f6](https://github.com/adobe/helix-publish/commit/f3202f614c7c8a7398f1020ca0d925958561593a)), closes [#846](https://github.com/adobe/helix-publish/issues/846)
+
 ## [8.13.7](https://github.com/adobe/helix-publish/compare/v8.13.6...v8.13.7) (2021-04-20)
 
 
