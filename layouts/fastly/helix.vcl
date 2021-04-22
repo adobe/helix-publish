@@ -146,31 +146,38 @@ sub hlx_recv_init {
 
   # set X-Version initial value
   set req.http.X-Version = regsub(req.vcl, "([^.]+)\.(\d+)_(\d+)-(.*)", "\2");
-
 }
 
 
 # Determines the current strain, and sets the X-Strain header
 sub hlx_strain {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_strain";
-  # TODO: add X-Strain-Key as a random-generated, validation property
-  if (req.http.X-Strain) {
-    set req.http.X-Trace = req.http.X-Trace + "(header:" + req.http.X-Strain + ")";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_strain";
+    # TODO: add X-Strain-Key as a random-generated, validation property
+    if (req.http.X-Strain) {
+      set req.http.X-Trace = req.http.X-Trace + "(header:" + req.http.X-Strain + ")";
+    }
   }
   # read strain from URL query string
   if (subfield(req.url.qs, "hlx_strain", "&")) {
     set req.http.X-Strain = subfield(req.url.qs, "hlx_strain", "&");
-    set req.http.X-Trace = req.http.X-Trace + "(url)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(url)";
+    }
   }
   # read strain from Cookie
   if (req.http.Cookie:X-Strain) {
     set req.http.X-Strain = req.http.Cookie:X-Strain;
-    set req.http.X-Trace = req.http.X-Trace + "(cookie)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(cookie)";
+    }
   }
   # read strain from stealty-strain header
   if (req.http.X-Stealthy-Strain) {
     set req.http.X-Strain = req.http.X-Stealthy-Strain;
-    set req.http.X-Trace = req.http.X-Trace + "(stealthy)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(stealthy)";
+    }
   }
 
   # Sanitize user input. `urlencode` leaves alphanumeric and `-._~`
@@ -182,7 +189,9 @@ sub hlx_strain {
 
     # run custom strain resolution
     include "strains.vcl";
-    set req.http.X-Trace = req.http.X-Trace + "(resolved)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(resolved)";
+    }
   }
 
   # we don't need cookies for anything else, but Proxy strains might
@@ -194,7 +203,9 @@ sub hlx_strain {
 
 # Gets the content allow list for the current strain and sets the X-Allow header
 sub hlx_allow {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_allow";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_allow";
+  }
 
   # starting permissive – change this for a more restrictive default
   set req.http.X-Allow = table.lookup(strain_allow, req.http.X-Strain);
@@ -205,7 +216,9 @@ sub hlx_allow {
 
 # Gets the content denylist for the current strain and sets the X-Deny header
 sub hlx_deny {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deny";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_deny";
+  }
 
   set req.http.X-Deny = table.lookup(strain_deny, req.http.X-Strain);
   if (!req.http.X-Deny) {
@@ -215,7 +228,9 @@ sub hlx_deny {
 
 # Implements the content block list (to be called from vcl_recv)
 sub hlx_block_recv {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_block_recv";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_block_recv";
+  }
 
   if (!req.http.x-topurl && req.url.path ~ {"regex:block.rgx"}) { # block baddies
     error 955 "Forbidden";
@@ -229,7 +244,9 @@ sub hlx_block_recv {
 sub hlx_owner {
   call hlx_owner_before;
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_owner";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_owner";
+  }
 
   set req.http.X-Owner = table.lookup(strain_owners, req.http.X-Strain);
   if (!req.http.X-Owner) {
@@ -241,7 +258,9 @@ sub hlx_owner {
 
 # Gets the directory index for the current strain
 sub hlx_index {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_index";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_index";
+  }
 
   set req.http.X-Index = table.lookup(strain_index_files, req.http.X-Strain);
   if (!req.http.X-Index) {
@@ -253,7 +272,9 @@ sub hlx_index {
 sub hlx_repo {
   call hlx_repo_before;
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_repo";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_repo";
+  }
   set req.http.X-Repo = table.lookup(strain_repos, req.http.X-Strain);
   if (!req.http.X-Repo) {
     set req.http.X-Repo = table.lookup(strain_repos, "default");
@@ -266,7 +287,9 @@ sub hlx_repo {
 sub hlx_ref {
   call hlx_ref_before;
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_ref";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_ref";
+  }
   set req.http.X-Ref = table.lookup(strain_refs, req.http.X-Strain);
   # fall back to default strain
   if (!req.http.X-Ref) {
@@ -282,7 +305,9 @@ sub hlx_ref {
 
 # Gets the content path root
 sub hlx_root_path {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_root_path";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_root_path";
+  }
   set req.http.X-Repo-Root-Path = table.lookup(strain_root_paths, req.http.X-Strain);
   if (!req.http.X-Repo-Root-Path) {
     set req.http.X-Repo-Root-Path = table.lookup(strain_root_paths, "default");
@@ -293,7 +318,9 @@ sub hlx_root_path {
 }
 
 sub hlx_action_root {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_action_root";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_action_root";
+  }
   set req.http.X-Action-Root = table.lookup(strain_action_roots, req.http.X-Strain);
   if (!req.http.X-Action-Root) {
     set req.http.X-Action-Root = table.lookup(strain_action_roots, "default");
@@ -303,7 +330,9 @@ sub hlx_action_root {
 
 # Gets the github static repo
 sub hlx_github_static_repo {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_repo";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_repo";
+  }
   set req.http.X-Github-Static-Repo = table.lookup(strain_github_static_repos, req.http.X-Strain);
   if (!req.http.X-Github-Static-Repo) {
     set req.http.X-Github-Static-Repo = table.lookup(strain_github_static_repos, "default");
@@ -312,7 +341,9 @@ sub hlx_github_static_repo {
 
 # Gets the github static owner
 sub hlx_github_static_owner {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_owner";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_owner";
+  }
   set req.http.X-Github-Static-Owner = table.lookup(strain_github_static_owners, req.http.X-Strain);
   if (!req.http.X-Github-Static-Owner) {
     set req.http.X-Github-Static-Owner = table.lookup(strain_github_static_owners, "default");
@@ -321,7 +352,9 @@ sub hlx_github_static_owner {
 
 # Gets the github static root
 sub hlx_github_static_root {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_root";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_root";
+  }
   set req.http.X-Github-Static-Root = table.lookup(strain_github_static_root, req.http.X-Strain);
   if (!req.http.X-Github-Static-Root) {
     set req.http.X-Github-Static-Root = table.lookup(strain_github_static_root, "default");
@@ -329,14 +362,20 @@ sub hlx_github_static_root {
   if (!req.http.X-Github-Static-Root) {
     set req.http.X-Github-Static-Root = "/";
   }
-  set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root +  ")";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "(" + req.http.X-Github-Static-Root +  ")";
+  }
 }
 
 # Gets the version lock
 sub hlx_version_lock {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_version_lock";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_version_lock";
+  }
   if (req.http.X-OW-Version-Lock && req.http.X-OW-Version-Lock != "") {
-    set req.http.X-Trace = req.http.X-Trace + "(header)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(header)";
+    }
     return;
   }
 
@@ -348,7 +387,9 @@ sub hlx_version_lock {
 
 # Gets the github static ref
 sub hlx_github_static_ref {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_ref";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_github_static_ref";
+  }
   set req.http.X-Github-Static-Ref = table.lookup(strain_github_static_refs, req.http.X-Strain);
   if (!req.http.X-Github-Static-Ref) {
     set req.http.X-Github-Static-Ref = table.lookup(strain_github_static_refs, "default");
@@ -357,9 +398,11 @@ sub hlx_github_static_ref {
 
 # rewrite required headers (called from fetch)
 sub hlx_headers_fetch {
-  # We're in the 'fetch' state where we temporarily store
-  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
-  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_headers_fetch";
+  if (!req.is_esi_subreq) {
+    # We're in the 'fetch' state where we temporarily store
+    # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_headers_fetch";
+  }
 
   if (beresp.http.x-openwhisk-activation-id) {
     # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427)
@@ -406,7 +449,9 @@ sub hlx_headers_fetch {
 }
 
 sub hlx_headers_deliver {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_deliver";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_headers_deliver";
+  }
 
   # Set HSTS since we always do HTTPS
   set resp.http.Strict-Transport-Security = "max-age=31536000";
@@ -433,50 +478,66 @@ sub hlx_headers_deliver {
 
     set resp.http.X-Embed = req.http.X-Embed;
 
+  if (!req.is_esi_subreq) {
     set resp.http.X-Trace = req.http.X-Trace;
+  }
  }
 
   call hlx_deliver_errors;
 }
 
 sub hlx_determine_request_type {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_determine_request_type";
+  }
 
   if (req.request == "HLXPURGE" || req.http.x-method-override == "HLXPURGE") {
-    set req.http.X-Trace = req.http.X-Trace + "(hlx-purge)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(hlx-purge)";
+    }
     set req.http.X-Request-Type = "Helix-Purge";
     return;
   }
 
   // TODO check for topurl
   if (req.url.ext == "url") {
-    set req.http.X-Trace = req.http.X-Trace + "(static-url)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(static-url)";
+    }
     set req.http.X-Request-Type = "Static-URL";
     return;
   }
 
   // TODO check for topurl
   if (req.url.ext == "302") {
-    set req.http.X-Trace = req.http.X-Trace + "(static-302)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(static-302)";
+    }
     set req.http.X-Request-Type = "Static-302";
     return;
   }
 
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
-    set req.http.X-Trace = req.http.X-Trace + "(existing:" + req.http.X-Request-Type + ")" ;
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(existing:" + req.http.X-Request-Type + ")" ;
+    }
     return;
   }
 
   if (req.url.ext ~ "^lnk$") {
-    set req.http.X-Trace = req.http.X-Trace + "(content-lnk)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(content-lnk)";
+    }
     set req.http.X-Request-Type = "Content/LNK";
     return;
   }
 
   // something like https://hlx.blob.core.windows.net/external/098af326aa856bb42ce9a21240cf73d6f64b0b45
   if (req.url.path ~ "^/(hlx_([0-9a-f]){40,41}).([0-9a-z]+)$" || req.url.path ~ "/(media_([0-9a-f]){40,41}).([0-9a-z]+)$") {
-    set req.http.X-Trace = req.http.X-Trace + "(blob)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(blob)";
+    }
     set req.http.X-Request-Type = "Blob";
     unset req.http.Accept-Encoding;
     return;
@@ -490,7 +551,9 @@ sub hlx_determine_request_type {
 
   // something like /_query/index/name
   if (req.url.path ~ "^/_query/.+/.+$") {
-    set req.http.X-Trace = req.http.X-Trace + "(query)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(query)";
+    }
     set req.http.X-Request-Type = "Query";
     unset req.http.Accept-Encoding;
     return;
@@ -499,19 +562,25 @@ sub hlx_determine_request_type {
   // move below cg-bin and queries to allow serving
   // md and json from there
   if (req.url.ext ~ "^md$") {
-    set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    }
     set req.http.X-Request-Type = "Content/MD";
     return;
   }
 
   if (req.url.ext ~ "^json$") {
-    set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(content-md)";
+    }
     set req.http.X-Request-Type = "Content/JSON";
     return;
   }
 
   if (req.url.path ~ "/sitemap(-[^/]+)?\.xml$") {
-    set req.http.X-Trace = req.http.X-Trace + "(content-sitemap)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(content-sitemap)";
+    }
     set req.http.X-Request-Type = "Content/Sitemap";
     return;
   }
@@ -519,24 +588,32 @@ sub hlx_determine_request_type {
   // something like /hlx_fonts/af/d91a29/00000000000000003b9af759/27/l?primer=34645566c6d4d8e7116ebd63bd1259d4c9689c1a505c3639ef9e73069e3e4176&fvd=i4&v=3
   // but not like /hlx_fonts/eic8tkf.css
   if (req.url.path ~ "^/hlx_fonts/.+" && req.url.ext != "css") {
-    set req.http.X-Trace = req.http.X-Trace + "(fonts)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(fonts)";
+    }
     set req.http.X-Request-Type = "Fonts";
   }
 
   if (req.url.ext ~ "^(hlx_([0-9a-f]){20,40}$)") {
-    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    }
     set req.http.X-Request-Type = "Static";
     unset req.http.Accept-Encoding;
     return;
   }
 
   if (req.http.host == "adobeioruntime.net") {
-    set req.http.X-Trace = req.http.X-Trace + "(embed)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(embed)";
+    }
     set req.http.X-Request-Type = "Embed";
     return;
   }
 
-  set req.http.X-Trace = req.http.X-Trace + "(none)";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "(none)";
+  }
 }
 
 /**
@@ -547,7 +624,9 @@ sub hlx_determine_request_type {
  * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
  */
 sub hlx_type_static_url {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_url";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_url";
+  }
 
   # get it from OpenWhisk
   set req.backend = F_AdobeRuntime;
@@ -621,7 +700,9 @@ sub hlx_type_static_url {
  * @header X-Orig-URL             the original (unmodified) URL, starting after hostname and port
  */
 sub hlx_type_static {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static";
+  }
   # This is a static request.
 
   # get it from OpenWhisk
@@ -666,12 +747,16 @@ sub hlx_type_static {
 
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.url ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
-    set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(immutable)";
+    }
     # and keep only the non-hashed part, i.e. everything before .hlx_
     set var.path = re.group.1;
     set var.esi = "&esi=true";
   } else {
-    set req.http.X-Trace = req.http.X-Trace + "(normal)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(normal)";
+    }
     # TODO: check for URL ending with `/` and look up index file
     set var.path = req.url;
     set var.esi = "";
@@ -706,7 +791,9 @@ sub hlx_type_static {
 }
 
 sub hlx_type_purge {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_purge";
+  }
   # This is a purge request.
 
   if (table.lookup(settings, "purge", "commence") ~ "stop") {
@@ -758,7 +845,9 @@ sub hlx_type_purge {
 sub hlx_type_cgi {
   declare local var.script STRING;
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_cgi";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_cgi";
+  }
   # This is a CGI request.
 
   set req.backend = F_AdobeRuntime;
@@ -808,7 +897,9 @@ sub hlx_type_cgi {
 }
 
 sub hlx_type_blob {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_blob";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_blob";
+  }
   # This is a blob request.
 
   # get it from Azure Blob Storage
@@ -820,7 +911,9 @@ sub hlx_type_blob {
 
   if (req.url.path ~ "^/hlx_(([0-9a-f]){40,41}).([0-9a-z]+)$" || req.url.path ~ "/media_(([0-9a-f]){40,41}).([0-9a-z]+)$") {
     set var.sha = re.group.1;
-    set req.http.X-Trace = req.http.X-Trace + "(" + var.sha + ")";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(" + var.sha + ")";
+    }
     set var.ext = req.url.ext;
     set var.sas = table.lookup(secrets, "AZURE_BLOB_SAS_RO", "");
 
@@ -834,7 +927,9 @@ sub hlx_type_blob {
 }
 
 sub hlx_type_query {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query";
+  }
   # yes, it's a query request
 
   # get it from Algolia
@@ -895,7 +990,9 @@ sub hlx_type_query {
 }
 
 sub hlx_type_fonts {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_fonts";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_fonts";
+  }
   # yes, it's a fonts request
 
   # get it from Adobe Fonts
@@ -917,7 +1014,9 @@ sub hlx_type_fonts {
  * response headers like Content-Type will be injected later on.
  */
 sub hlx_type_static_redirect {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_redirect";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_static_redirect";
+  }
   # Handle a redirect from static.js by
   # - fetching the resource from GitHub
   # - don't forget to override the Content-Type header
@@ -930,7 +1029,9 @@ sub hlx_type_static_redirect {
 }
 
 sub hlx_type_query_redirect {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query_redirect";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_query_redirect";
+  }
   set req.backend = F_Algolia;
 }
 
@@ -938,7 +1039,9 @@ sub hlx_fetch_blob {
   # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   if (req.http.X-Request-Type == "Blob" && beresp.status == 200) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_blob";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_blob";
+    }
     # The URLs are a hash of the content, so we can cache stuff for a year
     # both on the edge and in the browser
     set beresp.http.Cache-Control = "max-age=31622400,immutable";
@@ -964,7 +1067,9 @@ sub hlx_fetch_query {
   # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   if (beresp.http.X-Static == "Raw/Query" && beresp.status == 307) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(raw)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(raw)";
+    }
     # We're adding X-Restarts to the Vary here, so that we don't have to use
     # req.hash_always_miss, which can cause a thundering herd. Since we only
     # add to the Vary when we are restarting, and not on the final object, the
@@ -980,12 +1085,16 @@ sub hlx_fetch_query {
     return(deliver);
   }
   if (req.http.X-Request-Type == "Query/Redirect" && beresp.status == 200) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(redirect)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(redirect)";
+    }
 
     # use the cache settings configured for the query
     set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
   } elseif (req.http.X-Request-Type == "Query" && beresp.status == 200) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(regular)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_query(regular)";
+    }
 
     # use the cache settings configured for the query
     set beresp.http.Surrogate-Control = req.http.X-Surrogate-Control;
@@ -995,34 +1104,44 @@ sub hlx_fetch_query {
 sub hlx_fetch_static {
   # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
-  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_static";
+  if (!req.is_esi_subreq) {
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_static";
+  }
   declare local var.ext STRING;
 
   if (req.http.X-Request-Type == "Static-URL" && beresp.status == 200) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(url)";
-    # we copy the trace to the req in order to make it availale in vcl_error
-    set req.http.X-PostFetch = beresp.http.X-PostFetch;
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(url)";
+      # we copy the trace to the req in order to make it availale in vcl_error
+      set req.http.X-PostFetch = beresp.http.X-PostFetch;
+    }
     # Get the ETag response header and use it to construct a stable URL
 
-
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    }
     set req.http.X-Location = regsub(req.http.X-Orig-URL, ".url$", var.ext);
     error 303 "URL";
   }
   if (req.http.X-Request-Type == "Static-302" && beresp.status == 200) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(302)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(302)";
+    }
     # Get the ETag response header and use it to construct a stable URL
 
-
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[url=" + req.http.X-Orig-URL + ", ext=" + var.ext + "]";
+    }
     set req.http.X-Location = regsub(req.http.X-Orig-URL, ".302$", var.ext);
     error 902 "302";
   }
   # check for hard-cached files like /foo.js.hlx_f7c3bc1d808e04732adf679965ccc34ca7ae3441
   if (req.http.X-Orig-URL ~ "^(.*)(.hlx_([0-9a-f]){20,40}$)") {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(immutable)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(immutable)";
+    }
 
     set var.ext = ".hlx_" + digest.hash_sha1(beresp.http.ETag);
 
@@ -1037,14 +1156,18 @@ sub hlx_fetch_static {
       set beresp.ttl = 31622400s;
     } else {
       set beresp.ttl = 300s;
-      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[etag=" + beresp.http.ETag + ", ext=" + var.ext + "]";
+      if (!req.is_esi_subreq) {
+        set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "[etag=" + beresp.http.ETag + ", ext=" + var.ext + "]";
+      }
       error 404 "Invalid";
 
     }
     return(deliver);
   }
   if (beresp.http.X-Static == "Raw/Static") {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(raw)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(raw)";
+    }
     if (beresp.status == 307) {
       # This negates the need for hash_always_miss, see hlx_fetch_query for
       # more info.
@@ -1055,7 +1178,9 @@ sub hlx_fetch_static {
       return(deliver);
     }
   } elsif (req.http.X-Request-Type == "Static/Redirect" && beresp.status == 200) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(redirect)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(redirect)";
+    }
     // and this is where we fix the headers of the GitHub static response
     // so that they become digestible by a browser.
     // - recover Content-Type from X-Content-Type
@@ -1073,11 +1198,15 @@ sub hlx_fetch_static {
     unset beresp.http.X-XSS-Protection;
     unset beresp.http.Content-Security-Policy;
   } elsif (beresp.status == 404 || beresp.status == 204) {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(400)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(400)";
+    }
     # Cache for a short time, restart will get rid of it anyway
     set beresp.ttl = 60s;
   } else {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(none)";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "(none)";
+    }
   }
 }
 
@@ -1086,7 +1215,9 @@ sub hlx_fetch_static {
  * deliver or restart.
  */
 sub hlx_deliver_type {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_type(" + req.http.X-Request-Type + ")";
+  }
   if (req.http.X-Request-Type == "Dispatch") {
     call hlx_deliver_static;
     call hlx_deliver_redirects;
@@ -1105,11 +1236,13 @@ sub hlx_deliver_type {
  * 2. no error page could be found, so set the correct status code and deliver a fallback
  */
 sub hlx_fetch_error {
-  # We're in the 'fetch' state where we temporarily store
-  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
-  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_error(" + beresp.status + ")";
-  # we copy the trace to the req in order to make it availale in vcl_error
-  set req.http.X-PostFetch = beresp.http.X-PostFetch;
+  if (!req.is_esi_subreq) {
+    # We're in the 'fetch' state where we temporarily store
+    # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_error(" + beresp.status + ")";
+    # we copy the trace to the req in order to make it availale in vcl_error
+    set req.http.X-PostFetch = beresp.http.X-PostFetch;
+  }
 
   # only use syntethic errors if not in esi sub-request and no content is delivered from the dispatcher.
   if (!req.http.x-topurl && beresp.status != 200 && beresp.http.Content-Length == "0") {
@@ -1149,9 +1282,13 @@ sub hlx_fetch_error {
  * from redirect and adjust headers
  */
 sub hlx_deliver_static {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_static";
+  }
   if (resp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    }
     return;
   } elsif (resp.status == 307) {
     # perform some additional validation
@@ -1159,19 +1296,25 @@ sub hlx_deliver_static {
       set req.http.X-Request-Type = "Static/Redirect";
       set req.http.X-Backend-URL = re.group.1;
       set req.http.X-Static-Content-Type = resp.http.X-Content-Type;
-      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      if (!req.is_esi_subreq) {
+        set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      }
       restart;
     } else {
       # We should only end up here if there was a 307 with an invalid Location
       set resp.status = 500;
       set resp.response = "Redirect to wrong hostname";
-      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      if (!req.is_esi_subreq) {
+        set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      }
       # Remove X-Restarts from the Vary
       unset resp.http.Vary:X-Restarts;
     }
   } else {
     # any other error, ignore
-    set req.http.X-Trace = req.http.X-Trace + "(error)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(error)";
+    }
     #set req.http.X-Request-Type = "Error";
     #set req.url = "/" + resp.status + ".html"; // fall back to 500.html
     #restart;
@@ -1183,10 +1326,14 @@ sub hlx_deliver_static {
  * add the query string from the original url.
  */
 sub hlx_deliver_redirects {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_redirect";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_redirect";
+  }
   // only do this if we are serving a redirect
   if ((resp.status == 301 || resp.status == 302) && resp.http.Location) {
-    set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+    }
     // and only if the original url had parameters while the target has none
     if (resp.http.Location !~ "\?" && req.http.X-Orig-URL ~ "\?") {
       // append url parameters from original url to redirect target
@@ -1199,7 +1346,9 @@ sub hlx_fetch_preflight {
   # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
   if (req.http.X-Request-Type == "Preflight") {
-    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_preflight";
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_preflight";
+    }
     # We're adding X-Restarts to the Vary here, so that we don't have to use
     # req.hash_always_miss, which can cause a thundering herd. Since we only
     # add to the Vary when we are restarting, and not on the final object, the
@@ -1217,14 +1366,22 @@ sub hlx_fetch_preflight {
  * request and restart.
  */
 sub hlx_deliver_preflight {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_preflight";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_preflight";
+  }
   if (resp.status == 200) {
-    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    }
     include "preflight.vcl";
-    set req.http.X-Trace = req.http.X-Trace + "(x-pages-version=" resp.http.x-pages-version "/" req.http.x-preflight-x-pages-version ")";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(x-pages-version=" resp.http.x-pages-version "/" req.http.x-preflight-x-pages-version ")";
+    }
   } else {
     # any other error, ignore
-    set req.http.X-Trace = req.http.X-Trace + "(error)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(error)";
+    }
   }
   unset req.http.X-Request-Type;
   unset req.http.X-Strain;
@@ -1232,10 +1389,14 @@ sub hlx_deliver_preflight {
 }
 
 sub hlx_deliver_query {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_query";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_query";
+  }
   if (resp.status == 200) {
     # just pass it through
-    set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(ok)";
+    }
     return;
   } elseif (resp.status == 307) {
     # perform some additional validation
@@ -1244,19 +1405,25 @@ sub hlx_deliver_query {
       set req.http.X-Backend-URL = resp.http.Location;
       # save the cache control header for later
       set req.http.X-Surrogate-Control = resp.http.Cache-Control;
-      set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      if (!req.is_esi_subreq) {
+        set req.http.X-Trace = req.http.X-Trace + "(redirect)";
+      }
       restart;
     } else {
       # We should only end up here if there was a 307 with an invalid Location
       set resp.status = 500;
       set resp.response = "Redirect to wrong path";
-      set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      if (!req.is_esi_subreq) {
+        set req.http.X-Trace = req.http.X-Trace + "(redirect-error)";
+      }
       # Remove X-Restarts from the Vary
       unset resp.http.Vary:X-Restarts;
     }
   } else {
     # any other error, ignore
-    set req.http.X-Trace = req.http.X-Trace + "(error)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(error)";
+    }
   }
 }
 
@@ -1268,7 +1435,9 @@ sub hlx_deliver_query {
  * the correct backend.
  */
 sub hlx_type_embed {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_embed";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_embed";
+  }
   # This is an embed request
   # Fastly sends embed requests back to the same service config (which is why
   # we are handling it here), but keeps the correct Host header in place (which
@@ -1304,7 +1473,9 @@ sub hlx_type_embed {
  * Serve MD and JSON from Helix-Content-Proxy
  */
 sub hlx_type_content {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_content";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_content";
+  }
 
   # get it from OpenWhisk
   set req.backend = F_AdobeRuntime;
@@ -1374,14 +1545,18 @@ sub hlx_type_content {
  * request to the preflight service.
  */
 sub hlx_type_preflight {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_preflight";
+  }
 
   call hlx_owner;
   call hlx_repo;
   call hlx_ref;
 
   if (!req.http.X-Owner || !req.http.X-Repo || !req.http.X-Ref) {
-    set req.http.X-Trace = req.http.X-Trace + "; (no ORR)";
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "; (no ORR)";
+    }
     // we could not resolve owner, repo, ref, so the preflight
     // service might fail, so we just skip it
     restart;
@@ -1406,7 +1581,9 @@ sub hlx_type_preflight {
 sub hlx_type_dispatch {
   call hlx_type_pipeline_before;
 
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_dispatch";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_dispatch";
+  }
   # This is a dynamic request.
 
   # get it from OpenWhisk
@@ -1503,7 +1680,9 @@ sub hlx_type_dispatch {
  * so there is no need for URL rewriting.
  */
 sub hlx_type_proxy {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_type_proxy";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_proxy";
+  }
   # TODO: set Forwarded header? (RFC7239)
   # TODO: Host header/URL rewrites? or all done at strain resolution time?
 
@@ -1542,15 +1721,17 @@ sub hlx_check_debug_key {
  * This is where all requests are received.
  */
 sub vcl_recv {
-  if (req.restarts == 0) {
-    if (req.http.X-Trace) {
-      set req.http.X-Trace = req.http.X-Trace + "; vcl_recv";
+  if (!req.is_esi_subreq) {
+    if (req.restarts == 0) {
+      if (req.http.X-Trace) {
+        set req.http.X-Trace = req.http.X-Trace + "; vcl_recv";
+      } else {
+        set req.http.X-Trace = "vcl_recv";
+      }
     } else {
-      set req.http.X-Trace = "vcl_recv";
+      # So we don't have to add `RESTART` to `X-Trace` whenever we use `restart`
+      set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
     }
-  } else {
-    # So we don't have to add `RESTART` to `X-Trace` whenever we use `restart`
-    set req.http.X-Trace = req.http.X-Trace + "; RESTART; vcl_recv";
   }
 
   call hlx_check_debug_key;
@@ -1679,11 +1860,13 @@ sub hlx_fetch_errors {
     return;
   }
 
-  # We're in the 'fetch' state where we temporarily store
-  # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
-  set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_errors(" beresp.status ")";
-  # we copy the trace to the req in order to make it availale in vcl_error
-  set req.http.X-PostFetch = beresp.http.X-PostFetch;
+  if (!req.is_esi_subreq) {
+    # We're in the 'fetch' state where we temporarily store
+    # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
+    set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_errors(" beresp.status ")";
+    # we copy the trace to the req in order to make it availale in vcl_error
+    set req.http.X-PostFetch = beresp.http.X-PostFetch;
+  }
 
   # Interpreting OpenWhisk errors is a bit tricky, because we don't have access to the JSON
   # of the response body. Instead we are using the Content-Length of known error messages
@@ -1706,7 +1889,9 @@ sub hlx_fetch_errors {
 }
 
 sub hlx_deliver_errors {
-  set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_errors(" resp.status ")";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_deliver_errors(" resp.status ")";
+  }
 
   # Cache Condition: OpenWhisk Error Prio: 10
   if (resp.status == 951 ) {
@@ -1772,10 +1957,12 @@ sub hlx_deliver_errors {
 }
 
 sub hlx_error_errors {
-  if (req.http.X-PostFetch) {
-    set req.http.X-PostFetch = req.http.X-PostFetch + "; hlx_error_errors(" obj.status ")";
-  } else {
-    set req.http.X-Trace = req.http.X-Trace + "; hlx_error_errors(" obj.status ")";
+  if (!req.is_esi_subreq) {
+    if (req.http.X-PostFetch) {
+      set req.http.X-PostFetch = req.http.X-PostFetch + "; hlx_error_errors(" obj.status ")";
+    } else {
+      set req.http.X-Trace = req.http.X-Trace + "; hlx_error_errors(" obj.status ")";
+    }
   }
 
   # Cache Condition: OpenWhisk Error Prio: 10
@@ -1845,14 +2032,16 @@ sub hlx_error_errors {
 }
 
 sub vcl_fetch {
-  # store trace information in backend response headers in order
-  # to make them available in vcl_deliver
-  set beresp.http.X-Trace = req.http.X-Trace;
-  set beresp.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
-  set beresp.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
-  set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url " " req.http.X-Request-Type ")";
-  # we still want to keep the trace in the req in order to make it also availale in vcl_error
-  set req.http.X-PostFetch = beresp.http.X-PostFetch;
+  if (!req.is_esi_subreq) {
+    # store trace information in backend response headers in order
+    # to make them available in vcl_deliver
+    set beresp.http.X-Trace = req.http.X-Trace;
+    set beresp.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
+    set beresp.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
+    set beresp.http.X-PostFetch = "; vcl_fetch(" beresp.status ": " req.url " " req.http.X-Request-Type ")";
+    # we still want to keep the trace in the req in order to make it also availale in vcl_error
+    set req.http.X-PostFetch = beresp.http.X-PostFetch;
+  }
 #FASTLY fetch
 
   # Sprinkling in our debugging
@@ -1938,12 +2127,16 @@ sub vcl_fetch {
 }
 
 sub vcl_hash {
-  set req.http.X-Trace = req.http.X-Trace "; vcl_hash(" req.http.host req.url ")";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace "; vcl_hash";
+  }
 #FASTLY hash
 }
 
 sub vcl_hit {
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_hit(" req.url ")";
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; vcl_hit";
+  }
 #FASTLY hit
 
   if (!obj.cacheable) {
@@ -1957,12 +2150,14 @@ sub vcl_hit {
  * vcl_pass, to avoid code-rot through having to update two places.
  */
 sub hlx_bereq {
-  if (req.http.X-PreFetch-Miss) {
-    set req.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss + "; hlx_bereq";
-  } elseif (req.http.X-PreFetch-Pass) {
-    set req.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass + "; hlx_bereq";
-  } else {
-    set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
+  if (!req.is_esi_subreq) {
+    if (req.http.X-PreFetch-Miss) {
+      set req.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss + "; hlx_bereq";
+    } elseif (req.http.X-PreFetch-Pass) {
+      set req.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass + "; hlx_bereq";
+    } else {
+      set req.http.X-Trace = req.http.X-Trace + "; hlx_bereq";
+    }
   }
 
   # see https://fastly-guests.slack.com/archives/C0145H64N4W/p1607604397160200?thread_ts=1606991486.124800&cid=C0145H64N4W
@@ -2082,7 +2277,9 @@ sub hlx_bereq {
 }
 
 sub vcl_miss {
-  set req.http.X-PreFetch-Miss = "; vcl_miss(" bereq.http.host bereq.url ")";
+  if (!req.is_esi_subreq) {
+    set req.http.X-PreFetch-Miss = "; vcl_miss";
+  }
 #FASTLY miss
 
   call hlx_set_from_edge;
@@ -2093,7 +2290,9 @@ sub vcl_miss {
 }
 
 sub vcl_pass {
-  set req.http.X-PreFetch-Pass = "; vcl_pass";
+  if (!req.is_esi_subreq) {
+    set req.http.X-PreFetch-Pass = "; vcl_pass";
+  }
 #FASTLY pass
 
   call hlx_set_from_edge;
@@ -2104,30 +2303,33 @@ sub vcl_pass {
 }
 
 sub vcl_deliver {
-  # reconstruct VCL trace from information stored in backend response headers
-  if (resp.http.X-Trace) {
-    set req.http.X-Trace = resp.http.X-Trace;
+  if (!req.is_esi_subreq) {
+    # reconstruct VCL trace from information stored in backend response headers
+    if (resp.http.X-Trace) {
+      set req.http.X-Trace = resp.http.X-Trace;
+    }
+
+    if (fastly_info.state ~ "^HITPASS") {
+      set req.http.X-Trace = req.http.X-Trace "; vcl_hit(object: uncacheable, return: pass)";
+    } elseif (fastly_info.state ~ "^HIT") {
+      set req.http.X-Trace = req.http.X-Trace "; vcl_hit";
+    } else {
+      if (resp.http.X-PreFetch-Pass) {
+        set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Pass;
+      }
+
+      if (resp.http.X-PreFetch-Miss) {
+        set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Miss;
+      }
+
+      if (resp.http.X-PostFetch) {
+        set req.http.X-Trace = req.http.X-Trace resp.http.X-PostFetch;
+      }
+    }
+
+    set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
   }
 
-  if (fastly_info.state ~ "^HITPASS") {
-    set req.http.X-Trace = req.http.X-Trace "; vcl_hit(object: uncacheable, return: pass)";
-  } elseif (fastly_info.state ~ "^HIT") {
-    set req.http.X-Trace = req.http.X-Trace "; vcl_hit(" req.http.host req.url ")";
-  } else {
-    if (resp.http.X-PreFetch-Pass) {
-      set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Pass;
-    }
-
-    if (resp.http.X-PreFetch-Miss) {
-      set req.http.X-Trace = req.http.X-Trace resp.http.X-PreFetch-Miss;
-    }
-
-    if (resp.http.X-PostFetch) {
-      set req.http.X-Trace = req.http.X-Trace resp.http.X-PostFetch;
-    }
-  }
-
-  set req.http.X-Trace = req.http.X-Trace + "; vcl_deliver";
 #FASTLY deliver
 
   call hlx_headers_deliver;
@@ -2195,7 +2397,9 @@ sub vcl_deliver {
     unset resp.http.X-URL;
     unset resp.http.x-xss-protection;
   } else {
-    set resp.http.X-Trace = req.http.X-Trace;
+    if (!req.is_esi_subreq) {
+      set resp.http.X-Trace = req.http.X-Trace;
+    }
     set resp.http.X-Age = resp.http.Age;
   }
 
@@ -2210,19 +2414,23 @@ sub vcl_deliver {
 }
 
 sub vcl_error {
-  if (req.http.X-PostFetch) {
-    set req.http.X-PostFetch = req.http.X-PostFetch + "; vcl_error(" obj.status ")";
-  } else {
-    set req.http.X-Trace = req.http.X-Trace + "; vcl_error(" obj.status ")";
+  if (!req.is_esi_subreq) {
+    if (req.http.X-PostFetch) {
+      set req.http.X-PostFetch = req.http.X-PostFetch + "; vcl_error(" obj.status ")";
+    } else {
+      set req.http.X-Trace = req.http.X-Trace + "; vcl_error(" obj.status ")";
+    }
   }
 #FASTLY error
 
-  # store trace information in error response headers in order
-  # to make them available in vcl_deliver
-  set obj.http.X-Trace = req.http.X-Trace;
-  set obj.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
-  set obj.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
-  set obj.http.X-PostFetch = req.http.X-PostFetch;
+  if (!req.is_esi_subreq) {
+    # store trace information in error response headers in order
+    # to make them available in vcl_deliver
+    set obj.http.X-Trace = req.http.X-Trace;
+    set obj.http.X-PreFetch-Pass = req.http.X-PreFetch-Pass;
+    set obj.http.X-PreFetch-Miss = req.http.X-PreFetch-Miss;
+    set obj.http.X-PostFetch = req.http.X-PostFetch;
+  }
 
   if (req.http.x-openwhisk-activation-id) {
     # make sure activation id gets logged (https://github.com/adobe/helix-publish/issues/427)
