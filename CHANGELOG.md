@@ -1,3 +1,10 @@
+## [8.13.9](https://github.com/adobe/helix-publish/compare/v8.13.8...v8.13.9) (2021-04-23)
+
+
+### Bug Fixes
+
+* **vcl:** reduce workspace usage ([369e523](https://github.com/adobe/helix-publish/commit/369e523cb41ef64c6e49c157cc736eb288e702fc))
+
 ## [8.13.8](https://github.com/adobe/helix-publish/compare/v8.13.7...v8.13.8) (2021-04-22)
 
 
