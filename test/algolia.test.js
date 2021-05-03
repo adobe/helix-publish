@@ -14,7 +14,7 @@ process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 const assert = require('assert');
 const fs = require('fs-extra');
 const path = require('path');
-const { IndexConfig } = require('@adobe/helix-shared');
+const { IndexConfig } = require('@adobe/helix-shared-config');
 const { queryvcl, encode } = require('../src/fastly/algolia');
 
 /* eslint-env mocha */

@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-const { HelixConfig, IndexConfig } = require('@adobe/helix-shared');
+const { HelixConfig, IndexConfig } = require('@adobe/helix-shared-config');
 const initfastly = require('@adobe/fastly-native-promises');
 const backends = require('./fastly/backends');
 const vcl = require('./fastly/vcl');

@@ -14,7 +14,7 @@ process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 const assert = require('assert');
 const sinon = require('sinon');
 const path = require('path');
-const { HelixConfig } = require('@adobe/helix-shared');
+const { HelixConfig } = require('@adobe/helix-shared-config');
 const { init, updatestrains } = require('../src/fastly/dictionaries');
 
 /* eslint-env mocha */

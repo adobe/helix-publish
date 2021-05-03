@@ -15,7 +15,7 @@ process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 const fs = require('fs-extra');
 const assert = require('assert');
 const path = require('path');
-const { HelixConfig } = require('@adobe/helix-shared');
+const { HelixConfig } = require('@adobe/helix-shared-config');
 const utils = require('../src/fastly/vcl-utils');
 const { backends } = require('../src/fastly/backends');
 
