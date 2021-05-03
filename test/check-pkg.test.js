@@ -18,7 +18,7 @@ const path = require('path');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
 const { setupMocha: setupPolly } = require('@pollyjs/core');
 const FSPersister = require('@pollyjs/persister-fs');
-const { HelixConfig } = require('@adobe/helix-shared');
+const { HelixConfig } = require('@adobe/helix-shared-config');
 const checkPkgs = require('../src/check-pkgs');
 
 describe('test check_pkgs', () => {

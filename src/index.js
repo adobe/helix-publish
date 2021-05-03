@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 const { logger } = require('@adobe/helix-universal-logger');
-const { wrap } = require('@adobe/helix-shared');
+const wrap = require('@adobe/helix-shared-wrap');
 const { wrap: status } = require('@adobe/helix-status');
 const { Response } = require('@adobe/helix-universal');
 const publish = require('./publish');

@@ -14,7 +14,7 @@ process.env.HELIX_FETCH_FORCE_HTTP1 = 'true';
 const assert = require('assert');
 const sinon = require('sinon');
 const path = require('path');
-const { HelixConfig, IndexConfig } = require('@adobe/helix-shared');
+const { HelixConfig, IndexConfig } = require('@adobe/helix-shared-config');
 const {
   init, finish, updatestrains, extensions, dynamic, queries,
 } = require('../src/fastly/vcl');
