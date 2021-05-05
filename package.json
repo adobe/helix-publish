@@ -37,10 +37,10 @@
       "./layouts/fastly/952.html",
       "./layouts/fastly/953.html",
       "./layouts/fastly/generic-error.html",
-      "./node_modules/@adobe/helix-shared/src/schemas/indexconfig.schema.json",
-      "./node_modules/@adobe/helix-shared/src/schemas/index.schema.json",
-      "./node_modules/@adobe/helix-shared/src/schemas/query.schema.json",
-      "./node_modules/@adobe/helix-shared/src/schemas/property.schema.json"
+      "./node_modules/@adobe/helix-shared-config/src/schemas/indexconfig.schema.json",
+      "./node_modules/@adobe/helix-shared-config/src/schemas/index.schema.json",
+      "./node_modules/@adobe/helix-shared-config/src/schemas/query.schema.json",
+      "./node_modules/@adobe/helix-shared-config/src/schemas/property.schema.json"
     ],
     "memory": 512
   },
