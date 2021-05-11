@@ -86,7 +86,7 @@
     "@adobe/fastly-native-promises": "1.23.0",
     "@adobe/helix-fetch": "2.2.0",
     "@adobe/helix-log": "5.0.3",
-    "@adobe/helix-shared-config": "1.0.4",
+    "@adobe/helix-shared-config": "1.0.5",
     "@adobe/helix-shared-wrap": "1.0.0",
     "@adobe/helix-status": "9.1.6",
     "@adobe/helix-universal": "1.5.0",
