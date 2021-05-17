@@ -1101,6 +1101,17 @@ sub hlx_fetch_query {
   }
 }
 
+sub hlx_fetch_lnk {
+  if (req.http.X-Request-Type == "Content/LNK") {
+    if (!req.is_esi_subreq) {
+      set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_lnk";
+    }
+    set beresp.http.Access-Control-Allow-Origin = req.http.Origin;
+    set beresp.http.Access-Control-Allow-Methods = "OPTIONS, POST, HLXPURGE";
+    set beresp.http.Vary:Origin = "";
+  }
+}
+
 sub hlx_fetch_static {
   # We're in the 'fetch' state where we temporarily store
   # the trace information in beresp.http.X-PostFetch (see vcl_fetch)
@@ -2104,6 +2115,8 @@ sub vcl_fetch {
       set beresp.ttl = 60s;
     }
   }
+
+  call hlx_fetch_lnk;
 
   # checks if the request is a redirect or .hlx_xxxx request and then call helix-static respectively.
   call hlx_fetch_static;
