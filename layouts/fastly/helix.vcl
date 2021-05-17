@@ -1108,7 +1108,7 @@ sub hlx_fetch_lnk {
     }
     if (req.url.qs ? "hlx_report=true") {
       set beresp.http.Access-Control-Allow-Origin = req.http.Origin;
-      set beresp.http.Access-Control-Allow-Methods = "OPTIONS, POST, HLXPURGE";
+      set beresp.http.Access-Control-Allow-Methods = "GET, OPTIONS, POST";
       set beresp.http.Vary:Origin = "";
     }
   }
