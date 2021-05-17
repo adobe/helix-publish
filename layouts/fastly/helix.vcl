@@ -1106,9 +1106,11 @@ sub hlx_fetch_lnk {
     if (!req.is_esi_subreq) {
       set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_lnk";
     }
-    set beresp.http.Access-Control-Allow-Origin = req.http.Origin;
-    set beresp.http.Access-Control-Allow-Methods = "OPTIONS, POST, HLXPURGE";
-    set beresp.http.Vary:Origin = "";
+    if (req.url.qs ? "hlx_report=true") {
+      set beresp.http.Access-Control-Allow-Origin = req.http.Origin;
+      set beresp.http.Access-Control-Allow-Methods = "OPTIONS, POST, HLXPURGE";
+      set beresp.http.Vary:Origin = "";
+    }
   }
 }
 
