@@ -1106,7 +1106,7 @@ sub hlx_fetch_lnk {
     if (!req.is_esi_subreq) {
       set beresp.http.X-PostFetch = beresp.http.X-PostFetch + "; hlx_fetch_lnk";
     }
-    if (req.url.qs ~ "hlx_report=true") {
+    if (req.http.X-Orig-URL ~ "hlx_report=true") {
       set beresp.http.Access-Control-Allow-Origin = req.http.Origin;
       set beresp.http.Access-Control-Allow-Methods = "GET, OPTIONS, POST";
       set beresp.http.Vary:Origin = "";
@@ -2374,11 +2374,14 @@ sub vcl_deliver {
     set req.http.x-last-activation-id = resp.http.x-last-activation-id;
   }
 
-  if (!req.http.X-Debug) {
-    # Unless we are debugging, shut up chatty headers
+  if (!req.http.X-Debug && req.http.X-Request-Type != "Content/LNK") {
     unset resp.http.Access-Control-Allow-Headers;
     unset resp.http.Access-Control-Allow-Methods;
     unset resp.http.Access-Control-Allow-Origin;
+  }
+
+  if (!req.http.X-Debug) {
+    # Unless we are debugging, shut up chatty headers
     unset resp.http.Content-Md5;
     unset resp.http.Fastly-Io-Info;
     unset resp.http.Perf-Br-Resp-Out;
