@@ -1,3 +1,10 @@
+## [8.13.16](https://github.com/adobe/helix-publish/compare/v8.13.15...v8.13.16) (2021-05-19)
+
+
+### Bug Fixes
+
+* **content:** allow cors headers for lnk request type ([#871](https://github.com/adobe/helix-publish/issues/871)) ([ca1498b](https://github.com/adobe/helix-publish/commit/ca1498b95887d67730526f0d674afcfb85919a2a))
+
 ## [8.13.15](https://github.com/adobe/helix-publish/compare/v8.13.14...v8.13.15) (2021-05-12)
 
 
