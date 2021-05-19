@@ -1,3 +1,10 @@
+## [8.13.17](https://github.com/adobe/helix-publish/compare/v8.13.16...v8.13.17) (2021-05-19)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([#870](https://github.com/adobe/helix-publish/issues/870)) ([80c80ba](https://github.com/adobe/helix-publish/commit/80c80ba8ae8c4279a52ca7f9b45e587a2f8ab444))
+
 ## [8.13.16](https://github.com/adobe/helix-publish/compare/v8.13.15...v8.13.16) (2021-05-19)
 
 
