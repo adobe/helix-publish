@@ -2359,11 +2359,14 @@ sub vcl_deliver {
     set req.http.x-last-activation-id = resp.http.x-last-activation-id;
   }
 
-  if (!req.http.X-Debug) {
-    # Unless we are debugging, shut up chatty headers
+  if (!req.http.X-Debug && req.http.X-Request-Type != "Content/LNK") {
     unset resp.http.Access-Control-Allow-Headers;
     unset resp.http.Access-Control-Allow-Methods;
     unset resp.http.Access-Control-Allow-Origin;
+  }
+
+  if (!req.http.X-Debug) {
+    # Unless we are debugging, shut up chatty headers
     unset resp.http.Content-Md5;
     unset resp.http.Fastly-Io-Info;
     unset resp.http.Perf-Br-Resp-Out;
