@@ -1,3 +1,10 @@
+## [8.14.1](https://github.com/adobe/helix-publish/compare/v8.14.0...v8.14.1) (2021-05-27)
+
+
+### Bug Fixes
+
+* **block:** allow .rum path ([ecab8fd](https://github.com/adobe/helix-publish/commit/ecab8fdc2cd5c026f82f0b9a156af0d2cd3f8420)), closes [/github.com/adobe/theblog/pull/682#issuecomment-849460506](https://github.com//github.com/adobe/theblog/pull/682/issues/issuecomment-849460506)
+
 # [8.14.0](https://github.com/adobe/helix-publish/compare/v8.13.17...v8.14.0) (2021-05-27)
 
 
