@@ -1,3 +1,10 @@
+# [8.14.0](https://github.com/adobe/helix-publish/compare/v8.13.17...v8.14.0) (2021-05-27)
+
+
+### Features
+
+* **vcl:** add support for rum collection ([365d11b](https://github.com/adobe/helix-publish/commit/365d11b2a226e449ce7a81c1361f80badb12a7f0))
+
 ## [8.13.17](https://github.com/adobe/helix-publish/compare/v8.13.16...v8.13.17) (2021-05-19)
 
 
