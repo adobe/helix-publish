@@ -517,6 +517,14 @@ sub hlx_determine_request_type {
     return;
   }
 
+  if (req.url.path ~ "^/\.rum/") {
+    if (!req.is_esi_subreq) {
+      set req.http.X-Trace = req.http.X-Trace + "(rum)";
+    }
+    set req.http.X-Request-Type = "RUM";
+    return;
+  }
+
   # Exit if we already have a type
   if (req.http.X-Request-Type) {
     if (!req.is_esi_subreq) {
@@ -1575,6 +1583,22 @@ sub hlx_type_preflight {
   set req.http.X-Backend-URL = {"const:preflight"};
 }
 
+sub hlx_type_rum {
+  if (!req.is_esi_subreq) {
+    set req.http.X-Trace = req.http.X-Trace + "; hlx_type_rum";
+  }
+
+  // we do not add a separate backend for RUM and instead just
+  // use the fact that both the RUM service and universal runtime are
+  // on Fastly
+  set req.backend = F_UniversalRuntime;
+  // but we need to set the hostname accordingly
+  set req.http.X-Backend-Host = "rum.hlx3.page";
+
+  // keep the current URL
+  set req.http.X-Backend-URL = req.url;
+}
+
 /**
  * Handles requests for the main Helix rendering pipeline.
  */
@@ -1834,6 +1858,8 @@ sub vcl_recv {
     call hlx_type_content;
   } elseif (req.http.X-Request-Type == "Preflight") {
     call hlx_type_preflight;
+  } elseif (req.http.X-Request-Type == "RUM") {
+    call hlx_type_rum;
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
