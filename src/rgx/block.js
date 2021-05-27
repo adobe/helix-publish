@@ -14,7 +14,7 @@ module.exports = [
   /_debugbar/,
   /.+\.axd/,
   /.+\.log$/,
-  /(?!\/\.well-known)\/\./,
+  /(?!\/\.(well-known|rum))\/\./,
   /(Homestead|circle|_?config)\.ya?ml$/,
   /[()'"]/, // braces and escapes
   /[Tt]hank.*\.txt$/,
