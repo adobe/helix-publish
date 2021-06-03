@@ -1,3 +1,10 @@
+## [8.14.4](https://github.com/adobe/helix-publish/compare/v8.14.3...v8.14.4) (2021-06-03)
+
+
+### Bug Fixes
+
+* **rum:** pass rum requests and do not forward cookies ([4bb1f94](https://github.com/adobe/helix-publish/commit/4bb1f94d4a93f3b6acbb1d7081a21e64ab7234c1))
+
 ## [8.14.3](https://github.com/adobe/helix-publish/compare/v8.14.2...v8.14.3) (2021-05-31)
 
 
