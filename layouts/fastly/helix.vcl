@@ -1597,6 +1597,9 @@ sub hlx_type_rum {
 
   // keep the current URL
   set req.http.X-Backend-URL = req.url;
+
+  // rum needs no cookies
+  unset req.http.Cookie;
 }
 
 /**
@@ -1860,6 +1863,8 @@ sub vcl_recv {
     call hlx_type_preflight;
   } elseif (req.http.X-Request-Type == "RUM") {
     call hlx_type_rum;
+    // we pass here, as the rum post is not cachable
+    return(pass);
   } else {
     set req.http.X-Request-Type = "Dispatch";
     call hlx_type_dispatch;
