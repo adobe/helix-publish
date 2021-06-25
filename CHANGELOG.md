@@ -1,3 +1,10 @@
+## [8.14.9](https://github.com/adobe/helix-publish/compare/v8.14.8...v8.14.9) (2021-06-25)
+
+
+### Bug Fixes
+
+* **vcl:** fix 401 to 500 propagation, propagate as 403 instead ([c2eefae](https://github.com/adobe/helix-publish/commit/c2eefaeebb45c705ec20ec4275f65cce64af96e5)), closes [#893](https://github.com/adobe/helix-publish/issues/893)
+
 ## [8.14.8](https://github.com/adobe/helix-publish/compare/v8.14.7...v8.14.8) (2021-06-14)
 
 
