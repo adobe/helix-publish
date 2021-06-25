@@ -1270,6 +1270,10 @@ sub hlx_fetch_error {
       error 965 "Too many requests";
     } elsif (beresp.status == 400) {
       error 966 "Bad request";
+    } elsif (beresp.status == 401) {
+      // we handle a 401 from the backend just like a 403, as there won't be any
+      // chance that the client can re-authenticate.
+      error 955 "Forbidden";
     } else {
        error 952 "Internal Server Error";
     }
