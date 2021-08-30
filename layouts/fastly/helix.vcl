@@ -611,7 +611,7 @@ sub hlx_determine_request_type {
     return;
   }
 
-  if (req.http.host == "adobeioruntime.net") {
+  if (req.http.host == "adobeioruntime.net" || req.http.host ~ ".*\.anywhere\.run") {
     if (!req.is_esi_subreq) {
       set req.http.X-Trace = req.http.X-Trace + "(embed)";
     }
@@ -1475,6 +1475,7 @@ sub hlx_type_embed {
         set var.hostname = var.namespace + "." + re.group.4;
         set req.backend = F_UniversalRuntime;
         set req.http.X-Backend-Host = var.hostname;
+        set req.http.X-Backend-URL = req.url;
       }
     }
   }
