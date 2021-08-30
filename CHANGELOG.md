@@ -1,3 +1,13 @@
+## [8.14.12](https://github.com/adobe/helix-publish/compare/v8.14.11...v8.14.12) (2021-08-30)
+
+
+### Bug Fixes
+
+* **embeds:** fix broken server-side embeds ([72698c0](https://github.com/adobe/helix-publish/commit/72698c01a5ff8db22ea8663701cd8d7eb9c7ea53)), closes [adobe/helix-home#971](https://github.com/adobe/helix-home/issues/971)
+* **vcl:** do not escape dots ([a57b7e7](https://github.com/adobe/helix-publish/commit/a57b7e7697d1a292968b5289ac29df2369e74009))
+* **vcl:** match hostname the right way ([a115b26](https://github.com/adobe/helix-publish/commit/a115b26766b84491ef713c08162bf1f4040754e0))
+* **vcl:** stricter regex matching for anywhere.run hostname ([2dd8392](https://github.com/adobe/helix-publish/commit/2dd8392648f6f65bb98f1eea770c654d09904cbb))
+
 ## [8.14.11](https://github.com/adobe/helix-publish/compare/v8.14.10...v8.14.11) (2021-08-30)
 
 
