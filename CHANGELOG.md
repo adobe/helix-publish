@@ -1,3 +1,10 @@
+## [8.14.13](https://github.com/adobe/helix-publish/compare/v8.14.12...v8.14.13) (2021-09-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-universal to v1.6.8 ([#910](https://github.com/adobe/helix-publish/issues/910)) ([68e9159](https://github.com/adobe/helix-publish/commit/68e9159c9c4f702db79658004bfbd40cce8084b7))
+
 ## [8.14.12](https://github.com/adobe/helix-publish/compare/v8.14.11...v8.14.12) (2021-08-30)
 
 

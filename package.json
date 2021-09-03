@@ -1,6 +1,6 @@
 {
   "name": "@adobe/helix-publish",
-  "version": "8.14.12",
+  "version": "8.14.13",
   "description": "A microservice that publishes Helix configurations to Fastly",
   "main": "src/index.js",
   "private": true,
