@@ -1,3 +1,10 @@
+## [8.14.21](https://github.com/adobe/helix-publish/compare/v8.14.20...v8.14.21) (2021-09-27)
+
+
+### Bug Fixes
+
+* **deps:** use secrets-manager ([f9236ef](https://github.com/adobe/helix-publish/commit/f9236efab467af869380b0bb8bb63cb5242c07c6))
+
 ## [8.14.20](https://github.com/adobe/helix-publish/compare/v8.14.19...v8.14.20) (2021-09-22)
 
 
