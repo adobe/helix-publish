@@ -1,3 +1,11 @@
+## [8.14.27](https://github.com/adobe/helix-publish/compare/v8.14.26...v8.14.27) (2021-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-shared-config to v1.4.4 ([#943](https://github.com/adobe/helix-publish/issues/943)) ([df637a9](https://github.com/adobe/helix-publish/commit/df637a9e32d97cc6b4dcaed61380c7c08822c7d5))
+* **deps:** update dependency @adobe/helix-universal-logger to v2 ([#944](https://github.com/adobe/helix-publish/issues/944)) ([18e1cce](https://github.com/adobe/helix-publish/commit/18e1cceb398a70e86064926ad220a8261e7494be))
+
 ## [8.14.26](https://github.com/adobe/helix-publish/compare/v8.14.25...v8.14.26) (2021-10-20)
 
 
