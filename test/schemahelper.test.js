@@ -17,26 +17,34 @@ const { toString, vcl, str } = require('../src/vcl/schemahelper');
 
 describe('Test Schema Helper', () => {
   it('Test simple formatting', () => {
-    assert.equal(toString({}),
-      '{json"{ }"json}');
+    assert.equal(
+      toString({}),
+      '{json"{ }"json}',
+    );
   });
 
   it('Test key value formatting', () => {
-    assert.equal(toString({ foo: str`bar` }),
-      '{json"{ "foo": "bar" }"json}');
+    assert.equal(
+      toString({ foo: str`bar` }),
+      '{json"{ "foo": "bar" }"json}',
+    );
   });
 
   it('Test nested object formatting', () => {
-    assert.equal(toString({ foo: { bar: { baz: str`qxb` } } }),
-      '{json"{ "foo": { "bar": { "baz": "qxb" } } }"json}');
+    assert.equal(
+      toString({ foo: { bar: { baz: str`qxb` } } }),
+      '{json"{ "foo": { "bar": { "baz": "qxb" } } }"json}',
+    );
   });
 
   it('Test simple VCL formatting', () => {
-    assert.equal(toString({
-      epsagon_token: str`fake`,
-      enter: str`hlx_strain`,
-      'req.http.X-CDN-Request-ID': vcl`req.http.X-CDN-Request-ID`,
-    }),
-    '{json"{ "epsagon_token": "fake",  "enter": "hlx_strain",  "req.http.X-CDN-Request-ID": ""json} req.http.X-CDN-Request-ID {json"" }"json}');
+    assert.equal(
+      toString({
+        epsagon_token: str`fake`,
+        enter: str`hlx_strain`,
+        'req.http.X-CDN-Request-ID': vcl`req.http.X-CDN-Request-ID`,
+      }),
+      '{json"{ "epsagon_token": "fake",  "enter": "hlx_strain",  "req.http.X-CDN-Request-ID": ""json} req.http.X-CDN-Request-ID {json"" }"json}',
+    );
   });
 });
