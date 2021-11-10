@@ -44,9 +44,13 @@ function injectConsts(content, constants) {
   return Object
     .entries(constants)
     .filter(([key, value]) => !!key && !!value)
-    .reduce((str, [key, value]) => str
-      .replace(new RegExp(escapeStringRegexp(`{"const:${key}"}`), 'g'), `"${value}"`),
-    content);
+    .reduce(
+      (str, [key, value]) => str.replace(
+        new RegExp(escapeStringRegexp(`{"const:${key}"}`), 'g'),
+        `"${value}"`,
+      ),
+      content,
+    );
 }
 
 module.exports.include = include;

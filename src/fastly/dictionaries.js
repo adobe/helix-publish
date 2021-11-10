@@ -44,6 +44,7 @@ async function init(fastly, version) {
   )));
 }
 
+// eslint-disable-next-line default-param-last
 function ops(oldops = [], key, value) {
   return [...oldops, {
     op: 'upsert',
