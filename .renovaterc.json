@@ -1,3 +1,17 @@
 {
-  "extends": ["github>adobe/helix-shared"]
+  "extends": ["github>adobe/helix-shared"],
+  "packageRules": [
+    {
+      "packageNames": ["@pollyjs/adapter-node-http"],
+      "allowedVersions": "<6.0.0"
+    },
+    {
+      "packageNames": ["@pollyjs/core"],
+      "allowedVersions": "<6.0.0"
+    },
+    {
+      "packageNames": ["@pollyjs/persister-fs"],
+      "allowedVersions": "<6.0.0"
+    }
+  ]
 }
