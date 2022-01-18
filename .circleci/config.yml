@@ -157,8 +157,7 @@ jobs:
 
     - helix-post-deploy/monitoring:
         statuspage_name: Helix Publish
-        statuspage_group: Development
-        newrelic_group_policy: Development Repeated Failure
+        statuspage_group: Development (Legacy)
 
   branch-deploy:
     executor: node14
