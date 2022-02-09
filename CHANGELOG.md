@@ -1,3 +1,10 @@
+## [8.14.38](https://github.com/adobe/helix-publish/compare/v8.14.37...v8.14.38) (2022-02-09)
+
+
+### Bug Fixes
+
+* **deps:** update adobe fixes ([#1007](https://github.com/adobe/helix-publish/issues/1007)) ([26f057a](https://github.com/adobe/helix-publish/commit/26f057ad4b195dd9fe425f634306c3b766cd44aa))
+
 ## [8.14.37](https://github.com/adobe/helix-publish/compare/v8.14.36...v8.14.37) (2022-02-06)
 
 
