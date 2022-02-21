@@ -88,7 +88,7 @@
     "@adobe/helix-fetch": "3.0.5",
     "@adobe/helix-shared-config": "1.7.14",
     "@adobe/helix-shared-wrap": "1.0.2",
-    "@adobe/helix-status": "9.2.6",
+    "@adobe/helix-status": "9.2.7",
     "@adobe/helix-universal-logger": "2.0.3",
     "escape-string-regexp": "4.0.0",
     "fs-extra": "10.0.0",
