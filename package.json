@@ -86,7 +86,7 @@
   "dependencies": {
     "@adobe/fastly-native-promises": "2.0.2",
     "@adobe/helix-fetch": "3.0.5",
-    "@adobe/helix-shared-config": "1.7.14",
+    "@adobe/helix-shared-config": "1.7.15",
     "@adobe/helix-shared-wrap": "1.0.2",
     "@adobe/helix-status": "9.2.7",
     "@adobe/helix-universal-logger": "2.0.3",
